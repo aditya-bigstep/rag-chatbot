@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block title %}{{ current.title if current else "RAG Chatbot" }}{% endblock %}
+{% block body %}
+<div class="layout">
+  <aside class="sidebar">
+    <form method="post" action="/ui/sessions">
+      <button class="primary wide" type="submit">+ New chat</button>
+    </form>
+
+    <nav class="session-list" aria-label="Chat sessions">
+      {% for s in sessions %}
+        <a class="session-link {% if current and s.id == current.id %}active{% endif %}"
+           href="/sessions/{{ s.id }}" title="{{ s.title }}">
+          <span class="session-title">{{ s.title }}</span>
+          <span class="session-meta">{{ s.message_count }} msgs</span>
+        </a>
+      {% else %}
+        <p class="muted">No chats yet.</p>
+      {% endfor %}
+    </nav>
+
+    <section class="upload">
+      <h2>Documents</h2>
+      <form hx-post="/ui/documents" hx-encoding="multipart/form-data" hx-target="#upload-status"
+            hx-on::after-request="if(event.detail.successful) this.reset()">
+        <input type="file" name="file" accept=".md,.txt" required>
+        <button type="submit">Upload</button>
+      </form>
+      <div id="upload-status" aria-live="polite"></div>
+    </section>
+
+    {% if missing %}
+    <details class="status">
+      <summary>{{ missing|length }} module(s) not implemented yet</summary>
+      <ul>{% for name, reason in missing.items() %}<li><b>{{ name }}</b>: {{ reason }}</li>{% endfor %}</ul>
+    </details>
+    {% endif %}
+  </aside>
+
+  <main class="chat">
+    {% if current %}
+      <header class="chat-header">
+        <form class="rename" method="post" action="/ui/sessions/{{ current.id }}/rename">
+          <input name="title" value="{{ current.title }}" aria-label="Session title" maxlength="120">
+          <button type="submit">Rename</button>
+        </form>
+        <form method="post" action="/ui/sessions/{{ current.id }}/delete"
+              onsubmit="return confirm('Delete this chat?')">
+          <button class="danger" type="submit">Delete</button>
+        </form>
+      </header>
+
+      <div id="messages" class="messages">
+        {% with messages = current.messages %}{% include "partials/messages.html" %}{% endwith %}
+      </div>
+
+      <form class="composer" id="composer" data-session="{{ current.id }}">
+        <textarea name="content" rows="2" placeholder="Ask about your documents…" required
+                  onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); this.form.requestSubmit()}"></textarea>
+        <button class="primary" type="submit">Send</button>
+      </form>
+    {% else %}
+      <div class="empty">
+        <h1>RAG Chatbot</h1>
+        <p>Create a chat to get started.</p>
+      </div>
+    {% endif %}
+  </main>
+</div>
+<script>
+  const box = document.getElementById('messages'); if (box) box.scrollTop = box.scrollHeight;
+
+  function addMessage(role, text) {
+    const article = document.createElement('article');
+    article.className = 'message ' + role;
+    article.innerHTML = '<div class="role"></div><div class="content"></div>';
+    article.querySelector('.role').textContent = role;
+    article.querySelector('.content').textContent = text;
+    box.appendChild(article);
+    box.scrollTop = box.scrollHeight;
+    return article;
+  }
+
+  function addSources(article, sources) {
+    if (!sources.length) return;
+    const details = document.createElement('details');
+    details.className = 'sources';
+    const summary = document.createElement('summary');
+    summary.textContent = sources.length + ' source(s)';
+    const list = document.createElement('ul');
+    for (const s of sources) {
+      const li = document.createElement('li');
+      const name = document.createElement('b');
+      name.textContent = s.source;
+      li.append(name);
+      if (s.score !== null) li.append(' (' + s.score.toFixed(2) + ')');
+      if (s.snippet) {
+        const snippet = document.createElement('div');
+        snippet.className = 'snippet';
+        snippet.textContent = s.snippet;
+        li.append(snippet);
+      }
+      list.append(li);
+    }
+    details.append(summary, list);
+    article.append(details);
+  }
+
+  async function streamReply(sessionId, content, article, userArticle) {
+    const target = article.querySelector('.content');
+    const response = await fetch('/api/sessions/' + sessionId + '/messages/stream', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({content}),
+    });
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+    let buffer = '';
+    for (;;) {
+      const {value, done} = await reader.read();
+      if (done) break;
+      buffer += value;
+      let end;
+      while ((end = buffer.indexOf('\n\n')) !== -1) {
+        const lines = buffer.slice(0, end).split('\n');
+        buffer = buffer.slice(end + 2);
+        const event = lines[0].slice(7);
+        const data = JSON.parse(lines[1].slice(6));
+        if (event === 'user') userArticle.querySelector('.content').textContent = data.content;  // PII masked
+        else if (event === 'token') target.textContent += data;
+        else if (event === 'done') { target.textContent = data.content; addSources(article, data.sources); }
+        box.scrollTop = box.scrollHeight;
+      }
+    }
+  }
+
+  // ---- Human-in-the-loop: if the chat is paused waiting for approval, show Approve / Reject buttons.
+  async function checkApproval() {
+    const composerEl = document.getElementById('composer');
+    if (!composerEl) return;
+    const sessionId = composerEl.dataset.session;
+    const old = document.getElementById('approval-bar'); if (old) old.remove();
+    const res = await fetch('/api/sessions/' + sessionId + '/approval');
+    if (!res.ok) return;
+    const {pending} = await res.json();
+    if (!pending) return;
+    const bar = document.createElement('div');
+    bar.id = 'approval-bar';
+    bar.className = 'message assistant';
+    bar.innerHTML = '<div class="role">approval needed</div><div class="content"></div>';
+    bar.querySelector('.content').textContent = pending.message;
+    for (const [label, approved] of [['Approve', true], ['Reject', false]]) {
+      const btn = document.createElement('button');
+      btn.textContent = label;
+      btn.className = approved ? 'primary' : 'danger';
+      btn.onclick = async () => {
+        bar.querySelectorAll('button').forEach(b => b.disabled = true);
+        const r = await fetch('/api/sessions/' + sessionId + '/approval', {
+          method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({approved}),
+        });
+        bar.remove();
+        if (r.ok) addSources(addMessage('assistant', (await r.json()).content), []);
+        checkApproval();  // the resumed run could pause again
+      };
+      bar.append(btn);
+    }
+    box.appendChild(bar);
+    box.scrollTop = box.scrollHeight;
+  }
+  checkApproval();
+
+  const composer = document.getElementById('composer');
+  if (composer) composer.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const textarea = composer.querySelector('textarea');
+    const button = composer.querySelector('button');
+    const content = textarea.value.trim();
+    if (!content) return;
+    button.disabled = true;
+    textarea.value = '';
+    const sent = addMessage('user', content);
+    const reply = addMessage('assistant', '');
+    try {
+      await streamReply(composer.dataset.session, content, reply, sent);
+      await checkApproval();
+    } catch (err) {
+      reply.querySelector('.content').textContent = 'Error: ' + err.message;
+    } finally {
+      button.disabled = false;
+      textarea.focus();
+    }
+  });
+</script>
+{% endblock %}
