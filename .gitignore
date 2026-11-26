@@ -12,3 +12,7 @@ data/vectorstore/*
 data/checkpoints.sqlite*
 
 .DS_Store
+
+data/research/
+evals/results/vectors/
+scrollcraft/builds/*/lab/

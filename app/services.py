@@ -13,7 +13,7 @@ from app.chat.pii import redact_pii
 from app.config import Settings
 from app.deps import Components
 from app.ingest.pipeline import ingest_file
-from app.models import EngineResult, Message
+from app.models import EngineResult, Message, Session
 from app.storage.json_store import SessionStore
 
 logger = logging.getLogger(__name__)
@@ -28,13 +28,18 @@ def _mask_pii(content: str) -> str:
     return redaction.text
 
 
+def _scope(session: Session) -> dict[str, str]:
+    """Extra engine argument for chats that belong to a research report (limits retrieval to it)."""
+    return {"scope": session.report_id} if session.report_id else {}
+
+
 def run_chat_turn(store: SessionStore, engine: ChatEngine, session_id: str, content: str) -> tuple[Message, Message]:
     """Send one user message through the engine and save both messages."""
     session = store.get(session_id)  # raises SessionNotFoundError before we call the engine
     content = _mask_pii(content)
     user_message = Message(role="user", content=content)
     try:
-        result = engine.invoke(message=content, history=session.messages, session_id=session_id)
+        result = engine.invoke(message=content, history=session.messages, session_id=session_id, **_scope(session))
         assistant_message = Message(role="assistant", content=result.answer, sources=result.sources)
     except Exception as exc:
         logger.exception("Engine failed for session %s", session_id)
@@ -69,7 +74,8 @@ def run_chat_turn_stream(
     user_message = Message(role="user", content=content)
     yield user_message
     try:
-        for item in engine.stream(message=content, history=session.messages, session_id=session_id):
+        stream = engine.stream(message=content, history=session.messages, session_id=session_id, **_scope(session))
+        for item in stream:
             if isinstance(item, EngineResult):
                 assistant_message = Message(role="assistant", content=item.answer, sources=item.sources)
             else:

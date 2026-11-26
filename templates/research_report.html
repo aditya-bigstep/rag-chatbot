@@ -1,0 +1,40 @@
+{% extends "pilot_base.html" %}
+{% block title %}{{ topic }} · ResearchPilot{% endblock %}
+{% block tab_research %}on{% endblock %}
+{% block body %}
+<div class="work" id="work" data-report="{{ report_id }}">
+  <aside class="rail">
+    <div>
+      <h3>Sections</h3>
+      <nav class="toc" id="toc" aria-label="Sections"></nav>
+    </div>
+    <div>
+      <h3>Activity</h3>
+      <div class="log" id="log" aria-live="polite"></div>
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+    <article class="sheet" id="sheet"></article>
+    <div class="composer hidden" id="composer">
+      <form>
+        <input class="field" name="text" maxlength="600" placeholder="Ask for a change: add a section on government policy, make section 3 more detailed" aria-label="Change request">
+        <button class="btn go" type="submit">Revise</button>
+      </form>
+    </div>
+  </main>
+
+  <aside class="side">
+    <div class="side-tabs" role="tablist">
+      <button data-tab="sources" class="on">Sources</button>
+      <button data-tab="analysis">Analysis</button>
+      <button data-tab="chat">Chat</button>
+      <button data-tab="history">History</button>
+      <button data-tab="runs">Runs</button>
+    </div>
+    <div class="side-body" id="side"></div>
+  </aside>
+</div>
+<div class="pop hidden" id="pop" role="dialog" aria-label="Evidence"></div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', path='report.js') }}"></script>{% endblock %}

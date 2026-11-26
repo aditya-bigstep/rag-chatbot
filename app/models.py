@@ -53,6 +53,8 @@ class Source(BaseModel):
     chunk_id: str
     score: float | None = None
     snippet: str = ""
+    section: str = ""  # report section the chunk came from (empty for uploaded files)
+    urls: list[str] = Field(default_factory=list)  # web sources cited in that section
 
 
 class EngineResult(BaseModel):
@@ -81,6 +83,7 @@ class Session(BaseModel):
     created_at: str = Field(default_factory=utc_now)
     updated_at: str = Field(default_factory=utc_now)
     messages: list[Message] = Field(default_factory=list)
+    report_id: str | None = None  # set when this chat is about one research report
 
 
 class SessionSummary(BaseModel):

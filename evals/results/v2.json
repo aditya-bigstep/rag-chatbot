@@ -1,0 +1,563 @@
+{
+ "config": {
+  "verify": true,
+  "retrieval": "hybrid",
+  "sections": 3,
+  "model": "openai/gpt-oss-120b",
+  "judge": "qwen/qwen3.8-27b"
+ },
+ "topics": [
+  {
+   "topic": "State of electric two-wheelers in India",
+   "system": {
+    "latency_seconds": 107.3,
+    "search_calls": 6,
+    "pages_read": 12,
+    "sentences_removed": 4,
+    "llm_calls": 8,
+    "input_tokens": 8233,
+    "output_tokens": 1932,
+    "cost_usd": 0.00192
+   },
+   "report": {
+    "sentences": 20,
+    "sources": 10,
+    "citation_url_valid": 1.0,
+    "citation_supports_claim": 0.7,
+    "groundedness": 0.7,
+    "hallucination_rate": 0.3,
+    "uncited_sentences": 0,
+    "coverage": 1.0,
+    "source_diversity": 0.9,
+    "top_domain_share": 0.2,
+    "readability": 0.8,
+    "readability_comment": "The report is well-structured with clear sections and logical progression, though the density of statistics in the first paragraph slightly hampers immediate readability.",
+    "empty_sections": 0
+   },
+   "chat": {
+    "questions": 4,
+    "faithfulness": 1.0,
+    "answer_relevancy": 1.0,
+    "context_recall": 1.0,
+    "context_precision": 0.375,
+    "answered_rate": 1.0,
+    "idk_correct": 1.0,
+    "rows": [
+     {
+      "question": "How has the electric two-wheeler market in India evolved over the past decade?",
+      "answerable": true,
+      "faithful": true,
+      "relevant": true,
+      "refused": false,
+      "context_recall": 1.0,
+      "context_precision": 0.25
+     },
+     {
+      "question": "Who are the major manufacturers and new entrants in India's electric two-wheeler segment?",
+      "answerable": true,
+      "faithful": true,
+      "relevant": true,
+      "refused": false,
+      "context_recall": 1.0,
+      "context_precision": 0.5
+     },
+     {
+      "question": "What is the boiling point of tungsten?",
+      "answerable": false,
+      "refused": true
+     },
+     {
+      "question": "Who won the football world cup in 1998?",
+      "answerable": false,
+      "refused": true
+     }
+    ]
+   }
+  },
+  {
+   "topic": "Solid-state batteries: where the technology stands",
+   "system": {
+    "latency_seconds": 58.9,
+    "search_calls": 6,
+    "pages_read": 11,
+    "sentences_removed": 3,
+    "llm_calls": 7,
+    "input_tokens": 5732,
+    "output_tokens": 1540,
+    "cost_usd": 0.00155
+   },
+   "report": {
+    "sentences": 15,
+    "sources": 8,
+    "citation_url_valid": 1.0,
+    "citation_supports_claim": 0.733,
+    "groundedness": 0.733,
+    "hallucination_rate": 0.267,
+    "uncited_sentences": 0,
+    "coverage": 1.0,
+    "source_diversity": 0.875,
+    "top_domain_share": 0.25,
+    "readability": 1.0,
+    "readability_comment": "The report is exceptionally well-structured, with precise technical language and a logical progression from fundamentals to market outlook that ensures seamless readability.",
+    "empty_sections": 0
+   },
+   "chat": {
+    "questions": 4,
+    "faithfulness": 1.0,
+    "answer_relevancy": 1.0,
+    "context_recall": 1.0,
+    "context_precision": 0.375,
+    "answered_rate": 1.0,
+    "idk_correct": 1.0,
+    "rows": [
+     {
+      "question": "What are the core scientific principles behind solid-state batteries and how do they differ from conventional liquid electrolyte batteries?",
+      "answerable": true,
+      "faithful": true,
+      "relevant": true,
+      "refused": false,
+      "context_recall": 1.0,
+      "context_precision": 0.25
+     },
+     {
+      "question": "Which solid-state battery chemistries (e.g., sulfide, oxide, polymer) are closest to commercial viability and why?",
+      "answerable": true,
+      "faithful": true,
+      "relevant": true,
+      "refused": false,
+      "context_recall": 1.0,
+      "context_precision": 0.5
+     },
+     {
+      "question": "What is the boiling point of tungsten?",
+      "answerable": false,
+      "refused": true
+     },
+     {
+      "question": "Who won the football world cup in 1998?",
+      "answerable": false,
+      "refused": true
+     }
+    ]
+   }
+  },
+  {
+   "topic": "Remote work and productivity: what studies show",
+   "system": {
+    "latency_seconds": 92.7,
+    "search_calls": 6,
+    "pages_read": 8,
+    "sentences_removed": 6,
+    "llm_calls": 10,
+    "input_tokens": 9569,
+    "output_tokens": 2299,
+    "cost_usd": 0.00214
+   },
+   "report": {
+    "sentences": 19,
+    "sources": 7,
+    "citation_url_valid": 1.0,
+    "citation_supports_claim": 0.789,
+    "groundedness": 0.789,
+    "hallucination_rate": 0.211,
+    "uncited_sentences": 0,
+    "coverage": 0.75,
+    "source_diversity": 1.0,
+    "top_domain_share": 0.143,
+    "readability": 0.8,
+    "readability_comment": "The report is well-structured and easy to read, though the transition from historical context to current evidence could be slightly smoother to avoid a disjointed feel.",
+    "empty_sections": 0
+   },
+   "chat": {
+    "questions": 4,
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.5,
+    "context_recall": 1.0,
+    "context_precision": 0.5,
+    "answered_rate": 0.5,
+    "idk_correct": 1.0,
+    "rows": [
+     {
+      "question": "How has remote work evolved over the past two decades?",
+      "answerable": true,
+      "faithful": true,
+      "relevant": false,
+      "refused": true,
+      "context_recall": 1.0,
+      "context_precision": 0.75
+     },
+     {
+      "question": "What do recent meta\u2011analyses and large\u2011scale surveys say about the impact of remote work on individual and team productivity?",
+      "answerable": true,
+      "faithful": true,
+      "relevant": true,
+      "refused": false,
+      "context_recall": 1.0,
+      "context_precision": 0.25
+     },
+     {
+      "question": "What is the boiling point of tungsten?",
+      "answerable": false,
+      "refused": true
+     },
+     {
+      "question": "Who won the football world cup in 1998?",
+      "answerable": false,
+      "refused": true
+     }
+    ]
+   }
+  },
+  {
+   "topic": "Microplastics and human health",
+   "system": {
+    "latency_seconds": 188.7,
+    "search_calls": 6,
+    "pages_read": 12,
+    "sentences_removed": 5,
+    "llm_calls": 7,
+    "input_tokens": 6596,
+    "output_tokens": 1679,
+    "cost_usd": 0.0017
+   },
+   "report": {
+    "sentences": 17,
+    "sources": 10,
+    "citation_url_valid": 1.0,
+    "citation_supports_claim": 0.882,
+    "groundedness": 0.882,
+    "hallucination_rate": 0.118,
+    "uncited_sentences": 0,
+    "coverage": 1.0,
+    "source_diversity": 0.7,
+    "top_domain_share": 0.4,
+    "readability": 0.867,
+    "readability_comment": "The report is well-structured with distinct sections and clear language, though the transition between regulatory stances and scientific challenges could be slightly smoother.",
+    "empty_sections": 0
+   },
+   "chat": {
+    "questions": 4,
+    "faithfulness": 1.0,
+    "answer_relevancy": 1.0,
+    "context_recall": 1.0,
+    "context_precision": 0.5,
+    "answered_rate": 1.0,
+    "idk_correct": 1.0,
+    "rows": [
+     {
+      "question": "What are microplastics and how are they defined in scientific literature?",
+      "answerable": true,
+      "faithful": true,
+      "relevant": true,
+      "refused": false,
+      "context_recall": 1.0,
+      "context_precision": 0.5
+     },
+     {
+      "question": "What toxicological effects have been observed in laboratory studies of microplastics on human cells and animal models?",
+      "answerable": true,
+      "faithful": true,
+      "relevant": true,
+      "refused": false,
+      "context_recall": 1.0,
+      "context_precision": 0.5
+     },
+     {
+      "question": "What is the boiling point of tungsten?",
+      "answerable": false,
+      "refused": true
+     },
+     {
+      "question": "Who won the football world cup in 1998?",
+      "answerable": false,
+      "refused": true
+     }
+    ]
+   }
+  },
+  {
+   "topic": "The global semiconductor supply chain",
+   "system": {
+    "latency_seconds": 92.3,
+    "search_calls": 6,
+    "pages_read": 9,
+    "sentences_removed": 3,
+    "llm_calls": 7,
+    "input_tokens": 4717,
+    "output_tokens": 1640,
+    "cost_usd": 0.00149
+   },
+   "report": {
+    "sentences": 15,
+    "sources": 8,
+    "citation_url_valid": 1.0,
+    "citation_supports_claim": 0.6,
+    "groundedness": 0.6,
+    "hallucination_rate": 0.4,
+    "uncited_sentences": 0,
+    "coverage": 0.75,
+    "source_diversity": 1.0,
+    "top_domain_share": 0.125,
+    "readability": 0.8,
+    "readability_comment": "The report is well-structured and logically sequenced, though the inclusion of future-dated statistics (2026) in the 'Current State' section slightly undermines the precision of the timeline.",
+    "empty_sections": 0
+   },
+   "chat": {
+    "questions": 4,
+    "faithfulness": 0.5,
+    "answer_relevancy": 1.0,
+    "context_recall": 1.0,
+    "context_precision": 0.375,
+    "answered_rate": 1.0,
+    "idk_correct": 1.0,
+    "rows": [
+     {
+      "question": "How did the semiconductor supply chain develop from its inception to the present day?",
+      "answerable": true,
+      "faithful": true,
+      "relevant": true,
+      "refused": false,
+      "context_recall": 1.0,
+      "context_precision": 0.5
+     },
+     {
+      "question": "Who are the dominant firms and regions in each stage of the semiconductor value chain today?",
+      "answerable": true,
+      "faithful": false,
+      "relevant": true,
+      "refused": false,
+      "context_recall": 1.0,
+      "context_precision": 0.25
+     },
+     {
+      "question": "What is the boiling point of tungsten?",
+      "answerable": false,
+      "refused": true
+     },
+     {
+      "question": "Who won the football world cup in 1998?",
+      "answerable": false,
+      "refused": true
+     }
+    ]
+   }
+  },
+  {
+   "topic": "Adoption of UPI digital payments in India",
+   "system": {
+    "latency_seconds": 238.0,
+    "search_calls": 6,
+    "pages_read": 10,
+    "sentences_removed": 1,
+    "llm_calls": 8,
+    "input_tokens": 7933,
+    "output_tokens": 1783,
+    "cost_usd": 0.00182
+   },
+   "report": {
+    "sentences": 20,
+    "sources": 8,
+    "citation_url_valid": 1.0,
+    "citation_supports_claim": 0.55,
+    "groundedness": 0.55,
+    "hallucination_rate": 0.45,
+    "uncited_sentences": 0,
+    "coverage": 1.0,
+    "source_diversity": 0.875,
+    "top_domain_share": 0.25,
+    "readability": 0.8,
+    "readability_comment": "The report is well-structured and easy to read, though the final section could benefit from a clearer distinction between challenges and future drivers to improve logical flow.",
+    "empty_sections": 0
+   },
+   "chat": {
+    "questions": 4,
+    "faithfulness": 1.0,
+    "answer_relevancy": 1.0,
+    "context_recall": 1.0,
+    "context_precision": 0.375,
+    "answered_rate": 1.0,
+    "idk_correct": 1.0,
+    "rows": [
+     {
+      "question": "What were the key motivations and policy decisions that led to the creation of UPI?",
+      "answerable": true,
+      "faithful": true,
+      "relevant": true,
+      "refused": false,
+      "context_recall": 1.0,
+      "context_precision": 0.25
+     },
+     {
+      "question": "What is the current penetration of UPI among consumers, merchants, and businesses across urban and rural India?",
+      "answerable": true,
+      "faithful": true,
+      "relevant": true,
+      "refused": false,
+      "context_recall": 1.0,
+      "context_precision": 0.5
+     },
+     {
+      "question": "What is the boiling point of tungsten?",
+      "answerable": false,
+      "refused": true
+     },
+     {
+      "question": "Who won the football world cup in 1998?",
+      "answerable": false,
+      "refused": true
+     }
+    ]
+   }
+  },
+  {
+   "topic": "Intermittent fasting: evidence for health benefits",
+   "system": {
+    "latency_seconds": 42.9,
+    "search_calls": 6,
+    "pages_read": 11,
+    "sentences_removed": 7,
+    "llm_calls": 7,
+    "input_tokens": 6555,
+    "output_tokens": 1704,
+    "cost_usd": 0.00166
+   },
+   "report": {
+    "sentences": 17,
+    "sources": 10,
+    "citation_url_valid": 1.0,
+    "citation_supports_claim": 0.647,
+    "groundedness": 0.647,
+    "hallucination_rate": 0.353,
+    "uncited_sentences": 0,
+    "coverage": 1.0,
+    "source_diversity": 0.8,
+    "top_domain_share": 0.3,
+    "readability": 1.0,
+    "readability_comment": "The report is exceptionally well-structured, with clear and precise language that logically progresses from biological mechanisms to evidence and practical considerations.",
+    "empty_sections": 0
+   },
+   "chat": {
+    "questions": 4,
+    "faithfulness": 1.0,
+    "answer_relevancy": 1.0,
+    "context_recall": 1.0,
+    "context_precision": 0.375,
+    "answered_rate": 1.0,
+    "idk_correct": 1.0,
+    "rows": [
+     {
+      "question": "What are the physiological mechanisms proposed to underlie the health effects of intermittent fasting?",
+      "answerable": true,
+      "faithful": true,
+      "relevant": true,
+      "refused": false,
+      "context_recall": 1.0,
+      "context_precision": 0.5
+     },
+     {
+      "question": "What does recent clinical and epidemiological research say about intermittent fasting\u2019s impact on weight, cardiometabolic risk, and longevity?",
+      "answerable": true,
+      "faithful": true,
+      "relevant": true,
+      "refused": false,
+      "context_recall": 1.0,
+      "context_precision": 0.25
+     },
+     {
+      "question": "What is the boiling point of tungsten?",
+      "answerable": false,
+      "refused": true
+     },
+     {
+      "question": "Who won the football world cup in 1998?",
+      "answerable": false,
+      "refused": true
+     }
+    ]
+   }
+  },
+  {
+   "topic": "Small modular nuclear reactors",
+   "system": {
+    "latency_seconds": 30.1,
+    "search_calls": 6,
+    "pages_read": 12,
+    "sentences_removed": 7,
+    "llm_calls": 10,
+    "input_tokens": 9285,
+    "output_tokens": 2128,
+    "cost_usd": 0.00218
+   },
+   "report": {
+    "sentences": 17,
+    "sources": 10,
+    "citation_url_valid": 1.0,
+    "citation_supports_claim": 0.706,
+    "groundedness": 0.706,
+    "hallucination_rate": 0.294,
+    "uncited_sentences": 0,
+    "coverage": 0.75,
+    "source_diversity": 0.9,
+    "top_domain_share": 0.2,
+    "readability": 0.667,
+    "readability_comment": "The report is clear and well-structured but suffers from a disjointed final section where market statistics are presented without sufficient connection to the preceding challenges.",
+    "empty_sections": 0
+   },
+   "chat": {
+    "questions": 4,
+    "faithfulness": 1.0,
+    "answer_relevancy": 1.0,
+    "context_recall": 1.0,
+    "context_precision": 0.5,
+    "answered_rate": 1.0,
+    "idk_correct": 1.0,
+    "rows": [
+     {
+      "question": "What are the core design principles and types of small modular reactors (SMRs)?",
+      "answerable": true,
+      "faithful": true,
+      "relevant": true,
+      "refused": false,
+      "context_recall": 1.0,
+      "context_precision": 0.5
+     },
+     {
+      "question": "Which companies and governments are actively developing or deploying SMRs today?",
+      "answerable": true,
+      "faithful": true,
+      "relevant": true,
+      "refused": false,
+      "context_recall": 1.0,
+      "context_precision": 0.5
+     },
+     {
+      "question": "What is the boiling point of tungsten?",
+      "answerable": false,
+      "refused": true
+     },
+     {
+      "question": "Who won the football world cup in 1998?",
+      "answerable": false,
+      "refused": true
+     }
+    ]
+   }
+  },
+  {
+   "topic": "Impact of generative AI on software development jobs",
+   "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01m66zpa7cegds1dfwr4aafq6h` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199792, Requested 899. Please try again in 4m58.512s. Need more tokens? Up"
+  },
+  {
+   "topic": "Green hydrogen as an energy source",
+   "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01m66zpa7cegds1dfwr4aafq6h` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199791, Requested 970. Please try again in 5m28.752s. Need more tokens? Up"
+  },
+  {
+   "topic": "Urban air pollution in Delhi",
+   "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01m66zpa7cegds1dfwr4aafq6h` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199791, Requested 895. Please try again in 4m56.352s. Need more tokens? Up"
+  },
+  {
+   "topic": "The four-day work week trials",
+   "error": "RateLimitError: Error code: 429 - {'error': {'message': 'Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01m66zpa7cegds1dfwr4aafq6h` service tier `on_demand` on tokens per day (TPD): Limit 200000, Used 199791, Requested 970. Please try again in 5m28.752s. Need more tokens? Up"
+  }
+ ]
+}

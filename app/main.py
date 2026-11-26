@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from app import web
-from app.api import chat, documents, sessions
+from app.api import chat, documents, research, sessions
 from app.config import Settings, get_settings
 from app.observability import configure_tracing
 from app.storage.json_store import SessionStore
@@ -22,7 +22,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or get_settings()
     settings.ensure_dirs()
 
-    application = FastAPI(title="RAG Chatbot (training scaffold)")
+    application = FastAPI(title="ResearchPilot")
     application.state.settings = settings
     application.state.session_store = SessionStore(settings.sessions_dir)
     application.state.components = None  # built lazily by app.deps.get_components
@@ -31,12 +31,21 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(sessions.router)
     application.include_router(chat.router)
     application.include_router(documents.router)
+    application.include_router(research.router)
     application.include_router(web.router)
     application.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
     @application.get("/health", tags=["meta"])
     def health() -> dict[str, object]:
-        return {"status": "ok", "tracing": application.state.tracing_enabled}
+        return {
+            "status": "ok",
+            "tracing": application.state.tracing_enabled,
+            "provider": settings.llm_provider,
+            "model": settings.llm_model,
+            "fallback": settings.llm_fallback_provider,
+            "search": settings.search_provider,
+            "verify": settings.research_verify,
+        }
 
     return application
 

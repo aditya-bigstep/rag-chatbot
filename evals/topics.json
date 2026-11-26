@@ -1,0 +1,14 @@
+[
+  {"topic": "State of electric two-wheelers in India", "aspects": ["market size or sales growth", "main manufacturers", "government incentives or policy", "charging or battery challenges"]},
+  {"topic": "Solid-state batteries: where the technology stands", "aspects": ["how they differ from lithium-ion", "companies or labs working on them", "technical or manufacturing challenges", "commercialisation timeline"]},
+  {"topic": "Remote work and productivity: what studies show", "aspects": ["measured productivity effects", "hybrid work models", "employee wellbeing or isolation", "employer policies or return to office"]},
+  {"topic": "Microplastics and human health", "aspects": ["sources of exposure", "evidence of presence in the human body", "known or suspected health effects", "regulation or mitigation"]},
+  {"topic": "The global semiconductor supply chain", "aspects": ["where chips are manufactured", "leading companies", "geopolitical risks or export controls", "government subsidies such as the CHIPS Act"]},
+  {"topic": "Adoption of UPI digital payments in India", "aspects": ["transaction volume or growth", "role of NPCI or the regulator", "main apps or banks", "international expansion or challenges"]},
+  {"topic": "Intermittent fasting: evidence for health benefits", "aspects": ["common fasting methods", "weight loss evidence", "metabolic or heart health effects", "risks or who should avoid it"]},
+  {"topic": "Small modular nuclear reactors", "aspects": ["what makes them different from large reactors", "companies or projects", "cost or licensing challenges", "safety or waste concerns"]},
+  {"topic": "Impact of generative AI on software development jobs", "aspects": ["productivity gains from coding assistants", "effect on hiring or junior roles", "new skills in demand", "limitations or risks of AI-written code"]},
+  {"topic": "Green hydrogen as an energy source", "aspects": ["how it is produced", "current production cost", "main uses or industries", "government strategies or investment"]},
+  {"topic": "Urban air pollution in Delhi", "aspects": ["main pollution sources", "health impact", "government measures", "seasonal factors such as stubble burning"]},
+  {"topic": "The four-day work week trials", "aspects": ["countries or companies that ran trials", "productivity results", "employee wellbeing results", "criticism or limits"]}
+]

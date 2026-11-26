@@ -1,25 +1,23 @@
-"""MILESTONE 7 — Retriever.
+"""Retriever: question -> the most relevant chunks.
 
-Glue between a question and the vector store: embed the query, search, and
-(optionally) post-process — score threshold, de-duplication, MMR, re-ranking.
-
-Rules the evaluator checks:
-  - `retrieve(query)` returns at most `k` RetrievedChunk, best first.
-  - `retrieve(query, k=2)` overrides the default k.
-  - It uses the embedder and store it was GIVEN (the evaluator passes its own).
-  - It shows up in LangSmith as a run with run_type="retriever"
-    (hint: `from langsmith import traceable` and `@traceable(run_type="retriever")`).
+RETRIEVAL_MODE picks how:
+  dense   vector similarity only
+  bm25    keyword match only
+  hybrid  both lists merged with reciprocal rank fusion
 """
 
 from __future__ import annotations
 
-from typing import Protocol
+from typing import Any, Protocol
 
 from langsmith import traceable
 
 from app.models import RetrievedChunk
+from app.vectordb.bm25 import bm25_scores
 from app.vectordb.embeddings import Embedder, get_embedder
 from app.vectordb.store import VectorStore, get_vector_store
+
+RRF_K = 60
 
 
 class Retriever(Protocol):
@@ -33,38 +31,85 @@ def get_retriever(
     embedder: Embedder | None = None,
     k: int | None = None,
     min_score: float | None = None,
+    mode: str | None = None,
 ) -> Retriever:
-    """Build a retriever.
-
-    IN:  store / embedder to use (None -> build the defaults with
-         get_vector_store() / get_embedder()), default k (None -> settings.top_k),
-         minimum score (None -> settings.min_score).
-    OUT: an object with `.retrieve(query, k=None)`.
-
-    """
     from app.config import get_settings
 
+    settings = get_settings()
     return VectorRetriever(
         store if store is not None else get_vector_store(),
         embedder if embedder is not None else get_embedder(),
-        k if k is not None else get_settings().top_k,
-        min_score if min_score is not None else get_settings().min_score,
+        k if k is not None else settings.top_k,
+        min_score if min_score is not None else settings.min_score,
+        mode or settings.retrieval_mode,
     )
 
 
 class VectorRetriever:
-    """Embeds the question and returns the closest chunks from the store."""
-
-    def __init__(self, store: VectorStore, embedder: Embedder, k: int, min_score: float = 0.0) -> None:
+    def __init__(
+        self,
+        store: VectorStore,
+        embedder: Embedder,
+        k: int,
+        min_score: float = 0.0,
+        mode: str = "dense",
+        where: dict[str, Any] | None = None,
+    ) -> None:
         self.store = store
         self.embedder = embedder
         self.k = k
         self.min_score = min_score
+        self.mode = mode
+        self.where = where
+
+    def scoped(self, where: dict[str, Any]) -> VectorRetriever:
+        """Same retriever, limited to chunks whose metadata matches `where` (e.g. one report)."""
+        return VectorRetriever(self.store, self.embedder, self.k, self.min_score, self.mode, where)
+
+    def _dense(self, query: str, k: int) -> list[RetrievedChunk]:
+        vector = self.embedder.embed_query(query)
+        if self.where:
+            hits = self.store.search(vector, k, where=self.where)  # type: ignore[call-arg]
+        else:
+            hits = self.store.search(vector, k)
+        return [hit for hit in hits if hit.score >= self.min_score]
+
+    def _keyword(self, query: str, k: int) -> list[RetrievedChunk]:
+        chunks = self.store.all_chunks(self.where)  # type: ignore[attr-defined]
+        scores = bm25_scores(query, [chunk.text for chunk in chunks])
+        ranked = sorted(zip(chunks, scores, strict=True), key=lambda pair: pair[1], reverse=True)
+        return [RetrievedChunk(chunk=chunk, score=score) for chunk, score in ranked[:k] if score > 0]
 
     @traceable(run_type="retriever", name="retrieve")
     def retrieve(self, query: str, k: int | None = None) -> list[RetrievedChunk]:
-        hits = self.store.search(self.embedder.embed_query(query), k or self.k)
-        # Similarity threshold: drop weak matches so the LLM never sees chunks that barely
-        # relate to the question. If nothing is good enough we return [], and the chatbot
-        # says it couldn't find the answer instead of guessing from irrelevant text.
-        return [hit for hit in hits if hit.score >= self.min_score]
+        k = k or self.k
+        can_keyword = hasattr(self.store, "all_chunks")
+        if self.mode == "bm25" and can_keyword:
+            return self._keyword(query, k)
+        if self.mode != "hybrid" or not can_keyword:
+            return self._dense(query, k)
+
+        dense = self._dense(query, k * 3)
+        if not dense:  # nothing is semantically close: let the bot say "not found" instead of keyword-guessing
+            return []
+        keyword = self._keyword(query, k * 3)
+        return fuse(dense, keyword)[:k]
+
+
+def fuse(dense: list[RetrievedChunk], keyword: list[RetrievedChunk]) -> list[RetrievedChunk]:
+    """Reciprocal rank fusion. The reported score stays the dense similarity when we have one."""
+    points: dict[str, float] = {}
+    best: dict[str, RetrievedChunk] = {}
+    for hits in (keyword, dense):  # dense last so its similarity score is the one kept
+        for rank, hit in enumerate(hits):
+            points[hit.chunk.id] = points.get(hit.chunk.id, 0.0) + 1 / (RRF_K + rank + 1)
+            best[hit.chunk.id] = hit
+    dense_ids = {hit.chunk.id for hit in dense}
+    floor = min((hit.score for hit in dense), default=0.0)
+    ordered = sorted(points, key=lambda chunk_id: points[chunk_id], reverse=True)
+    results = []
+    for chunk_id in ordered:
+        hit = best[chunk_id]
+        score = hit.score if chunk_id in dense_ids else floor
+        results.append(RetrievedChunk(chunk=hit.chunk, score=score))
+    return results

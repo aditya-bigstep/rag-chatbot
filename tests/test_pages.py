@@ -4,9 +4,15 @@ from fastapi.testclient import TestClient
 
 
 def test_home_renders_without_sessions(client: TestClient) -> None:
-    response = client.get("/")
+    response = client.get("/chat")
     assert response.status_code == 200
     assert "New chat" in response.text
+
+
+def test_research_home_renders(client: TestClient) -> None:
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "ResearchPilot" in response.text
 
 
 def test_ui_flow_create_rename_chat_delete(client: TestClient) -> None:

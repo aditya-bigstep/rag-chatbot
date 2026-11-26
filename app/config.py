@@ -65,10 +65,26 @@ class Settings:
     memory_max_messages: int = 10  # recent messages sent verbatim; older ones get summarised
     memory_summarize: bool = True  # summarise older messages (costs one extra LLM call, cached)
 
+    llm_fallback_provider: str = "groq"
+    llm_fallback_model: str = ""
+    llm_fast_model: str = ""  # cheaper model for small jobs (judging, edit planning); empty = main model
+    retrieval_mode: str = "dense"  # dense | bm25 | hybrid
+
+    search_provider: str = "ddgs"
+    research_max_sections: int = 5
+    research_sources_per_section: int = 4
+    research_parallel_sections: int = 2
+    research_verify: bool = True
+    research_max_llm_calls: int = 40
+
     @property
     def checkpoint_db(self) -> Path:
         """SQLite file where LangGraph saves its checkpoints (see app/chat/checkpointing.py)."""
         return self.data_dir / "checkpoints.sqlite"
+
+    @property
+    def research_dir(self) -> Path:
+        return self.data_dir / "research"
 
     def ensure_dirs(self) -> None:
         for path in (self.sessions_dir, self.documents_dir, self.vector_dir):
@@ -98,6 +114,16 @@ def load_settings() -> Settings:
         hitl_enabled=_env_bool("HITL_ENABLED", True),
         memory_max_messages=_env_int("MEMORY_MAX_MESSAGES", 10),
         memory_summarize=_env_bool("MEMORY_SUMMARIZE", True),
+        llm_fallback_provider=os.getenv("LLM_FALLBACK_PROVIDER", "groq"),
+        llm_fallback_model=os.getenv("LLM_FALLBACK_MODEL", ""),
+        llm_fast_model=os.getenv("LLM_FAST_MODEL", ""),
+        retrieval_mode=os.getenv("RETRIEVAL_MODE", "dense").strip().lower(),
+        search_provider=os.getenv("SEARCH_PROVIDER", "ddgs").strip().lower(),
+        research_max_sections=_env_int("RESEARCH_MAX_SECTIONS", 5),
+        research_sources_per_section=_env_int("RESEARCH_SOURCES_PER_SECTION", 4),
+        research_parallel_sections=_env_int("RESEARCH_PARALLEL_SECTIONS", 2),
+        research_verify=_env_bool("RESEARCH_VERIFY", True),
+        research_max_llm_calls=_env_int("RESEARCH_MAX_LLM_CALLS", 40),
     )
 
 

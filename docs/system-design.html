@@ -1,0 +1,358 @@
+<title>ResearchPilot System Design</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: one reading column of prose, with full-width figures and tables breaking out of it. */
+  :root {
+    --bg: #f3f5f1; --surface: #ffffff; --sunk: #e9ece6; --fg: #111815; --soft: #55615b; --line: #d2d8cf;
+    --accent: #0b6e4f; --accent-wash: #dcefe6; --warn: #8a5800; --warn-wash: #f6e9cc; --bad: #a8281d; --bad-wash: #f7dcd8;
+    --font: "Geist", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0d1210; --surface: #151c19; --sunk: #1c2521; --fg: #e7ede9; --soft: #9aa8a1; --line: #2b3631;
+      --accent: #4fcf9f; --accent-wash: #173529; --warn: #e2b04a; --warn-wash: #3a2f14; --bad: #f08a7e; --bad-wash: #3d1c18;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0d1210; --surface: #151c19; --sunk: #1c2521; --fg: #e7ede9; --soft: #9aa8a1; --line: #2b3631;
+    --accent: #4fcf9f; --accent-wash: #173529; --warn: #e2b04a; --warn-wash: #3a2f14; --bad: #f08a7e; --bad-wash: #3d1c18;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--fg); font: 16px/1.6 var(--font); -webkit-font-smoothing: antialiased; }
+  .page { max-width: 1040px; margin: 0 auto; padding-block: 48px 96px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  h1, h2, h3 { letter-spacing: -0.02em; line-height: 1.15; text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 650; }
+  h2 { font-size: 1.55rem; font-weight: 620; margin-top: 72px; }
+  h3 { font-size: 1.05rem; font-weight: 600; margin-top: 28px; }
+  p { margin: 12px 0 0; max-width: 68ch; }
+  .lede { font-size: 1.15rem; color: var(--soft); max-width: 60ch; margin-top: 16px; }
+  code { font-family: var(--mono); font-size: 0.86em; background: var(--sunk); padding: 1px 5px; border-radius: 4px; }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .fact { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; min-width: 130px; }
+  .fact b { display: block; font-size: 1.35rem; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .fact span { color: var(--soft); font-size: 0.85rem; }
+  figure { margin: 24px 0 0; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+  .scroll { overflow-x: auto; }
+  figure svg { display: block; min-width: 720px; width: 100%; height: auto; color: var(--fg); font-family: var(--font); }
+  figcaption { margin-top: 12px; color: var(--soft); font-size: 0.9rem; max-width: 75ch; }
+  svg .n { fill: var(--surface); stroke: currentColor; stroke-width: 1.2; }
+  svg .s { fill: var(--sunk); stroke: currentColor; stroke-width: 1.2; }
+  svg .h { fill: var(--accent-wash); stroke: var(--accent); stroke-width: 1.6; }
+  svg .x { fill: var(--bad-wash); stroke: var(--bad); stroke-width: 1.4; }
+  svg .band { fill: none; stroke: currentColor; stroke-dasharray: 4 5; opacity: 0.5; }
+  svg text { fill: currentColor; font-size: 13px; }
+  svg .b { font-weight: 600; }
+  svg .m { font-size: 11px; opacity: 0.75; }
+  svg .l { font-size: 11px; font-family: var(--mono); opacity: 0.85; }
+  svg .a { stroke: currentColor; stroke-width: 1.3; fill: none; }
+  svg .d { stroke-dasharray: 4 4; opacity: 0.6; }
+  .tablewrap { overflow-x: auto; margin-top: 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 0.93rem; min-width: 560px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  th { font-weight: 600; color: var(--soft); font-size: 0.82rem; background: var(--sunk); }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tag { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 0.78rem; white-space: nowrap; background: var(--sunk); color: var(--soft); }
+  .tag.new { background: var(--accent-wash); color: var(--accent); }
+  .tag.had { background: var(--warn-wash); color: var(--warn); }
+  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-top: 18px; }
+  .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; min-width: 0; }
+  .panel h3 { margin-top: 0; }
+  .panel ul { margin: 10px 0 0; padding-left: 18px; }
+  .panel li { margin-bottom: 6px; }
+  pre { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; overflow-x: auto; font: 13px/1.6 var(--mono); margin: 18px 0 0; }
+  .note { margin-top: 18px; padding: 12px 16px; border-radius: 10px; background: var(--warn-wash); color: var(--warn); max-width: 75ch; }
+</style>
+
+<div class="page">
+  <header>
+    <h1>ResearchPilot system design</h1>
+    <p class="lede">A research agent that plans with you, reads the web, writes a cited report and deletes any sentence its sources do not back. This page is the high-level design: what runs where, how state moves, what keeps it honest, and what we added beyond the brief.</p>
+    <div class="facts">
+      <div class="fact"><b>3</b><span>LangGraph graphs</span></div>
+      <div class="fact"><b>3</b><span>human approval points</span></div>
+      <div class="fact"><b>4</b><span>LLM providers, one config line</span></div>
+      <div class="fact"><b>80</b><span>tests passing, no network</span></div>
+      <div class="fact"><b>12</b><span>fixed eval topics</span></div>
+    </div>
+  </header>
+
+  <h2>What the brief asked for and where it lives</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Module</th><th>Requirement</th><th>How it is met</th><th>Code</th></tr></thead>
+    <tbody>
+      <tr><td>1. Research agent</td><td>Plan, search, read, write, cite, verify</td><td>Main graph plus a per-section worker graph. Every sentence carries the id of the page it came from.</td><td><code>app/research/graph.py</code><br><code>section.py</code>, <code>verify.py</code></td></tr>
+      <tr><td></td><td>Approve or edit the outline</td><td><code>interrupt()</code> before any research. Outline editor in the UI.</td><td><code>review_outline</code> node</td></tr>
+      <tr><td></td><td>Change requests update only affected sections</td><td>A work list of section ids. Workers run only for ids on it. Tested: untouched sections are identical.</td><td><code>plan_edit</code>, <code>dispatch</code></td></tr>
+      <tr><td>2. Analysis agent</td><td>Sentiment overall, per section, per source. Traceable recommendations.</td><td>Separate graph. One LLM call plus a word-list scorer. Items without a real section reference are dropped.</td><td><code>app/research/analysis.py</code></td></tr>
+      <tr><td>3. Knowledge base and chatbot</td><td>Ingest, grounded answers with section and source, "I don't know", follow-ups</td><td>Section-level chunks with metadata, retrieval filtered to the report, score threshold, grounding check, query rewriting.</td><td><code>app/research/kb.py</code><br><code>app/chat/engine.py</code></td></tr>
+      <tr><td>4. Evaluation and observability</td><td>All listed metrics on 10 to 15 topics, two versions compared, LangSmith</td><td>12 fixed topics, an independent judge model, v1 against v2, every run traced.</td><td><code>evals/</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>What was already in the repo and what we built</h2>
+  <div class="two">
+    <div class="panel">
+      <h3><span class="tag had">already there</span> Document chatbot</h3>
+      <ul>
+        <li>Chat engine graph with routing, memory, input guardrails, grounding check</li>
+        <li>Approval step before deleting a document</li>
+        <li>SQLite checkpointing, LangSmith tracing helpers, PII masking</li>
+        <li>Chroma store, chunking, ingestion, upload</li>
+        <li>Three tests were failing because embeddings called an OpenAI key that no longer works</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3><span class="tag new">built now</span> ResearchPilot</h3>
+      <ul>
+        <li>Research graph, section worker, claim verifier, analysis graph</li>
+        <li>Search and safe page reader with caching</li>
+        <li>Report knowledge base and report-scoped chat</li>
+        <li>Provider switch with fallback, local embeddings, hybrid retrieval</li>
+        <li>Usage tracking, run service, report store, research API</li>
+        <li>Evaluation harness and a new UI</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>High-level design</h2>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 960 440" role="img" aria-label="The browser talks to FastAPI, which starts three separate LangGraph graphs. The graphs share an LLM factory and stores, and every run is traced to LangSmith.">
+      <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+      <rect class="n" x="380" y="16" width="200" height="50" rx="8"/><text class="b" x="480" y="38" text-anchor="middle">Browser UI</text><text class="m" x="480" y="54" text-anchor="middle">home, report workspace, chat</text>
+      <rect class="n" x="380" y="118" width="200" height="50" rx="8"/><text class="b" x="480" y="140" text-anchor="middle">FastAPI + ResearchService</text><text class="m" x="480" y="156" text-anchor="middle">background runs, snapshots</text>
+      <path class="a" d="M480,66 V118" marker-end="url(#ar)"/><text class="l" x="490" y="96">topic, approvals, change requests, questions</text>
+
+      <rect class="band" x="40" y="206" width="800" height="86" rx="12"/><text class="l" x="52" y="200">every run traced to LangSmith</text>
+      <rect class="n" x="60" y="222" width="220" height="54" rx="8"/><text class="b" x="170" y="245" text-anchor="middle">Research graph</text><text class="m" x="170" y="262" text-anchor="middle">plan, review, sections, feedback loop</text>
+      <rect class="n" x="340" y="222" width="220" height="54" rx="8"/><text class="b" x="450" y="245" text-anchor="middle">Analysis graph</text><text class="m" x="450" y="262" text-anchor="middle">sentiment, recommendations</text>
+      <rect class="n" x="610" y="222" width="210" height="54" rx="8"/><text class="b" x="715" y="245" text-anchor="middle">Chat engine graph</text><text class="m" x="715" y="262" text-anchor="middle">route, retrieve, answer, verify</text>
+      <path class="a" d="M420,168 L190,222" marker-end="url(#ar)"/><text class="l" x="218" y="188">start / resume</text>
+      <path class="a" d="M470,168 L455,222" marker-end="url(#ar)"/><text class="l" x="474" y="200">analyse</text>
+      <path class="a" d="M540,168 L700,222" marker-end="url(#ar)"/><text class="l" x="640" y="188">ask</text>
+
+      <rect class="s" x="20" y="360" width="168" height="54" rx="8"/><text class="b" x="104" y="383" text-anchor="middle">Web</text><text class="m" x="104" y="400" text-anchor="middle">search + safe page reader</text>
+      <rect class="s" x="208" y="360" width="168" height="54" rx="8"/><text class="b" x="292" y="383" text-anchor="middle">SQLite</text><text class="m" x="292" y="400" text-anchor="middle">graph checkpoints</text>
+      <rect class="s" x="396" y="360" width="168" height="54" rx="8"/><text class="b" x="480" y="383" text-anchor="middle">LLM factory</text><text class="m" x="480" y="400" text-anchor="middle">provider from .env + fallback</text>
+      <rect class="s" x="584" y="360" width="168" height="54" rx="8"/><text class="b" x="668" y="383" text-anchor="middle">Chroma</text><text class="m" x="668" y="400" text-anchor="middle">report + document chunks</text>
+      <rect class="s" x="772" y="360" width="168" height="54" rx="8"/><text class="b" x="856" y="383" text-anchor="middle">JSON files</text><text class="m" x="856" y="400" text-anchor="middle">reports, chat sessions</text>
+
+      <path class="a" d="M130,276 L108,360" marker-end="url(#ar)"/><text class="l" x="40" y="322">search, fetch</text>
+      <path class="a" d="M190,276 L280,360" marker-end="url(#ar)"/><text class="l" x="244" y="312">save state</text>
+      <path class="a" d="M250,276 L440,360" marker-end="url(#ar)"/>
+      <path class="a" d="M455,276 L478,360" marker-end="url(#ar)"/>
+      <path class="a" d="M680,276 L520,360" marker-end="url(#ar)"/><text class="l" x="540" y="322">prompts</text>
+      <path class="a" d="M730,276 L680,360" marker-end="url(#ar)"/><text class="l" x="716" y="322">retrieve</text>
+      <path class="a" d="M580,143 H880 V360" marker-end="url(#ar)"/><text class="l" x="760" y="136">read / write</text>
+    </svg>
+    </div>
+    <figcaption>Three graphs, one per job. They share the model factory and the stores and nothing else, so a failure in analysis or chat cannot damage a report. The service also embeds report sections into Chroma when you add a report to the knowledge base.</figcaption>
+  </figure>
+
+  <h2>The research graph and its two human steps</h2>
+  <p>A report is one long-lived LangGraph thread. It alternates between working and waiting for you. The checkpointer saves state after every step, so a paused run survives a server restart and can be resumed from the UI.</p>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 960 350" role="img" aria-label="The research graph: guard, plan, outline review by a human, parallel section workers, assemble, then a feedback step by a human that loops back through plan_edit to only the changed sections.">
+      <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+      <rect class="n" x="30" y="120" width="100" height="46" rx="8"/><text class="b" x="80" y="141" text-anchor="middle">guard</text><text class="m" x="80" y="156" text-anchor="middle">block, mask PII</text>
+      <rect class="n" x="160" y="120" width="100" height="46" rx="8"/><text class="b" x="210" y="141" text-anchor="middle">plan</text><text class="m" x="210" y="156" text-anchor="middle">1 LLM call</text>
+      <rect class="h" x="290" y="120" width="140" height="46" rx="8"/><text class="b" x="360" y="141" text-anchor="middle">review_outline</text><text class="m" x="360" y="156" text-anchor="middle">you approve or edit</text>
+      <rect class="n" x="484" y="126" width="120" height="46" rx="8"/><rect class="n" x="477" y="120" width="120" height="46" rx="8"/><text class="b" x="537" y="141" text-anchor="middle">section × N</text><text class="m" x="537" y="156" text-anchor="middle">in parallel</text>
+      <rect class="n" x="650" y="120" width="100" height="46" rx="8"/><text class="b" x="700" y="141" text-anchor="middle">assemble</text><text class="m" x="700" y="156" text-anchor="middle">log what changed</text>
+      <rect class="h" x="790" y="120" width="140" height="46" rx="8"/><text class="b" x="860" y="141" text-anchor="middle">feedback</text><text class="m" x="860" y="156" text-anchor="middle">you ask for changes</text>
+      <path class="a" d="M130,143 H160" marker-end="url(#ar2)"/>
+      <path class="a" d="M260,143 H290" marker-end="url(#ar2)"/>
+      <path class="a" d="M430,143 H477" marker-end="url(#ar2)"/><text class="l" x="436" y="112">Send</text>
+      <path class="a" d="M604,143 H650" marker-end="url(#ar2)"/>
+      <path class="a" d="M750,143 H790" marker-end="url(#ar2)"/>
+
+      <rect class="n" x="650" y="26" width="100" height="46" rx="8"/><text class="b" x="700" y="47" text-anchor="middle">plan_edit</text><text class="m" x="700" y="62" text-anchor="middle">request → ops</text>
+      <path class="a" d="M860,120 V49 H750" marker-end="url(#ar2)"/><text class="l" x="770" y="42">resume</text>
+      <path class="a" d="M650,49 H537 V120" marker-end="url(#ar2)"/><text class="l" x="430" y="42">only sections on the work list</text>
+
+      <path class="a d" d="M477,172 L160,246"/><path class="a d" d="M604,172 L860,246"/>
+      <text class="l" x="30" y="275">inside one</text><text class="l" x="30" y="290">section</text>
+      <rect class="s" x="160" y="250" width="110" height="42" rx="8"/><text class="b" x="215" y="276" text-anchor="middle">search</text>
+      <rect class="s" x="305" y="250" width="110" height="42" rx="8"/><text class="b" x="360" y="276" text-anchor="middle">read</text>
+      <rect class="s" x="450" y="250" width="110" height="42" rx="8"/><text class="b" x="505" y="276" text-anchor="middle">write</text>
+      <rect class="s" x="595" y="250" width="110" height="42" rx="8"/><text class="b" x="650" y="276" text-anchor="middle">verify</text>
+      <rect class="s" x="740" y="250" width="120" height="42" rx="8"/><text class="b" x="800" y="276" text-anchor="middle">finish</text>
+      <path class="a" d="M270,271 H305" marker-end="url(#ar2)"/><path class="a" d="M415,271 H450" marker-end="url(#ar2)"/>
+      <path class="a" d="M560,271 H595" marker-end="url(#ar2)"/><path class="a" d="M705,271 H740" marker-end="url(#ar2)"/>
+      <path class="a" d="M650,292 C650,326 505,326 505,292" marker-end="url(#ar2)"/><text class="l" x="578" y="340" text-anchor="middle">one rewrite if over 40% of sentences were rejected</text>
+    </svg>
+    </div>
+    <figcaption>Green boxes call <code>interrupt()</code>: the graph stops and waits for a person. After a change request, <code>plan_edit</code> puts only the affected section ids on the work list, so the dispatcher starts workers for those and leaves every other section untouched.</figcaption>
+  </figure>
+
+  <h3>State design</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Field</th><th>Shape</th><th>Why it is shaped this way</th></tr></thead>
+    <tbody>
+      <tr><td><code>outline</code></td><td>ordered list of {id, title, questions, queries}</td><td>The order of the report. The planner writes search queries here so sections need no extra planning call.</td></tr>
+      <tr><td><code>sections</code></td><td>dict by section id, merge reducer</td><td>Parallel workers each return one entry. A revision returns only the changed ids, so the rest are the same objects as before.</td></tr>
+      <tr><td><code>sources</code></td><td>dict by source id, merge reducer</td><td>Source id is a hash of the URL, created when the page is fetched. It stays attached to passages and sentences from then on.</td></tr>
+      <tr><td><code>todo</code>, <code>edits</code></td><td>section ids and per-section instructions</td><td>The unit of work. First run: every id. Revision: one or two.</td></tr>
+      <tr><td><code>history</code></td><td>append-only list</td><td>One entry per pass with before and after text. Drives the version history and diff.</td></tr>
+    </tbody>
+  </table></div>
+  <p>Everything in state is plain JSON, so the checkpointer and the report file on disk hold the same shape.</p>
+
+  <h2>No citation, no claim</h2>
+  <p>The writer only sees numbered passages and must end every sentence with a source number. Then each sentence is checked on its own.</p>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 960 240" role="img" aria-label="Each sentence must have a citation, then passes a local similarity and number check; only unsure sentences go to an LLM judge. Failures are removed.">
+      <defs><marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+      <rect class="n" x="20" y="60" width="130" height="50" rx="8"/><text class="b" x="85" y="82" text-anchor="middle">draft sentence</text><text class="m" x="85" y="98" text-anchor="middle">from the writer</text>
+      <rect class="n" x="195" y="60" width="130" height="50" rx="8"/><text class="b" x="260" y="82" text-anchor="middle">has a citation?</text><text class="m" x="260" y="98" text-anchor="middle">to a fetched page</text>
+      <rect class="n" x="375" y="60" width="180" height="50" rx="8"/><text class="b" x="465" y="82" text-anchor="middle">local check</text><text class="m" x="465" y="98" text-anchor="middle">embedding match + numbers</text>
+      <rect class="n" x="610" y="60" width="150" height="50" rx="8"/><text class="b" x="685" y="82" text-anchor="middle">LLM judge</text><text class="m" x="685" y="98" text-anchor="middle">one batched call</text>
+      <rect class="h" x="810" y="60" width="130" height="50" rx="8"/><text class="b" x="875" y="82" text-anchor="middle">kept</text><text class="m" x="875" y="98" text-anchor="middle">with its passage</text>
+      <rect class="x" x="375" y="176" width="180" height="46" rx="8"/><text class="b" x="465" y="204" text-anchor="middle">removed from the report</text>
+      <path class="a" d="M150,85 H195" marker-end="url(#ar3)"/>
+      <path class="a" d="M325,85 H375" marker-end="url(#ar3)"/><text class="l" x="338" y="76">yes</text>
+      <path class="a" d="M555,85 H610" marker-end="url(#ar3)"/><text class="l" x="560" y="76">unsure</text>
+      <path class="a" d="M760,85 H810" marker-end="url(#ar3)"/><text class="l" x="774" y="76">yes</text>
+      <path class="a" d="M465,60 V26 H875 V60" marker-end="url(#ar3)"/><text class="l" x="600" y="18">clearly supported: no LLM call</text>
+      <path class="a" d="M260,110 V199 H375" marker-end="url(#ar3)"/><text class="l" x="270" y="192">no</text>
+      <path class="a" d="M465,110 V176" marker-end="url(#ar3)"/><text class="l" x="474" y="148">unrelated</text>
+      <path class="a" d="M685,110 V199 H555" marker-end="url(#ar3)"/><text class="l" x="640" y="192">no</text>
+    </svg>
+    </div>
+    <figcaption>The local check takes milliseconds and settles most sentences. The judge runs once per section on the unsure ones, using a smaller model. Fabricated references cannot happen because the model never writes URLs: a source id only exists once its page has been downloaded.</figcaption>
+  </figure>
+
+  <h2>Analysis agent, knowledge base and chat</h2>
+  <div class="two">
+    <div class="panel">
+      <h3>Analysis: a separate graph, on purpose</h3>
+      <ul>
+        <li>It only reads a finished report, so a failure here can never damage one.</li>
+        <li>Different trigger: research runs when sections change, analysis when you ask.</li>
+        <li>No human step, so no checkpointer or thread needed.</li>
+        <li>Two branches run in parallel: one LLM call for sentiment and recommendations, and a VADER word-list score per source and section that costs no tokens.</li>
+        <li>A final check drops any recommendation that does not point at a real section, and flags sections where the two sentiment readings disagree.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Knowledge base and chatbot</h3>
+      <ul>
+        <li>Each section is its own document. Chunks carry report id, section title and the cited URLs.</li>
+        <li>After an edit only sections whose content hash changed are embedded again.</li>
+        <li>A report's chat session filters retrieval to that report.</li>
+        <li>Dense, BM25 or hybrid retrieval, chosen in <code>.env</code>.</li>
+        <li>Below the score threshold the bot answers "I couldn't find that" without calling the LLM.</li>
+        <li>Follow-ups are rewritten into standalone queries using the conversation.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Guardrails</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Layer</th><th>What it stops</th><th>How</th></tr></thead>
+    <tbody>
+      <tr><td>Input</td><td>Prompt injection, unsafe requests, oversized or malformed input</td><td>Pattern checks on topics, change requests and chat messages before any LLM call</td></tr>
+      <tr><td>Input</td><td>Personal data reaching the model, traces or disk</td><td>Emails, phone numbers and keys are masked first</td></tr>
+      <tr><td>Web</td><td>Requests to internal addresses (SSRF)</td><td>Only public http(s). Localhost, private and link-local ranges refused, also after redirects</td></tr>
+      <tr><td>Web</td><td>Huge or non-text downloads</td><td>2 MB cap, 8 second timeout, HTML only</td></tr>
+      <tr><td>Web</td><td>Instructions hidden in web pages</td><td>Instruction-like lines are neutralised and the prompt treats sources as data</td></tr>
+      <tr><td>Output</td><td>Unsupported or uncited sentences</td><td>Sentence-level verification, failures removed</td></tr>
+      <tr><td>Output</td><td>Made-up references</td><td>Citations can only point at pages fetched in this run</td></tr>
+      <tr><td>Output</td><td>Untraceable recommendations, ungrounded chat answers</td><td>Reference check in analysis, grounding check in chat</td></tr>
+      <tr><td>Cost</td><td>Runaway spend on a free tier</td><td>Cap on LLM calls per run, two runs at most, one rewrite per section</td></tr>
+      <tr><td>Reliability</td><td>A provider being down</td><td>LLM fallback provider, search fallback, retries on rate limits</td></tr>
+      <tr><td>Human</td><td>The agent going its own way</td><td>Outline approval, change requests, approval before deleting documents</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>What we did to stand out</h2>
+  <p>Every team has the same brief. These are the additions, chosen because they improve trust or control without adding much waiting time.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Addition</th><th>What the user gets</th><th>Added latency</th></tr></thead>
+    <tbody>
+      <tr><td>Evidence on click</td><td>Click any citation to see the passage behind that sentence, the match score and the source's trust</td><td>None. The verifier already found it.</td></tr>
+      <tr><td>Two-stage verification</td><td>Unsupported sentences are removed, not just flagged</td><td>One small batched call per section</td></tr>
+      <tr><td>Trust score</td><td>Per section and per report: supported claims, source quality, source variety</td><td>None</td></tr>
+      <tr><td>Section buttons</td><td>More detail, Better sources, Rewrite, Remove. They skip the planning call</td><td>Saves a call</td></tr>
+      <tr><td>Version history with diff</td><td>See exactly what a revision changed, word by word</td><td>None</td></tr>
+      <tr><td>Evidence cache</td><td>Edits and eval reruns reuse searches and pages. Makes the version comparison fair</td><td>Saves time</td></tr>
+      <tr><td>Incremental knowledge base</td><td>After an edit only the changed section is re-embedded</td><td>Saves time</td></tr>
+      <tr><td>Second opinion on sentiment</td><td>A word-list score beside the LLM's reading, with disagreements flagged</td><td>Milliseconds</td></tr>
+      <tr><td>Provider fallback and model routing</td><td>Keeps working when a provider is down. A smaller model does the small jobs</td><td>None</td></tr>
+      <tr><td>Resume from checkpoint</td><td>A run cut off by a restart continues where it stopped</td><td>None</td></tr>
+      <tr><td>Independent eval judge</td><td>A different model family grades the reports, so the system does not mark its own work</td><td>Evals only</td></tr>
+      <tr><td>Scroll-driven sample run</td><td>The home page plays a run as you scroll, including a sentence being fact-checked and removed</td><td>None</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>Evaluation</h2>
+  <p>Twelve fixed topics, each with four aspects a good report should cover. Two versions run on the same cached evidence. The judge is Qwen, a different model family from the writer.</p>
+  <div class="two">
+    <div class="panel"><h3>v1, the baseline</h3><ul><li>No claim verification: whatever the writer produces is kept</li><li>Dense retrieval for the chatbot</li></ul></div>
+    <div class="panel"><h3>v2, the full system</h3><ul><li>Sentence-level verification with one rewrite</li><li>Hybrid retrieval (dense + BM25)</li></ul></div>
+  </div>
+  <p class="note">Interim numbers: 3 of the 12 topics had finished in both versions when this page was written. The free tier allows about one topic pair every eight minutes and the run was still going. <code>uv run python -m evals.compare v1 v2</code> prints the current table.</p>
+<div class="tablewrap"><table><thead><tr><th>Metric</th><th class="num">v1</th><th class="num">v2</th></tr></thead><tbody>
+<tr><td>Groundedness (supported sentences)</td><td class="num">0.55</td><td class="num">0.74</td></tr>
+<tr><td>Hallucination rate, lower is better</td><td class="num">0.45</td><td class="num">0.26</td></tr>
+<tr><td>Uncited sentences per report</td><td class="num">2.33</td><td class="num">0.00</td></tr>
+<tr><td>Cited source supports the claim</td><td class="num">0.62</td><td class="num">0.74</td></tr>
+<tr><td>Cited URL resolves</td><td class="num">1.00</td><td class="num">1.00</td></tr>
+<tr><td>Coverage of expected aspects</td><td class="num">0.92</td><td class="num">0.92</td></tr>
+<tr><td>Source diversity</td><td class="num">0.97</td><td class="num">0.92</td></tr>
+<tr><td>Structure and readability</td><td class="num">0.80</td><td class="num">0.87</td></tr>
+<tr><td>Chat faithfulness</td><td class="num">0.83</td><td class="num">1.00</td></tr>
+<tr><td>Chat answer relevancy</td><td class="num">1.00</td><td class="num">0.83</td></tr>
+<tr><td>Context precision / recall</td><td class="num">0.38 / 1.00</td><td class="num">0.42 / 1.00</td></tr>
+<tr><td>Correct refusals, out-of-scope questions</td><td class="num">1.00</td><td class="num">1.00</td></tr>
+<tr><td>Latency per report</td><td class="num">41 s</td><td class="num">86 s</td></tr>
+<tr><td>LLM calls per report</td><td class="num">4.0</td><td class="num">8.3</td></tr>
+<tr><td>Tokens per report</td><td class="num">5,203</td><td class="num">9,769</td></tr>
+<tr><td>Estimated cost per report</td><td class="num">$0.0013</td><td class="num">$0.0019</td></tr>
+<tr><td>Search calls / pages read</td><td class="num">6 / 11</td><td class="num">6 / 10</td></tr>
+</tbody></table></div>
+<h3>What we learned</h3>
+<div class="two">
+<div class="panel"><ul>
+<li>Verification raised groundedness from 0.55 to 0.74 and took uncited sentences to zero. It costs about twice the time and tokens.</li>
+<li>Coverage did not drop. Reports got shorter and read slightly better.</li>
+<li>Even with a strict prompt, the unverified writer left 2.3 sentences per report without a citation. A prompt is not a guardrail.</li>
+</ul></div>
+<div class="panel"><ul>
+<li>The independent judge still rejects about a quarter of v2's sentences, mostly long sentences joining two facts where the source backs one. Next step: judge every sentence or split compound ones.</li>
+<li>Chat samples are too small (six answerable questions per version) to rank hybrid against dense retrieval.</li>
+<li>The eval caught a real bug: the model sometimes writes citations as 【1】, which the parser missed. Fixed, with a test.</li>
+</ul></div>
+</div>
+
+  <h2>Switching providers</h2>
+  <pre>LLM_PROVIDER=groq            # groq | google | anthropic | openai
+LLM_MODEL=openai/gpt-oss-120b
+LLM_FALLBACK_PROVIDER=groq   # used when the main provider errors
+LLM_FAST_MODEL=openai/gpt-oss-20b
+SEARCH_PROVIDER=ddgs         # ddgs | tavily | wikipedia
+EMBEDDING_MODEL=fastembed:BAAI/bge-small-en-v1.5
+RETRIEVAL_MODE=hybrid        # dense | bm25 | hybrid
+RESEARCH_VERIFY=true</pre>
+  <p>Provider packages are imported in one function. The vector collection is named after the embedding model, so changing the model never mixes vectors of different sizes.</p>
+
+  <h2>Known limits</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Limit</th><th>Effect</th></tr></thead>
+    <tbody>
+      <tr><td>Groq free tier allows 8,000 tokens a minute per model</td><td>A five-section report takes one to two minutes. Most of that is waiting on the limit and on search.</td></tr>
+      <tr><td>The free search endpoint blocks bursts</td><td>Searches run one at a time.</td></tr>
+      <tr><td>Verification is similarity plus an LLM judge</td><td>It can still pass a subtle misreading of a source. The evals measure how often.</td></tr>
+      <tr><td>Gemini returned "high demand" errors all through the build</td><td>The Google path is wired and configurable but was not exercised on a full report.</td></tr>
+      <tr><td>Source trust is a simple domain rule</td><td>It is a signal, not a reputation service.</td></tr>
+      <tr><td>Postgres, Redis, MinIO and Brevo keys from the shared env</td><td>Not used here. No Docker containers were started or changed.</td></tr>
+    </tbody>
+  </table></div>
+</div>

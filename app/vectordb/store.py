@@ -17,8 +17,9 @@ Rules the evaluator checks:
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
-from typing import Protocol
+from typing import Any, Protocol
 
 import chromadb
 
@@ -51,7 +52,7 @@ class VectorStore(Protocol):
 class ChromaVectorStore:
     """Keeps chunks and their vectors in Chroma, a small database that saves itself to disk."""
 
-    def __init__(self, persist_dir: Path) -> None:
+    def __init__(self, persist_dir: Path, collection: str = "chunks") -> None:
         """Open the Chroma database in `persist_dir` (it is created the first time).
 
         This is what makes the data permanent: when the app restarts, it opens the same
@@ -60,7 +61,7 @@ class ChromaVectorStore:
         # PersistentClient saves everything inside persist_dir, so data survives a restart.
         client = chromadb.PersistentClient(path=str(persist_dir))
         # "cosine" tells Chroma to compare vectors by direction, same as we did before.
-        self.collection = client.get_or_create_collection("chunks", metadata={"hnsw:space": "cosine"})
+        self.collection = client.get_or_create_collection(collection, metadata={"hnsw:space": "cosine"})
 
     def add(self, chunks: list[Chunk], embeddings: list[list[float]]) -> None:
         """Save chunks together with their vectors (embeddings).
@@ -81,7 +82,9 @@ class ChromaVectorStore:
             metadatas=[{"doc_id": c.doc_id, "source": c.source, "position": c.position, **c.metadata} for c in chunks],
         )
 
-    def search(self, query_embedding: list[float], k: int) -> list[RetrievedChunk]:
+    def search(
+        self, query_embedding: list[float], k: int, where: dict[str, Any] | None = None
+    ) -> list[RetrievedChunk]:
         """Find the k chunks whose meaning is closest to the question's vector.
 
         This is the "retrieval" step of RAG: the chatbot passes the returned chunks to
@@ -92,24 +95,20 @@ class ChromaVectorStore:
         if k <= 0 or count == 0:  # nothing to look through
             return []
         # Chroma hands back the closest chunks first, so no sorting is needed.
-        result = self.collection.query(query_embeddings=[query_embedding], n_results=min(k, count))
+        result = self.collection.query(query_embeddings=[query_embedding], n_results=min(k, count), where=where)
         hits = []
         for chunk_id, text, meta, distance in zip(
             result["ids"][0], result["documents"][0], result["metadatas"][0], result["distances"][0], strict=True
         ):
-            # Pull the three main fields back out; whatever is left was the extra metadata.
-            extra = dict(meta)
-            chunk = Chunk(
-                id=chunk_id,
-                text=text,
-                doc_id=extra.pop("doc_id"),
-                source=extra.pop("source"),
-                position=extra.pop("position"),
-                metadata=extra,
-            )
             # Chroma gives a distance (smaller = closer); we want a score (bigger = better).
-            hits.append(RetrievedChunk(chunk=chunk, score=1 - distance))
+            hits.append(RetrievedChunk(chunk=_to_chunk(chunk_id, text, meta), score=1 - distance))
         return hits
+
+    def all_chunks(self, where: dict[str, Any] | None = None) -> list[Chunk]:
+        """Every stored chunk (optionally filtered). Keyword search needs the raw texts."""
+        found = self.collection.get(where=where)
+        rows = zip(found["ids"], found["documents"], found["metadatas"], strict=True)
+        return [_to_chunk(chunk_id, text, meta) for chunk_id, text, meta in rows]
 
     def delete_document(self, doc_id: str) -> int:
         """Remove every chunk that belongs to one document and return how many were removed.
@@ -141,10 +140,27 @@ class ChromaVectorStore:
         return found["metadatas"][0].get("content_hash")
 
 
-def get_vector_store(persist_dir: str | Path | None = None) -> VectorStore:
-    """Open (or create) the vector store saved in `persist_dir` (default: settings.vector_dir).
+def _to_chunk(chunk_id: str, text: str, meta: Any) -> Chunk:
+    extra = dict(meta)
+    return Chunk(
+        id=chunk_id,
+        text=text,
+        doc_id=extra.pop("doc_id"),
+        source=extra.pop("source"),
+        position=extra.pop("position"),
+        metadata=extra,
+    )
 
-    The rest of the app calls this instead of using ChromaVectorStore directly, so the
-    database can be swapped later by changing only this one line.
-    """
-    return ChromaVectorStore(Path(persist_dir) if persist_dir else get_settings().vector_dir)
+
+def collection_name(embedding_model: str) -> str:
+    """One collection per embedding model, so switching models never mixes vector sizes."""
+    slug = re.sub(r"[^a-z0-9]+", "-", embedding_model.lower()).strip("-")
+    return f"chunks-{slug}"[:60].rstrip("-") if slug else "chunks"
+
+
+def get_vector_store(persist_dir: str | Path | None = None) -> VectorStore:
+    """Open (or create) the vector store saved in `persist_dir` (default: settings.vector_dir)."""
+    settings = get_settings()
+    return ChromaVectorStore(
+        Path(persist_dir) if persist_dir else settings.vector_dir, collection_name(settings.embedding_model)
+    )

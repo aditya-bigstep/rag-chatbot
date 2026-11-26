@@ -58,8 +58,8 @@ class SessionStore:
             )
         return sorted(summaries, key=lambda s: s.updated_at, reverse=True)
 
-    def create(self, title: str | None = None) -> Session:
-        session = Session(id=uuid.uuid4().hex, title=(title or "").strip() or DEFAULT_TITLE)
+    def create(self, title: str | None = None, report_id: str | None = None) -> Session:
+        session = Session(id=uuid.uuid4().hex, title=(title or "").strip() or DEFAULT_TITLE, report_id=report_id)
         with self._lock:
             self._write(session)
         return session

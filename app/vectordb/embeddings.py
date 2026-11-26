@@ -1,80 +1,103 @@
-"""MILESTONE 4 — Embeddings.
+"""Embeddings: text -> vectors.
 
-Turn text into vectors so similar meaning -> nearby vectors.
-
-Pick any embedding model: a hosted API (OpenAI, Voyage, Cohere ...) or a local
-one (sentence-transformers, fastembed ...). Add its package with `uv add <pkg>`
-and read the model name from `EMBEDDING_MODEL` in `.env`.
-
-Rules the evaluator checks:
-  - `embed_documents(texts)` returns one vector per text, in the same order.
-  - Every vector has length `dimension`.
-  - `embed_documents([])` returns `[]`.
-  - The same text always gives (almost) the same vector.
-  - `embed_query(t)` is close to `embed_documents([t])[0]`.
-  - Related sentences are closer (cosine) than unrelated ones.
+EMBEDDING_MODEL picks the backend:
+  fastembed:BAAI/bge-small-en-v1.5   local ONNX model, no API key
+  hash                               bag-of-words hashing, no model at all (tests / offline)
+  openai:text-embedding-3-small      hosted
 """
 
 from __future__ import annotations
 
+import hashlib
+import math
+import re
 from functools import cached_property, lru_cache
+from typing import Protocol
 
-from langchain_openai import OpenAIEmbeddings
 from langsmith import traceable
 
 from app.config import get_settings
 
+DEFAULT_MODEL = "fastembed:BAAI/bge-small-en-v1.5"
+_WORD = re.compile(r"[a-z0-9]+")
 
-def _summarize_vectors(vectors: list[list[float]]) -> dict[str, int]:
-    """Log only the size of the result in LangSmith, because the raw numbers are huge and unreadable."""
+
+def _count_only(vectors: list[list[float]]) -> dict[str, int]:
     return {"vector_count": len(vectors), "dimension": len(vectors[0]) if vectors else 0}
 
 
-def _summarize_vector(vector: list[float]) -> dict[str, int]:
-    """Same as above, for a single vector."""
+def _dimension_only(vector: list[float]) -> dict[str, int]:
     return {"dimension": len(vector)}
+
+
+class Backend(Protocol):
+    def embed(self, texts: list[str]) -> list[list[float]]: ...
+
+
+class FastEmbedBackend:
+    def __init__(self, model: str) -> None:
+        from fastembed import TextEmbedding
+
+        self.model = TextEmbedding(model)
+
+    def embed(self, texts: list[str]) -> list[list[float]]:
+        return [vector.tolist() for vector in self.model.embed(texts)]
+
+
+class HashBackend:
+    def __init__(self, dimension: int = 256) -> None:
+        self.dimension = dimension
+
+    def _one(self, text: str) -> list[float]:
+        vector = [0.0] * self.dimension
+        for word in _WORD.findall(text.lower()):
+            vector[int(hashlib.md5(word.encode()).hexdigest(), 16) % self.dimension] += 1.0
+        norm = math.sqrt(sum(v * v for v in vector)) or 1.0
+        return [v / norm for v in vector]
+
+    def embed(self, texts: list[str]) -> list[list[float]]:
+        return [self._one(text) for text in texts]
+
+
+class OpenAIBackend:
+    def __init__(self, model: str) -> None:
+        from langchain_openai import OpenAIEmbeddings
+
+        self.model = OpenAIEmbeddings(model=model, chunk_size=100)
+
+    def embed(self, texts: list[str]) -> list[list[float]]:
+        return self.model.embed_documents(texts)
+
+
+def _backend(name: str) -> Backend:
+    kind, _, model = name.partition(":")
+    if kind == "hash":
+        return HashBackend()
+    if kind == "fastembed":
+        return FastEmbedBackend(model or "BAAI/bge-small-en-v1.5")
+    if kind == "openai":
+        return OpenAIBackend(model or "text-embedding-3-small")
+    return OpenAIBackend(name)  # a bare name is treated as an OpenAI model, as before
 
 
 class Embedder:
     def __init__(self, model: str) -> None:
-        # We use OpenAI's embedding model through LangChain so we don't write the API calls ourselves.
-        # chunk_size=100 means "send at most 100 texts per API request", which keeps each request
-        # small enough to avoid size/rate limits when embedding many chunks.
-        self._model = OpenAIEmbeddings(model=model, chunk_size=100)
+        self.name = model
+        self.backend = _backend(model)
 
     @cached_property
     def dimension(self) -> int:
-        """Length of every vector this embedder returns."""
-        # Different models produce different vector lengths, so instead of hard-coding a number
-        # we embed a dummy word and measure it. cached_property makes sure we only pay for this
-        # API call once; after that the answer is remembered.
-        return len(self.embed_query("example"))
+        return len(self.backend.embed(["example"])[0])
 
-    ## "example" is a sample word to embedd to get to know the len of vector that the
-    ## model will provide
-
-    # @traceable makes this call show up in LangSmith as an "embedding" run, so you can see
-    # how long it took and what was sent. Inside a chat turn it appears under the retriever run.
-    @traceable(run_type="embedding", name="embed_documents", process_outputs=_summarize_vectors)
+    @traceable(run_type="embedding", name="embed_documents", process_outputs=_count_only)
     def embed_documents(self, texts: list[str]) -> list[list[float]]:
-        """IN: list of texts.  OUT: list of vectors (same length and order)."""
-        # If there is nothing to embed, return [] right away instead of making a pointless API call.
-        return self._model.embed_documents(texts) if texts else []
+        return self.backend.embed(texts) if texts else []
 
-    # Same idea as above, for the single question typed by the user.
-    @traceable(run_type="embedding", name="embed_query", process_outputs=_summarize_vector)
+    @traceable(run_type="embedding", name="embed_query", process_outputs=_dimension_only)
     def embed_query(self, text: str) -> list[float]:
-        """IN: one search query.  OUT: one vector."""
-        # The user's question must be embedded by the same model as the documents,
-        # otherwise the vectors live in different "spaces" and can't be compared.
-        return self._model.embed_query(text)
+        return self.backend.embed([text])[0]
 
 
 @lru_cache(maxsize=1)
 def get_embedder() -> Embedder:
-    """Return the configured embedder (model name from settings.embedding_model)."""
-    # lru_cache means every caller shares ONE Embedder. Without it, each call built a new
-    # Embedder with an empty cached_property, so `dimension` hit the OpenAI API every time.
-    # The model name comes from .env so it can be changed without touching code;
-    # if it isn't set we fall back to a cheap, good-enough default.
-    return Embedder(get_settings().embedding_model or "text-embedding-3-small")
+    return Embedder(get_settings().embedding_model or DEFAULT_MODEL)

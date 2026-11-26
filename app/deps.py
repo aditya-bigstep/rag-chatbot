@@ -19,6 +19,8 @@ from app.chat.checkpointing import get_checkpointer
 from app.chat.engine import ChatEngine, PlaceholderEngine, get_engine
 from app.chat.options import EngineOptions
 from app.config import Settings, get_settings
+from app.research.deps import build_deps
+from app.research.service import ResearchService
 from app.storage.json_store import SessionStore
 from app.tools import get_tools
 from app.tools.admin_tools import make_admin_tools
@@ -38,6 +40,7 @@ class Components:
     embedder: Embedder | None = None
     store: VectorStore | None = None
     retriever: Retriever | None = None
+    research: ResearchService | None = None
     missing: dict[str, str] = field(default_factory=dict)
 
     @property
@@ -74,7 +77,20 @@ def build_components(settings: Settings | None = None) -> Components:
     engine = _try(
         "engine", get_engine, missing, retriever=retriever, tools=tools, options=options, checkpointer=checkpointer
     )
+    research = None
+    if embedder is not None and checkpointer is not None:
+        research = _try(
+            "research",
+            _build_research,
+            missing,
+            settings=settings,
+            embedder=embedder,
+            checkpointer=checkpointer,
+            chunker=chunker,
+            store=store,
+        )
     return Components(
+        research=research,
         engine=engine or PlaceholderEngine(),
         chunker=chunker,
         embedder=embedder,
@@ -82,6 +98,12 @@ def build_components(settings: Settings | None = None) -> Components:
         retriever=retriever,
         missing=missing,
     )
+
+
+def _build_research(
+    settings: Settings, embedder: Any, checkpointer: Any, chunker: Any, store: Any
+) -> ResearchService:
+    return ResearchService(settings, build_deps(settings, embedder), checkpointer, chunker, store)
 
 
 def get_store(request: Request) -> SessionStore:

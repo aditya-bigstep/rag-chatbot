@@ -1,104 +1,81 @@
-# RAG Chatbot — Training Project
+# ResearchPilot
 
-A small chat app with a sessions sidebar (create, rename, delete) and a chat pane. The web pages, the JSON
-session storage and the upload endpoint already work. **You build the AI parts** — the LLM, the LangGraph engine,
-LangSmith tracing, chunking, embeddings, a vector store, ingestion, retrieval and tools — one milestone at a time.
+A multi-agent research assistant. Give it a topic and it plans an outline, waits for you to approve it,
+searches and reads the web, writes a cited report, and removes any sentence its sources do not back.
+You can then ask for changes (only the affected sections are redone), run a sentiment and recommendations
+analysis, and chat with the report through a RAG chatbot.
 
-Read [TRAINEE_TASKS.md](TRAINEE_TASKS.md) for the milestones (M1–M8, in order).
+Built with LangGraph, LangChain, FastAPI, Chroma, fastembed and LangSmith.
 
-## 1. Install the tools (macOS)
+- Architecture and design decisions: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+- Evaluation results and the v1 vs v2 comparison: [docs/EVALUATION.md](docs/EVALUATION.md)
+
+## Setup
 
 ```bash
 brew install uv
-```
-
-`uv` installs Python 3.12 and every dependency for you. No separate `pip` or `venv` steps.
-
-## 2. Set up the project
-
-```bash
-cd rag-chatbot
-uv sync                  # creates .venv and installs dependencies
-cp .env.example .env     # then edit .env: set SELF_CHECK_KEY to your name, add API keys later
-```
-
-## 3. Run the app
-
-```bash
+uv sync
+cp .env.example .env      # then fill in the keys you have
 uv run uvicorn app.main:app --reload
 ```
 
-Open <http://127.0.0.1:8000>. Create a session and send a message. Until you finish Milestone 1 the reply is a
-placeholder, and the sidebar lists the modules that are not built yet.
+Open <http://127.0.0.1:8000>. No Docker is needed: checkpoints live in SQLite and vectors in Chroma, both under `data/`.
 
-## 4. Test your work
+## Environment variables
 
-| What | Command |
+| Variable | What it does |
 |---|---|
-| App plumbing tests (always green) | `uv run pytest` |
-| Milestone contract tests (pass = milestone done) | `uv run pytest -m contract` |
-| One milestone only | `uv run pytest -m contract tests/contract/test_m3_chunking.py` |
-| Pass/fail summary per milestone | `uv run python self_check.py` |
-| Lint and types | `uv run ruff check` and `uv run mypy app` |
+| `LLM_PROVIDER`, `LLM_MODEL` | Main model. Provider is `groq`, `google`, `anthropic` or `openai`. Change these two lines to switch. |
+| `LLM_FALLBACK_PROVIDER`, `LLM_FALLBACK_MODEL` | Takes over for a call when the main provider errors. Default `groq`. |
+| `LLM_FAST_MODEL` | Smaller model for the claim judge and the edit planner. Empty means use the main model. |
+| `GROQ_API_KEY`, `GOOGLE_API_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY` | Only the keys for the providers you use. |
+| `LANGSMITH_TRACING`, `LANGSMITH_API_KEY`, `LANGSMITH_PROJECT` | Tracing. Every run is tagged with the report id. |
+| `EMBEDDING_MODEL` | `fastembed:BAAI/bge-small-en-v1.5` (local, no key), `hash`, or `openai:<model>`. |
+| `RETRIEVAL_MODE`, `TOP_K`, `MIN_SCORE` | `dense`, `bm25` or `hybrid`. Chunks under `MIN_SCORE` are ignored. |
+| `SEARCH_PROVIDER` | `firecrawl` (needs `FIRECRAWL_API_KEY`, fastest), `tavily` (needs `TAVILY_API_KEY`), `ddgs` (no key) or `wikipedia`. |
+| `RESEARCH_MAX_SECTIONS`, `RESEARCH_SOURCES_PER_SECTION`, `RESEARCH_PARALLEL_SECTIONS` | Size and speed of a report. |
+| `RESEARCH_VERIFY` | `false` skips claim verification. Used as the baseline in the evals. |
+| `RESEARCH_MAX_LLM_CALLS` | Hard cap on LLM calls per run. |
 
-`self_check.py` prints PASS or FAIL per milestone and writes `self_check_report.json`. It needs `SELF_CHECK_KEY` in `.env`.
-Passing it is a good sign, not a grade — your trainer runs a separate, stricter evaluation.
+## Using it
 
-The fakes in `tests/fakes.py` (a fake chat model, a hash embedder, an in-memory store) let you test one module at a
-time without any API key.
+1. Type a topic on the home page. The agent plans an outline and stops.
+2. Edit the outline if you want (rename, reorder, add, remove) and approve it.
+3. Watch the sections being searched, read, written and checked. Click any citation to see the passage behind it.
+4. Ask for changes in the box at the bottom, or use the buttons on a section (More detail, Better sources, Rewrite, Remove).
+5. Open the Analysis tab for sentiment and recommendations.
+6. Open the Chat tab, add the report to the knowledge base and ask questions.
+7. History shows what each revision changed. Runs shows time, tokens, calls and cost.
 
-## 5. Index documents
+## Tests and evals
 
 ```bash
-uv run python -m app.ingest
+uv run pytest                      # 78 tests, no network or API key needed
+uv run pytest -m contract          # the original milestone contract tests
+uv run ruff check
+
+uv run python -m evals.run --label v1 --no-verify --retrieval dense   # baseline
+uv run python -m evals.run --label v2                                 # full system
+uv run python -m evals.compare v1 v2
 ```
-
-Indexes everything in `data/documents/`. You can also upload `.md` / `.txt` files in the browser.
-
-## Adding provider packages
-
-```bash
-uv add langchain-anthropic      # or langchain-openai
-uv add chromadb                 # or faiss-cpu, lancedb ... any vector store you pick
-```
-
-Set `LLM_PROVIDER`, `LLM_MODEL` and the API key in `.env`. Never commit `.env`.
 
 ## Layout
 
 ```
 app/
-  main.py, config.py, deps.py, services.py, web.py   working plumbing — leave alone
-  api/            JSON endpoints (sessions, chat, documents)
-  storage/        one JSON file per session
-  chat/llm.py            M1  get_llm
-  chat/engine.py         M1, M7, M8  LangGraph engine
-  observability.py       M2  LangSmith
-  vectordb/chunking.py   M3
-  vectordb/embeddings.py M4
-  vectordb/store.py      M5
-  ingest/                M6
-  vectordb/retriever.py  M7
-  tools/                 M8
-data/documents/  sample documents      data/sessions/  chat history (JSON)
-tests/           plumbing tests + tests/contract (one file per milestone)
-templates/, static/   the server-rendered UI
+  research/
+    graph.py       main LangGraph graph: guard, plan, outline review, sections, assemble, feedback loop
+    section.py     per-section worker graph: search, read, write, verify
+    verify.py      claim parsing and the two-stage support check
+    analysis.py    analysis graph: sentiment and recommendations
+    kb.py          report to vector store, section by section
+    search.py      search providers (swappable)      reader.py   safe page fetching
+    service.py     background runs, report snapshots  store.py    one JSON file per report
+    usage.py       token, call and cost tracking      trust.py    trust scores
+  chat/            RAG chat engine (routing, guardrails, memory, tool approval)
+  vectordb/        chunking, embeddings, Chroma store, dense / BM25 / hybrid retriever
+  api/             JSON endpoints
+evals/             test topics, judges, metrics, runner, comparison
+templates/, static/   the UI (vanilla JS and Motion)
+tests/
 ```
-
-Models in `app/models.py` are the contract between your modules and the trainer's evaluator — don't rename fields.
-
-## Advanced chat features
-
-| # | Feature | Where |
-|---|---|---|
-| 1 | Conversation memory (recent + summarised history, follow-up rewriting) | `app/chat/memory.py`, `rewrite_query` node in `app/chat/engine.py` |
-| 2 | Intelligent routing (conditional edges) | `app/chat/router.py`, `route` node + `after_route` in `engine.py` |
-| 3 | Guardrails (input, untrusted docs, grounding, insufficient-context fallback) | `app/chat/guardrails.py`, `guard` / `generate` / `verify` nodes |
-| 4 | SQLite checkpointing (`thread_id` = session id) | `app/chat/checkpointing.py`, wired in `app/deps.py` |
-| 5 | Human-in-the-loop approval for `delete_document` | `app/chat/approval.py`, `app/tools/admin_tools.py`, `/api/sessions/{id}/approval` |
-| 6 | LangSmith tracing (route, guard, grounding, latency metadata) | `app/observability.py` (`traced_node`, `annotate_run`, `build_run_config`) |
-
-All switches live in `app/chat/options.py` / `.env` (`SMART_ROUTING`, `ALWAYS_RETRIEVE`, `GUARDRAILS`,
-`GROUNDING_MODE`, `HITL_ENABLED`, ...). `get_engine()` called with no options keeps the original behaviour
-(retrieve on every turn), which is what the contract tests/evaluator use. Tests: `tests/test_advanced_engine.py`,
-`tests/test_approval_api.py`.

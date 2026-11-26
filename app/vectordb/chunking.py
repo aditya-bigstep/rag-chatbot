@@ -97,7 +97,7 @@ def get_chunker(
 
     """
     settings = get_settings()
-    # Use the strategy passed in; if none, use the one from settings. Clean it up (trim, lowercase) so "Fixed " still works.
+    # Use the strategy passed in; if none, the one from settings. Trim and lowercase so "Fixed " still works.
     name = (settings.chunking_strategy if strategy is None else strategy).strip().lower()
     # Same idea for size and overlap: use what the caller gave, otherwise the defaults from settings.
     size = settings.chunk_size if chunk_size is None else chunk_size

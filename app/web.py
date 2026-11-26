@@ -43,6 +43,23 @@ def _render_page(request: Request, store: SessionStore, components: Components, 
 
 
 @router.get("/", response_class=HTMLResponse)
+def research_home(request: Request) -> HTMLResponse:
+    return templates.TemplateResponse(request, "research_home.html", {})
+
+
+@router.get("/research/{report_id}", response_class=HTMLResponse)
+def research_page(report_id: str, request: Request, components: Components = Depends(get_components)) -> HTMLResponse:
+    if components.research is None:
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "Research service is not available")
+    try:
+        report = components.research.get(report_id)
+    except KeyError:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Report not found") from None
+    context = {"report_id": report_id, "topic": report["topic"]}
+    return templates.TemplateResponse(request, "research_report.html", context)
+
+
+@router.get("/chat", response_class=HTMLResponse)
 def home(
     request: Request,
     store: SessionStore = Depends(get_store),
@@ -90,7 +107,7 @@ def ui_delete_session(session_id: str, request: Request, store: SessionStore = D
         store.delete(session_id)
     except SessionNotFoundError:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Session not found") from None
-    return _redirect(request, "/")
+    return _redirect(request, "/chat")
 
 
 @router.post("/ui/sessions/{session_id}/messages", response_class=HTMLResponse)

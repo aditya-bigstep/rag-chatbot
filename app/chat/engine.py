@@ -199,6 +199,8 @@ class ChatState(TypedDict):
     blocked: str
     # Feature 5: the human's decision at the `approval` node.
     approved: bool
+    # Report chat: when set, retrieval only looks at chunks of this report.
+    scope: str
 
 
 # M1: maps our stored Message.role to the matching LangChain message class.
@@ -277,7 +279,7 @@ class GraphEngine:
         self.options = options or EngineOptions()
         self.checkpointed = checkpointed
 
-    def _inputs(self, message: str, history: list[Message]) -> dict[str, Any]:
+    def _inputs(self, message: str, history: list[Message], scope: str | None = None) -> dict[str, Any]:
         # Feature 1 (memory): decide which past messages the model sees — recent ones verbatim plus a summary.
         view = self.memory.build(history) if self.memory else None
         recent = view.recent if view else history
@@ -299,6 +301,7 @@ class GraphEngine:
             "summary": view.summary if view else "",
             "blocked": "",
             "approved": False,
+            "scope": scope or "",
         }
 
     def _config(self, session_id: str) -> dict[str, Any]:
@@ -322,9 +325,9 @@ class GraphEngine:
         answer = str(pending["message"]) if pending else _text(state["messages"][-1])
         return EngineResult(answer=answer, sources=state.get("sources", []), pending_approval=pending)
 
-    def invoke(self, message: str, history: list[Message], session_id: str) -> EngineResult:
+    def invoke(self, message: str, history: list[Message], session_id: str, scope: str | None = None) -> EngineResult:
         # M1: run the graph once. M2: the metadata tags the LangSmith trace with the session id.
-        state = self.graph.invoke(self._inputs(message, history), config=self._config(session_id))
+        state = self.graph.invoke(self._inputs(message, history, scope), config=self._config(session_id))
         return self._result(state, session_id)
 
     def resume(self, session_id: str, approved: bool) -> EngineResult:
@@ -332,12 +335,14 @@ class GraphEngine:
         state = self.graph.invoke(Command(resume={"approved": approved}), config=self._config(session_id))
         return self._result(state, session_id)
 
-    def stream(self, message: str, history: list[Message], session_id: str) -> Iterator[str | EngineResult]:
+    def stream(
+        self, message: str, history: list[Message], session_id: str, scope: str | None = None
+    ) -> Iterator[str | EngineResult]:
         """Yield the `generate` node's text as it arrives, then the final EngineResult."""
         # M9 (streaming): "messages" mode gives token pieces, "values" mode gives the full state.
         state: dict[str, Any] = {}
         for mode, data in self.graph.stream(
-            self._inputs(message, history),
+            self._inputs(message, history, scope),
             config=self._config(session_id),
             stream_mode=["messages", "values"],
         ):
@@ -427,12 +432,23 @@ class _GraphBuilder:
         k = None
         if state["route"] == Route.COMPARE.value:  # comparing needs evidence from both sides -> look wider
             k = (getattr(self.retriever, "k", 0) or 0) * 2 or None
-        hits = self.retriever.retrieve(state["query"] or _last_user_text(state), k)
-        annotate_run(retrieved_chunks=len(hits), top_score=max((h.score for h in hits), default=None))
+        retriever = self.retriever
+        scope = state.get("scope")
+        if scope and hasattr(retriever, "scoped"):
+            retriever = retriever.scoped({"report_id": scope})
+        hits = retriever.retrieve(state["query"] or _last_user_text(state), k)
+        annotate_run(retrieved_chunks=len(hits), top_score=max((h.score for h in hits), default=None), scope=scope)
         return {
             "context": [h.chunk.text for h in hits],
             "sources": [
-                Source(source=h.chunk.source, chunk_id=h.chunk.id, score=h.score, snippet=h.chunk.text[:200])
+                Source(
+                    source=h.chunk.source,
+                    chunk_id=h.chunk.id,
+                    score=h.score,
+                    snippet=h.chunk.text[:200],
+                    section=str(h.chunk.metadata.get("section", "")),
+                    urls=str(h.chunk.metadata.get("urls", "")).split(),
+                )
                 for h in hits
             ],
         }
