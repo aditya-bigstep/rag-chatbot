@@ -38,7 +38,8 @@ def ddgs_search(query: str, limit: int) -> list[dict[str, str]]:
 def tavily_search(query: str, limit: int) -> list[dict[str, str]]:
     response = httpx.post(
         "https://api.tavily.com/search",
-        json={"api_key": os.environ["TAVILY_API_KEY"], "query": query, "max_results": limit},
+        headers={"Authorization": "Bearer " + os.environ["TAVILY_API_KEY"]},
+        json={"query": query, "max_results": limit, "search_depth": "fast"},
         timeout=15,
     )
     response.raise_for_status()
@@ -83,6 +84,7 @@ PROVIDERS: dict[str, SearchFn] = {
     "firecrawl": firecrawl_search,
     "wikipedia": wikipedia_search,
 }
+KEY_NAMES = {"tavily": "TAVILY_API_KEY", "firecrawl": "FIRECRAWL_API_KEY"}
 FREE_ENDPOINTS = ("ddgs", "wikipedia")  # these block bursts, so they are called one at a time
 
 
@@ -94,10 +96,11 @@ def call_provider(name: str, query: str, limit: int) -> list[dict[str, str]]:
 
 
 def make_search(provider: str, cache_dir: Path | None = None) -> SearchFn:
-    """Search with `provider`, fall back to ddgs then Wikipedia if it fails, and cache results for a day."""
+    """Search with `provider`, fall back to the other providers if it fails, and cache results for a day."""
     order = [provider] if provider in PROVIDERS else ["ddgs"]
-    for backup in ("ddgs", "wikipedia"):
-        if backup not in order:
+    for backup in ("tavily", "firecrawl", "ddgs", "wikipedia"):
+        needs_key = KEY_NAMES.get(backup)
+        if backup not in order and (not needs_key or os.getenv(needs_key)):
             order.append(backup)
 
     def search(query: str, limit: int) -> list[dict[str, str]]:

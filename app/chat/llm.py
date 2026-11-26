@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_MODELS = {
     "groq": "openai/gpt-oss-120b",
-    "google": "gemini-3.8-flash",
+    "google": "gemini-3.5-flash-lite",
     "anthropic": "claude-sonnet-5-5",
     "openai": "gpt-4o-mini",
 }
@@ -43,7 +43,8 @@ def build_model(provider: str, model: str = "") -> BaseChatModel:
     if provider == "google":
         from langchain_google_genai import ChatGoogleGenerativeAI
 
-        return ChatGoogleGenerativeAI(model=name, temperature=0, max_retries=1, timeout=20)
+        # no temperature: the current Gemini models use fixed sampling and warn when one is passed
+        return ChatGoogleGenerativeAI(model=name, max_retries=1, timeout=40)
     if provider == "anthropic":
         from langchain_anthropic import ChatAnthropic
 

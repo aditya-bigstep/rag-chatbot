@@ -1,0 +1,175 @@
+<title>ResearchPilot Next Steps</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: a drawing sheet. One reading column, tables and the figure break out to full width. */
+  :root {
+    --bg: #eef2f6; --card: #fbfcfd; --raised: #e2e8ef; --fg: #12304c; --soft: #46617d; --line: #c9d4df;
+    --accent: #c2410c; --accent-wash: #fbe6dc; --ok: #15703a; --ok-wash: #dcf0e3; --warn: #8a5800; --warn-wash: #f6e9cc;
+    --font: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0d2740; --card: #12324f; --raised: #1a3d5e; --fg: #eaf0f6; --soft: #9db4ca; --line: #2b4d6e;
+      --accent: #ff6b45; --accent-wash: #4a2a22; --ok: #6fd69a; --ok-wash: #1c4a3a; --warn: #f0b050; --warn-wash: #4a3c1c;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0d2740; --card: #12324f; --raised: #1a3d5e; --fg: #eaf0f6; --soft: #9db4ca; --line: #2b4d6e;
+    --accent: #ff6b45; --accent-wash: #4a2a22; --ok: #6fd69a; --ok-wash: #1c4a3a; --warn: #f0b050; --warn-wash: #4a3c1c;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--fg); font: 16px/1.6 var(--font); -webkit-font-smoothing: antialiased; }
+  .page { max-width: 1040px; margin: 0 auto; padding-block: 48px 96px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  h1, h2, h3 { margin: 0; letter-spacing: -0.02em; line-height: 1.12; text-wrap: balance; }
+  h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 600; }
+  h2 { font-size: 1.6rem; font-weight: 600; margin-top: 72px; }
+  h3 { font-size: 1.05rem; font-weight: 600; }
+  p { margin: 12px 0 0; max-width: 68ch; }
+  .code { font: 500 0.72rem/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--soft); margin: 0 0 14px; }
+  .lede { font-size: 1.15rem; color: var(--soft); max-width: 60ch; margin-top: 16px; }
+  code { font-family: var(--mono); font-size: 0.85em; background: var(--raised); padding: 1px 5px; border-radius: 3px; }
+  .facts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .fact { background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 10px 14px; min-width: 150px; }
+  .fact b { display: block; font: 600 1.3rem/1.2 var(--font); font-variant-numeric: tabular-nums; }
+  .fact span { color: var(--soft); font-size: 0.85rem; }
+  .wrap { overflow-x: auto; margin-top: 18px; border: 1px solid var(--line); border-radius: 4px; background: var(--card); }
+  table { border-collapse: collapse; width: 100%; font-size: 0.93rem; min-width: 620px; }
+  th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  th { font: 500 0.72rem/1.3 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--soft); background: var(--raised); }
+  td b { font-weight: 600; }
+  .tag { display: inline-block; padding: 1px 8px; border-radius: 3px; font: 500 0.72rem/1.6 var(--mono); white-space: nowrap; background: var(--raised); color: var(--soft); }
+  .tag.do { background: var(--ok-wash); color: var(--ok); }
+  .tag.maybe { background: var(--warn-wash); color: var(--warn); }
+  .tag.skip { background: var(--accent-wash); color: var(--accent); }
+  figure { margin: 24px 0 0; background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 18px; }
+  .scroll { overflow-x: auto; }
+  figure svg { display: block; min-width: 680px; width: 100%; height: auto; color: var(--fg); font-family: var(--mono); }
+  figcaption { margin-top: 12px; color: var(--soft); font-size: 0.9rem; max-width: 75ch; }
+  svg text { fill: currentColor; font-size: 12px; }
+  svg .m { opacity: 0.7; font-size: 11px; }
+  svg .bar { fill: var(--raised); stroke: currentColor; stroke-width: 1; }
+  svg .hot { fill: var(--accent-wash); stroke: var(--accent); stroke-width: 1.5; }
+  svg .axis { stroke: currentColor; stroke-width: 1; opacity: 0.4; }
+  svg .note { fill: var(--accent); }
+  .lanes { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 18px; }
+  .lane { background: var(--card); border: 1px solid var(--line); border-radius: 4px; padding: 18px; min-width: 0; }
+  .lane ol { margin: 12px 0 0; padding-left: 20px; }
+  .lane li { margin-bottom: 8px; }
+  .lane .first { font-weight: 600; }
+  .note { margin-top: 18px; padding: 12px 16px; border-left: 3px solid var(--warn); background: var(--warn-wash); color: var(--fg); max-width: 75ch; }
+</style>
+
+<div class="page">
+  <header>
+    <p class="code">ResearchPilot · round two</p>
+    <h1>What we built this round, and what to build next</h1>
+    <p class="lede">The app now looks and behaves like your other project: a blueprint welcome page with a 3D rig, sign-in with a key that gets cut as you type, and a calmer workspace. Below is what changed, an honest verdict on the ideas you raised, and a plan for three developers.</p>
+    <div class="facts">
+      <div class="fact"><b>20.5 s</b><span>a 4-section report, was about 83 s</span></div>
+      <div class="fact"><b>91</b><span>tests passing, 11 new for accounts</span></div>
+      <div class="fact"><b>3 ms</b><span>measured cost of a local classifier</span></div>
+      <div class="fact"><b>6</b><span>sheets on the new welcome page</span></div>
+    </div>
+  </header>
+
+  <h2>What changed this round</h2>
+  <div class="wrap"><table>
+    <thead><tr><th>Area</th><th>Before</th><th>Now</th></tr></thead>
+    <tbody>
+      <tr><td><b>Design system</b></td><td>Its own green look, different from your other project</td><td>The same system as the reference project: Archivo and JetBrains Mono, navy drawing sheets, one orange accent. Fonts, three.js and the scroll engine are reused from it.</td></tr>
+      <tr><td><b>Welcome page</b></td><td>A flat sample run</td><td>Six drawing sheets. A three.js rig shows how a report is made: your topic drops through Plan, waits at Your review, splits into four section lanes, and the Verify sieve throws one sentence out. Motion handles the entrance and the stamps.</td></tr>
+      <tr><td><b>Accounts</b></td><td>None. Anyone with the URL could use the LLM.</td><td>Sign up, confirm a 6-digit code sent through Brevo, sign in, forgot password with a one-time link. Visitors only see the welcome page. Reports and chats belong to the user who made them.</td></tr>
+      <tr><td><b>Auth page</b></td><td>None</td><td>Your key animation: the blade is cut from the password's length as you type.</td></tr>
+      <tr><td><b>Workspace</b></td><td>Top tab bar, a left rail, five right tabs, four buttons under every heading</td><td>One sidebar (reports, document chats, account). Section actions sit behind one menu. History and Runs are merged into Activity. Sections and trust moved into an Outline tab.</td></tr>
+      <tr><td><b>Waiting</b></td><td>Grey skeleton lines</td><td>A small blueprint shows which stage the run is in, with the live status line, sections written so far, and a rotating set of 20 computer science facts.</td></tr>
+      <tr><td><b>Document chat</b></td><td>The original training layout</td><td>The reference chat layout: centred thread, growing composer, scanning ticks while it works, sources under each answer.</td></tr>
+      <tr><td><b>Speed</b></td><td>Groq at 8,000 tokens a minute, searches one at a time</td><td>Gemini 3.5 Flash Lite first with Groq as fallback, Tavily search in parallel, four sections at once.</td></tr>
+    </tbody>
+  </table></div>
+  <p>No feature was removed. Outline approval, section-only edits, evidence on click, analysis, report chat, history diff, run metrics, export and delete are all still there.</p>
+
+  <h2>Where the time goes now</h2>
+  <p>Before adding anything, it helps to see what a section costs today. These are measured on the current setup.</p>
+  <figure>
+    <div class="scroll">
+    <svg viewBox="0 0 760 210" role="img" aria-label="Time per stage for one report section: search about 1.4 seconds, reading pages about 10 seconds, writing about 2 seconds, verifying about 4 seconds. A local classifier at 3 milliseconds is too small to draw.">
+      <text x="0" y="16" class="m">ONE SECTION, SECONDS (MIDPOINT OF MEASURED RANGE)</text>
+      <text x="96" y="52" text-anchor="end">search</text><rect class="bar" x="110" y="38" width="42" height="20"/><text x="160" y="52" class="m">1.2 to 1.6 s</text>
+      <text x="96" y="86" text-anchor="end">read pages</text><rect class="hot" x="110" y="72" width="309" height="20"/><text x="427" y="86" class="note">8.6 to 12 s · the bottleneck</text>
+      <text x="96" y="120" text-anchor="end">write</text><rect class="bar" x="110" y="106" width="57" height="20"/><text x="175" y="120" class="m">1.7 to 2.1 s</text>
+      <text x="96" y="154" text-anchor="end">verify</text><rect class="bar" x="110" y="140" width="117" height="20"/><text x="235" y="154" class="m">1.7 to 6 s</text>
+      <text x="96" y="188" text-anchor="end">classifier</text><path class="axis" d="M110 172 V192"/><text x="118" y="188" class="note">0.003 s · too small to draw</text>
+      <path class="axis" d="M110 30 V198"/>
+    </svg>
+    </div>
+    <figcaption>Four sections run at once, so a whole report takes about as long as its slowest section plus planning. Fetching and reading web pages is now most of the wait. Anything that runs locally in a few milliseconds is free by comparison.</figcaption>
+  </figure>
+
+  <h2>Your ideas, assessed</h2>
+  <div class="wrap"><table>
+    <thead><tr><th>Idea</th><th>Verdict</th><th>Latency cost</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td><b>A local classification model</b></td><td><span class="tag do">do it</span></td><td>About 3 ms per message (measured)</td><td>We already load a local embedding model. Classifying a message is one embedding plus a comparison with a few example sentences per label. A quick probe sorted 5 of 5 messages into greeting, research, edit and unsafe. That is a toy check, not an evaluation. Uses: catch rephrased prompt injection the regex misses, route "make section 3 longer" without an LLM call, and tell a greeting from a research topic.</td></tr>
+      <tr><td><b>A hosted prompt-guard model</b></td><td><span class="tag maybe">try it</span></td><td>One small extra call, not measured</td><td>Your Groq key lists <code>llama-prompt-guard-2</code>. It is built for spotting injection and could screen topics and, more usefully, web passages before the writer sees them. Worth a day to measure.</td></tr>
+      <tr><td><b>Mood from cursor tracking</b></td><td><span class="tag skip">not as "mood"</span></td><td>None on the LLM. It runs in the browser.</td><td>Cursor data can show struggle: rapid repeated clicks, clicks on things that do nothing, long hovering without acting. Session analytics tools report signals like these. Reading an emotional state from them is much weaker, needs the user's consent, and has little to act on in a research tool. I could not identify the specific site you had in mind, so I have not recommended a product.</td></tr>
+      <tr><td><b>A smaller version of that idea</b></td><td><span class="tag maybe">cheap win</span></td><td>None</td><td>Detect two or three struggle signals in our own code (three edits to the same section in a row, an edit request that changed nothing, a long idle on the outline) and offer help at that moment. Call it what it is: noticing when someone is stuck.</td></tr>
+      <tr><td><b>Skip our own page fetching</b></td><td><span class="tag do">biggest speed win</span></td><td>Could remove most of the 8 to 12 s</td><td>Tavily can return page content with the search results. If that content is good enough, the read stage shrinks to almost nothing. Not yet tested: check that the text is complete enough for the verifier before switching.</td></tr>
+      <tr><td><b>Show text as it is written</b></td><td><span class="tag do">do it</span></td><td>None. It feels faster.</td><td>Sections currently appear whole. Streaming the draft into the page would make the wait feel shorter than any facts card can.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>What three developers should focus on</h2>
+  <p>Split by what each person can own end to end. The first item in each lane is the one to start on.</p>
+  <div class="lanes">
+    <div class="lane">
+      <p class="code">Developer A</p>
+      <h3>Trust and evaluation</h3>
+      <ol>
+        <li class="first">Re-run the 12-topic evaluation on the Gemini setup. The published numbers are from the old Groq setup.</li>
+        <li>Find out why the verifier removed nothing on Gemini runs. Either the drafts are cleaner or the judge is softer.</li>
+        <li>Judge every sentence, or split long ones first. The independent judge still rejected about 30% of sentences.</li>
+        <li>Write <code>score_source</code>. Every source shows "trust 50%" until it exists.</li>
+        <li>Capture the LangSmith traces and dashboard for the deliverables.</li>
+      </ol>
+    </div>
+    <div class="lane">
+      <p class="code">Developer B</p>
+      <h3>Experience</h3>
+      <ol>
+        <li class="first">Stream section text into the page while it is written.</li>
+        <li>Replace the browser prompt and confirm boxes (rewrite, remove, delete) with in-page dialogs.</li>
+        <li>Add the local classifier and use it for the stuck-user help.</li>
+        <li>PDF export, and a side-by-side view of two topics.</li>
+        <li>Test the welcome page on real phones. It has only been checked in a desktop browser at phone size.</li>
+      </ol>
+    </div>
+    <div class="lane">
+      <p class="code">Developer C</p>
+      <h3>Platform and speed</h3>
+      <ol>
+        <li class="first">Test Tavily page content in place of our own fetching.</li>
+        <li>Per-user limits: reports per day and LLM calls per day, so one account cannot spend the free quota.</li>
+        <li>Send one real sign-up and one reset e-mail end to end and check they arrive and are not marked as spam.</li>
+        <li>Move runs from an in-process thread pool to a job queue, so a restart does not interrupt them.</li>
+        <li>Deployment: one command to run it, HTTPS, and secrets outside the repo.</li>
+      </ol>
+    </div>
+  </div>
+
+  <h2>What is not verified yet</h2>
+  <div class="wrap"><table>
+    <thead><tr><th>Item</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Brevo e-mail delivery</td><td>The key is valid and has an active sender. The sign-up, code, sign-in and reset flows pass in tests with a fake mailbox. No real e-mail was sent during the build.</td></tr>
+      <tr><td>Evaluation numbers</td><td>7 topics scored in both versions on the old setup: groundedness 0.58 without the verifier and 0.70 with it; uncited sentences 1.9 and 0. Not re-run on Gemini and Tavily.</td></tr>
+      <tr><td>Gemini free quota</td><td>Unknown. If it runs out, calls fall back to Groq and reports slow down.</td></tr>
+      <tr><td>Welcome page</td><td>Checked with screenshots at desktop and phone size and with no console errors. Not checked on a real phone, with reduced motion, or without WebGL.</td></tr>
+      <tr><td>Git</td><td>Everything from this round and the Tavily and Gemini switch is local. Nothing has been committed or pushed since the Firecrawl version.</td></tr>
+    </tbody>
+  </table></div>
+</div>

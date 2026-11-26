@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Research Assembly · ResearchPilot</title>
+<meta name="description" content="Scroll to watch a research report get planned, approved, read, written and fact-checked. Then start one with your own topic.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='4' fill='%230D2740'/><path d='M8 9h16M8 16h16M8 23h16' stroke='%23EAF0F6' stroke-width='2'/><circle cx='16' cy='16' r='3' fill='%23FF6B45'/></svg>">
+<link rel="preload" href="{{ url_for('static', path='fonts/archivo-latin-500-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="{{ url_for('static', path='welcome/scrollcraft.css') }}?v={{ static_v('welcome/scrollcraft.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', path='welcome/welcome.css') }}?v={{ static_v('welcome/welcome.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', path='welcome/pilot.css') }}?v={{ static_v('welcome/pilot.css') }}">
+<script type="importmap">{ "imports": { "three": "{{ url_for('static', path='vendor/three.module.min.js') }}" } }</script>
+</head>
+<body data-signed-in="{{ 'yes' if user or not auth else 'no' }}">
+
+<span data-sc-progress></span>
+<div class="sc-grain" aria-hidden="true"></div>
+
+<div class="paper" aria-hidden="true"></div>
+<canvas id="rig" class="rig" aria-hidden="true"></canvas>
+<svg id="rig-flat" class="rig-flat" viewBox="-10 -11 20 22" aria-hidden="true" hidden></svg>
+<div class="tags" aria-hidden="true">
+  <span class="tag" data-tag="plan">1 · Plan</span>
+  <span class="tag" data-tag="review">2 · Your review</span>
+  <span class="tag" data-tag="lanes">3 · Search, read, write</span>
+  <span class="tag" data-tag="sieve">4 · Verify sieve</span>
+  <span class="tag tag--quiet" data-tag="tray">5 · Report</span>
+  <span class="packet-tag" data-tag="packet"></span>
+  <span class="stamp" data-tag="stamp" hidden></span>
+</div>
+
+<nav class="titleblock" aria-label="Drawing sheets">
+  <div class="tb-head">
+    <a class="tb-name" href="/">ResearchPilot</a>{% if auth and not user %}<a class="tb-auth" href="/auth">Sign in</a>{% endif %}
+    <span class="tb-meta">Research assembly · scale NTS</span>
+  </div>
+  <ol class="tb-sheets">
+    <li><a href="#assembly" data-sheet="assembly"><b>P-1</b> Assembly</a></li>
+    <li><a href="#ledger" data-sheet="ledger"><b>P-2</b> Ledger</a></li>
+    <li><a href="#run" data-sheet="run"><b>P-3</b> Test run</a></li>
+    <li><a href="#details" data-sheet="details"><b>P-4</b> Details</a></li>
+    <li><a href="#wiring" data-sheet="wiring"><b>P-5</b> Wiring</a></li>
+    <li><a href="#start" data-sheet="start"><b>P-6</b> Start</a></li>
+  </ol>
+</nav>
+
+<main>
+
+  <section id="assembly" class="sheet sheet--clear" data-sc-act="pin" data-sc-span="1.5">
+    <div data-sc-stage class="hero">
+      <div class="hero__copy">
+        <p class="sheet-code" data-hero>Sheet P-1 · General assembly</p>
+        <h1 class="hero__title" data-hero>Research you can check, sentence by sentence.</h1>
+        <p class="hero__sub" data-hero>Type a topic. Scroll, and watch a report get planned, approved, written and fact-checked.</p>
+        <form class="qform" id="qform" autocomplete="off" data-hero>
+          <label class="qform__label" for="q">Your topic</label>
+          <div class="qform__row">
+            <input id="q" name="q" type="text" maxlength="300" value="State of electric two-wheelers in India" spellcheck="false">
+            <button type="submit" class="qform__go">Plan it</button>
+          </div>
+          <div class="chips" role="group" aria-label="Sample topics">
+            <button type="button" class="chip" data-q="Solid-state batteries: where the technology stands">solid-state batteries</button>
+            <button type="button" class="chip" data-q="Remote work and productivity: what studies show">remote work and productivity</button>
+            <button type="button" class="chip" data-q="Green hydrogen as an energy source">green hydrogen</button>
+          </div>
+          <p class="qform__status" id="qstatus" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+      <svg class="dimline" viewBox="0 0 60 600" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M30 6 V594 M18 6 H42 M18 594 H42 M30 6 l-5 12 M30 6 l5 12 M30 594 l-5 -12 M30 594 l5 -12" />
+      </svg>
+      <p class="dimline__label" aria-hidden="true">5 stations between a topic and a report</p>
+    </div>
+  </section>
+
+  <section id="ledger" class="sheet sheet--print sc-section">
+    <div class="sc-wrap ledger" data-sc-in data-sc-stagger="60">
+      <p class="sheet-code">Sheet P-2 · Ledger</p>
+      <h2 class="ledger__title">A chatbot answer gives you nothing to check.</h2>
+      <table class="ledger__table">
+        <caption class="visually-hidden">What you get from a plain chatbot answer and from ResearchPilot</caption>
+        <thead><tr><th scope="col">Question</th><th scope="col">Plain chatbot</th><th scope="col">ResearchPilot</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Where did this fact come from?</th><td>No sources, or links it made up</td><td>Every sentence cites a page that was actually downloaded</td></tr>
+          <tr><th scope="row">Does the source really say that?</th><td>You check by hand</td><td>Each sentence is checked against its source. Click a citation to see the passage</td></tr>
+          <tr><th scope="row">Who decides the structure?</th><td>The model</td><td>You approve or edit the outline before anything is written</td></tr>
+          <tr><th scope="row">What if one section is weak?</th><td>Ask again, get a different answer</td><td>Only that section is redone. The rest stays word for word</td></tr>
+          <tr><th scope="row">Sentences with no citation, per report</th><td>1.9 in our test without the checker</td><td>0 with the checker, across 7 test topics</td></tr>
+        </tbody>
+      </table>
+      <p class="ledger__turn">So the rule is short: no citation, no claim. A sentence stays only if a source backs it.</p>
+    </div>
+  </section>
+
+  <section id="run" class="sheet sheet--clear" data-sc-act="pin" data-sc-span="4.6">
+    <div data-sc-stage class="drop">
+      <aside class="log" aria-labelledby="log-title">
+        <p class="sheet-code" id="log-title">Sheet P-3 · Test run</p>
+        <p class="log__q"><span class="log__k">T</span> <span id="log-q"></span></p>
+        <ol class="log__lines">
+          <li data-step="plan"><span class="log__k">1</span> Plan <span class="log__v">waiting</span></li>
+          <li data-step="review"><span class="log__k">2</span> Your review <span class="log__v">waiting</span></li>
+          <li data-step="lanes"><span class="log__k">3</span> Search, read, write <span class="log__v">waiting</span></li>
+          <li data-step="sieve"><span class="log__k">4</span> Verify <span class="log__v">waiting</span></li>
+          <li data-step="tray" class="log__out"><span class="log__k">→</span> Report <span class="log__v">pending</span></li>
+        </ol>
+        <p class="log__src">Illustration of one run. A real report takes 20 to 60 seconds.</p>
+      </aside>
+    </div>
+  </section>
+
+  <section id="details" class="sheet sheet--deep" data-sc-act="pan" data-sc-span="3">
+    <div data-sc-stage class="details">
+      <div class="rail" data-sc-pan="0.06">
+        <div class="rail__lead">
+          <p class="sheet-code">Sheet P-4 · Details</p>
+          <h2 class="rail__title">Five parts that keep it honest.</h2>
+          <p class="rail__body">Each one is a small mechanism, not a promise in a prompt.</p>
+        </div>
+
+        <article class="detail" data-sc-tilt="6">
+          <p class="detail__code">Detail A</p>
+          <svg class="detail__fig" viewBox="0 0 200 120" aria-hidden="true">
+            <g class="fig-rows"><path d="M30 26 H150 M30 50 H150 M30 74 H150 M30 98 H150"/></g>
+            <path class="fig-link" d="M30 74 H150"/>
+            <g class="fig-text"><text x="158" y="30">ok</text><text x="158" y="54">ok</text><text x="158" y="78">cut</text><text x="158" y="102">new</text></g>
+          </svg>
+          <h3 class="detail__name">Outline approval</h3>
+          <dl class="detail__spec">
+            <div><dt>Does</dt><dd>Stops after planning and waits for you</dd></div>
+            <div><dt>You can</dt><dd>Rename, reorder, add or remove sections</dd></div>
+            <div><dt>File</dt><dd><code>review_outline</code></dd></div>
+          </dl>
+        </article>
+
+        <article class="detail" data-sc-tilt="6">
+          <p class="detail__code">Detail B</p>
+          <svg class="detail__fig" viewBox="0 0 200 120" aria-hidden="true">
+            <g class="fig-rows"><rect x="20" y="20" width="34" height="80"/><rect x="62" y="20" width="34" height="80"/><rect x="146" y="20" width="34" height="80"/></g>
+            <rect class="fig-q-page" x="104" y="20" width="34" height="80"/>
+            <g class="fig-text"><text x="26" y="114">v1</text><text x="68" y="114">v1</text><text x="110" y="114">v2</text><text x="152" y="114">v1</text></g>
+          </svg>
+          <h3 class="detail__name">Section-only edits</h3>
+          <dl class="detail__spec">
+            <div><dt>Does</dt><dd>Redoes only the sections your request touches</dd></div>
+            <div><dt>Proof</dt><dd>History shows a word-level diff</dd></div>
+            <div><dt>File</dt><dd><code>plan_edit</code></dd></div>
+          </dl>
+        </article>
+
+        <article class="detail is-selected" data-sc-tilt="6">
+          <p class="detail__code">Detail C</p>
+          <svg class="detail__fig" viewBox="0 0 200 120" aria-hidden="true">
+            <g class="fig-rows"><path d="M20 30 H110 M20 52 H110 M20 74 H110 M20 96 H110 M140 30 H184 M140 52 H184 M140 96 H184"/></g>
+            <path class="fig-link" d="M110 30 H140 M110 52 H140 M110 96 H140"/>
+            <circle class="fig-q" cx="118" cy="74" r="5"/>
+            <g class="fig-text"><text x="128" y="78">no source</text></g>
+          </svg>
+          <h3 class="detail__name">No citation, no claim</h3>
+          <dl class="detail__spec">
+            <div><dt>Does</dt><dd>Checks every sentence against the page it cites</dd></div>
+            <div><dt>Fails</dt><dd>The sentence is removed, not flagged</dd></div>
+            <div><dt>File</dt><dd><code>verify.py</code></dd></div>
+          </dl>
+          <p class="detail__stamp">The rule</p>
+        </article>
+
+        <article class="detail" data-sc-tilt="6">
+          <p class="detail__code">Detail D</p>
+          <svg class="detail__fig" viewBox="0 0 200 120" aria-hidden="true">
+            <g class="fig-rows"><path d="M20 36 H96 M20 58 H96"/><rect x="112" y="22" width="72" height="76"/></g>
+            <path class="fig-link" d="M70 36 C92 36 92 44 112 44"/>
+            <g class="fig-text"><text x="64" y="32">[2]</text><text x="118" y="42">passage</text><text x="118" y="60">match 0.91</text><text x="118" y="78">trust 80%</text></g>
+          </svg>
+          <h3 class="detail__name">Evidence on click</h3>
+          <dl class="detail__spec">
+            <div><dt>Does</dt><dd>Shows the passage behind any citation</dd></div>
+            <div><dt>Cost</dt><dd>None. The checker already found it</dd></div>
+            <div><dt>File</dt><dd><code>check_claims()</code></dd></div>
+          </dl>
+        </article>
+
+        <article class="detail" data-sc-tilt="6">
+          <p class="detail__code">Detail E</p>
+          <svg class="detail__fig" viewBox="0 0 200 120" aria-hidden="true">
+            <g class="fig-rows"><rect x="20" y="20" width="110" height="26"/><rect x="70" y="62" width="110" height="38"/></g>
+            <g class="fig-text"><text x="28" y="37">capital of Mongolia?</text><text x="78" y="79">I couldn't find that</text><text x="78" y="93">in the report</text></g>
+          </svg>
+          <h3 class="detail__name">A chat that can say no</h3>
+          <dl class="detail__spec">
+            <div><dt>Does</dt><dd>Answers only from the report, with its section</dd></div>
+            <div><dt>Else</dt><dd>Says it could not find it</dd></div>
+            <div><dt>File</dt><dd><code>engine.py</code></dd></div>
+          </dl>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="wiring" class="sheet sheet--clear-deep" data-sc-act="pin" data-sc-span="1.6">
+    <div data-sc-stage class="wiring">
+      <div class="wiring__copy">
+        <p class="sheet-code">Sheet P-5 · Wiring</p>
+        <h2 class="wiring__title">One LangGraph, two stops for you.</h2>
+        <p class="wiring__body">The graph pauses at the red boxes and saves its state. After your change request it loops back and runs only the sections on its work list.</p>
+        <p class="wiring__file"><code>app/research/graph.py</code> · <code>build()</code></p>
+      </div>
+      <svg class="graph" viewBox="0 0 760 420" role="img" aria-labelledby="graph-title">
+        <title id="graph-title">The research graph: guard, plan, review outline, section workers, assemble, feedback, then plan edit back to the sections</title>
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" class="arrowhead"/></marker>
+        </defs>
+        <g class="edges">
+          <path pathLength="1" style="--d:0"    d="M100 64 H140" marker-end="url(#arr)"/>
+          <path pathLength="1" style="--d:0.1"  d="M240 64 H280" marker-end="url(#arr)"/>
+          <path pathLength="1" style="--d:0.2"  class="is-yours" d="M450 64 H610" marker-end="url(#arr)"/>
+          <path pathLength="1" style="--d:0.3"  d="M680 88 V186" marker-end="url(#arr)"/>
+          <path pathLength="1" style="--d:0.4"  d="M680 234 V332" marker-end="url(#arr)"/>
+          <path pathLength="1" style="--d:0.5"  d="M610 356 H530" marker-end="url(#arr)"/>
+          <path pathLength="1" style="--d:0.6"  class="is-yours" d="M380 356 H280" marker-end="url(#arr)"/>
+          <path pathLength="1" style="--d:0.7"  d="M215 332 C215 236 400 210 610 210" marker-end="url(#arr)"/>
+        </g>
+        <g class="nodes">
+          <g style="--d:0"><rect x="10" y="40" width="90" height="48"/><text x="55" y="69">guard</text></g>
+          <g style="--d:0.05"><rect x="140" y="40" width="100" height="48"/><text x="190" y="69">plan</text></g>
+          <g style="--d:0.15" class="is-yours"><rect x="280" y="40" width="170" height="48"/><text x="365" y="69">review_outline</text></g>
+          <g style="--d:0.25"><rect x="610" y="40" width="140" height="48"/><text x="680" y="69">dispatch</text></g>
+          <g style="--d:0.35"><rect x="610" y="186" width="140" height="48"/><text x="680" y="215">section × N</text></g>
+          <g style="--d:0.45"><rect x="610" y="332" width="140" height="48"/><text x="680" y="361">assemble</text></g>
+          <g style="--d:0.55" class="is-yours"><rect x="380" y="332" width="150" height="48"/><text x="455" y="361">feedback</text></g>
+          <g style="--d:0.65"><rect x="150" y="332" width="130" height="48"/><text x="215" y="361">plan_edit</text></g>
+        </g>
+        <g class="edge-notes">
+          <text x="530" y="52" text-anchor="middle" style="--d:0.25">you approve</text>
+          <text x="668" y="142" text-anchor="end" style="--d:0.35">one worker per section</text>
+          <text x="330" y="398" text-anchor="middle" style="--d:0.65">you ask for a change</text>
+          <text x="400" y="196" text-anchor="middle" style="--d:0.75">only changed sections</text>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <section id="start" class="sheet sheet--print sc-section ask">
+    <div class="sc-wrap ask__grid">
+      <div class="ask__intro" data-sc-in data-sc-stagger="60">
+        <p class="sheet-code">Sheet P-6 · Start</p>
+        <h2 class="ask__title">Now with your topic.</h2>
+        <p class="ask__body">You approve the outline before anything is written, and you can ask for changes to any section afterwards.</p>
+      </div>
+      <form class="askform" id="askform">
+        <label for="ask-q" class="qform__label">Topic</label>
+        <textarea id="ask-q" name="topic" rows="3" maxlength="300" required>State of electric two-wheelers in India</textarea>
+        <div class="askform__row">
+          <button type="submit" class="askform__go">Plan the report</button>
+          {% if auth and not user %}<a class="askform__alt" href="/auth?mode=signup">Create an account</a>
+          <a class="askform__alt" href="/auth">Sign in</a>{% else %}<a class="askform__alt" href="/">Open the workspace</a>{% endif %}
+        </div>
+        <p class="qform__status" id="ask-status" role="status"></p>
+      </form>
+    </div>
+    <footer class="colophon">
+      <span>ResearchPilot</span>
+      <span>FastAPI · LangGraph · LangSmith · three.js · Motion</span>
+    </footer>
+  </section>
+
+</main>
+
+<script src="{{ url_for('static', path='vendor/motion.js') }}"></script>
+<script src="{{ url_for('static', path='welcome/scrollcraft.js') }}?v={{ static_v('welcome/scrollcraft.js') }}"></script>
+<script>ScrollCraft.mount(document.body);</script>
+<script type="module" src="{{ url_for('static', path='welcome/welcome.js') }}?v={{ static_v('welcome/welcome.js') }}"></script>
+</body>
+</html>

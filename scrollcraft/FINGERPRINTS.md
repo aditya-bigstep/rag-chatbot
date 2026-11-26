@@ -65,3 +65,4 @@ illustration only: those rows are somebody else's builds and they do **not**
 constrain yours.
 
 | researchpilot | live surface | app tab strip + status readout | working input beside real report list | desk, pinned 6-state surface, command-line close | real input (command line) | evidence thread: scroll draws citation-to-passage paths and removes the unsupported sentence |
+| researchpilot-welcome | chaptered drawing set | title block with sheet index | pinned three.js rig beside a topic box | title, paper ledger, 4.6-screen run, pan rail, self-drawing graph, paper close | text box on a paper sheet | research assembly rig: topic splits into four lanes and the sieve ejects a sentence |

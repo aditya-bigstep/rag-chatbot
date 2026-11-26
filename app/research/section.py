@@ -123,7 +123,7 @@ class SectionWorker:
         wanted = self.deps.settings.research_sources_per_section + (2 if mode == "expand" else 0)
         candidates = state["candidates"][: wanted + 4]
         emit(state["report_id"], "read", f"Reading {len(candidates)} pages for: {item['title']}", section=item["id"])
-        with ThreadPoolExecutor(max_workers=6) as pool:
+        with ThreadPoolExecutor(max_workers=10) as pool:
             pages = [p for p in pool.map(lambda c: self.deps.fetch(c["url"]), candidates) if p]
 
         pages = one_per_site_first(pages)[:wanted]

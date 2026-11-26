@@ -1,74 +1,41 @@
-{% extends "pilot_base.html" %}
-{% block tab_research %}on{% endblock %}
-{% block body %}
-<main>
-  <section class="desk">
-    <div>
-      <h1>Research you can check, sentence by sentence.</h1>
-      <p class="lede">Give ResearchPilot a topic. It plans an outline for you to approve, reads the web, writes a cited report and removes any sentence its sources do not back.</p>
-      <form class="ask" data-start>
-        <input class="field" name="topic" placeholder="State of electric two-wheelers in India" minlength="4" maxlength="300" required aria-label="Research topic">
-        <button class="btn go" type="submit">Plan the report</button>
-      </form>
-      <div class="tries" aria-label="Example topics">
-        <button type="button">State of electric two-wheelers in India</button>
-        <button type="button">Solid-state batteries: where the technology stands</button>
-        <button type="button">Remote work and productivity: what studies show</button>
-      </div>
-      <p class="form-error" role="alert"></p>
-    </div>
-    <aside class="shelf">
-      <h2>Your reports</h2>
-      <ul id="reports"><li class="empty">Loading reports</li></ul>
-    </aside>
-  </section>
-
-  <section class="run" id="run" aria-label="Sample run">
-    <div class="stage">
-      <div class="win">
-        <div class="win-top">
-          <span class="pill">Sample run</span>
-          <span class="topic">State of electric two-wheelers in India</span>
-          <div class="steps" id="steps">
-            <span>Plan</span><span>Your review</span><span>Read</span><span>Write</span><span>Verify</span><span>Ready</span>
-          </div>
-        </div>
-        <div class="win-body" id="win-body">
-          <div class="pane outline">
-            <h3>Outline</h3>
-            <div id="o-rows"></div>
-            <p class="o-note" id="o-note">You removed one section and added another before any research started.</p>
-          </div>
-          <div class="pane doc">
-            <h2>Market growth</h2>
-            <p id="doc-text"></p>
-          </div>
-          <div class="pane evidence">
-            <h3>Evidence</h3>
-            <div id="srcs"></div>
-          </div>
-          <svg class="threads" id="threads" aria-hidden="true"></svg>
-        </div>
-        <div class="win-foot">
-          <span class="say" id="say">Scroll to run the sample.</span>
-          <span class="tag">illustrative data</span>
-          <span id="kept"></span>
-          <div class="meter" aria-label="Trust score"><i id="trust"></i></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="close">
-    <h2>Now with your topic.</h2>
-    <p>You approve the outline before anything is written, and you can ask for changes to any section afterwards.</p>
-    <form class="prompt" data-start>
-      <span aria-hidden="true">research &gt;</span>
-      <input name="topic" placeholder="type a topic" minlength="4" maxlength="300" required aria-label="Research topic">
-      <button class="btn go" type="submit">Start</button>
-    </form>
-    <p class="form-error" role="alert"></p>
-  </section>
-</main>
+{% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
+{% block title %}New report · ResearchPilot{% endblock %}
+{% block head %}
+<script src="{{ url_for('static', path='app/home.js') }}?v={{ static_v('app/home.js') }}" defer></script>
 {% endblock %}
-{% block scripts %}<script src="{{ url_for('static', path='home.js') }}"></script>{% endblock %}
+{% block body %}
+<div class="layout two">
+  {% include "partials/sidebar.html" %}
+
+  <main class="chat">
+    <header class="chat-header">
+      <button type="button" class="icon-btn only-mobile" data-toggle="sidebar" aria-label="Open menu">{{ icon("menu") }}</button>
+      <span class="chat-title">New report</span>
+    </header>
+
+    <div class="scroll">
+      <div class="thread">
+        <section class="intro">
+          <h1>What should we research?</h1>
+          <p>ResearchPilot plans an outline for you to approve, reads the web, writes a cited report and removes any sentence its sources do not back.</p>
+          <div class="starters">
+            <button type="button" class="starter" data-topic="State of electric two-wheelers in India">State of electric two-wheelers in India</button>
+            <button type="button" class="starter" data-topic="Solid-state batteries: where the technology stands">Solid-state batteries: where the technology stands</button>
+            <button type="button" class="starter" data-topic="Remote work and productivity: what studies show">Remote work and productivity: what studies show</button>
+          </div>
+          <p class="turn-error" id="start-error" role="alert" hidden></p>
+        </section>
+      </div>
+    </div>
+
+    <form class="composer" id="start">
+      <div class="composer-box">
+        <textarea name="topic" rows="1" placeholder="Type a topic" required minlength="4" maxlength="300" aria-label="Research topic">{{ topic or "" }}</textarea>
+        <button class="send" type="submit" aria-label="Plan the report">{{ icon("send", 18) }}</button>
+      </div>
+      <p class="composer-hint">You approve the outline before anything is written</p>
+    </form>
+  </main>
+</div>
+{% endblock %}

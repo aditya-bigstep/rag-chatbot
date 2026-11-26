@@ -84,6 +84,7 @@ class Session(BaseModel):
     updated_at: str = Field(default_factory=utc_now)
     messages: list[Message] = Field(default_factory=list)
     report_id: str | None = None  # set when this chat is about one research report
+    user_id: str | None = None  # owner, when accounts are switched on
 
 
 class SessionSummary(BaseModel):
@@ -91,3 +92,5 @@ class SessionSummary(BaseModel):
     title: str
     updated_at: str
     message_count: int
+    report_id: str | None = None
+    user_id: str | None = None

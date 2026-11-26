@@ -19,9 +19,10 @@ from app.chat.checkpointing import get_checkpointer
 from app.chat.engine import ChatEngine, PlaceholderEngine, get_engine
 from app.chat.options import EngineOptions
 from app.config import Settings, get_settings
+from app.models import Message, Session, SessionSummary
 from app.research.deps import build_deps
 from app.research.service import ResearchService
-from app.storage.json_store import SessionStore
+from app.storage.json_store import SessionNotFoundError, SessionStore
 from app.tools import get_tools
 from app.tools.admin_tools import make_admin_tools
 from app.vectordb.chunking import Chunker, get_chunker
@@ -106,9 +107,51 @@ def _build_research(
     return ResearchService(settings, build_deps(settings, embedder), checkpointer, chunker, store)
 
 
-def get_store(request: Request) -> SessionStore:
-    store: SessionStore = request.app.state.session_store
-    return store
+def user_id_of(request: Request) -> str | None:
+    """The signed-in user's id, or None when accounts are off (tests, single-user mode)."""
+    user = getattr(request.state, "user", None)
+    return user.id if user else None
+
+
+def is_mine(owner: str | None, user_id: str | None) -> bool:
+    """Things created before accounts existed have no owner and stay visible to everyone."""
+    return user_id is None or owner in (None, user_id)
+
+
+class UserSessions:
+    """The chat store as one person sees it: only their own chats."""
+
+    def __init__(self, store: SessionStore, user_id: str | None) -> None:
+        self.store = store
+        self.user_id = user_id
+
+    def list(self) -> list[SessionSummary]:
+        return [s for s in self.store.list() if is_mine(s.user_id, self.user_id)]
+
+    def create(self, title: str | None = None, report_id: str | None = None) -> Session:
+        return self.store.create(title, report_id, self.user_id)
+
+    def get(self, session_id: str) -> Session:
+        session = self.store.get(session_id)
+        if not is_mine(session.user_id, self.user_id):
+            raise SessionNotFoundError(session_id)
+        return session
+
+    def rename(self, session_id: str, title: str) -> Session:
+        self.get(session_id)
+        return self.store.rename(session_id, title)
+
+    def delete(self, session_id: str) -> None:
+        self.get(session_id)
+        self.store.delete(session_id)
+
+    def append_messages(self, session_id: str, *messages: Message) -> Session:
+        self.get(session_id)
+        return self.store.append_messages(session_id, *messages)
+
+
+def get_store(request: Request) -> UserSessions:
+    return UserSessions(request.app.state.session_store, user_id_of(request))
 
 
 def get_components(request: Request) -> Components:

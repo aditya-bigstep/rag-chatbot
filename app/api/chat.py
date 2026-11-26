@@ -9,10 +9,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
-from app.deps import Components, get_components, get_store
+from app.deps import Components, UserSessions, get_components, get_store
 from app.models import Message
 from app.services import resolve_approval, run_chat_turn, run_chat_turn_stream
-from app.storage.json_store import SessionNotFoundError, SessionStore
+from app.storage.json_store import SessionNotFoundError
 
 router = APIRouter(prefix="/api/sessions", tags=["chat"])
 
@@ -30,7 +30,7 @@ class ChatTurn(BaseModel):
 def send_message(
     session_id: str,
     body: SendMessage,
-    store: SessionStore = Depends(get_store),
+    store: UserSessions = Depends(get_store),
     components: Components = Depends(get_components),
 ) -> ChatTurn:
     try:
@@ -47,7 +47,7 @@ class ApprovalDecision(BaseModel):
 @router.get("/{session_id}/approval")
 def get_pending_approval(
     session_id: str,
-    store: SessionStore = Depends(get_store),
+    store: UserSessions = Depends(get_store),
     components: Components = Depends(get_components),
 ) -> dict[str, object]:
     """HITL: is this chat paused waiting for a human decision? Returns {"pending": null} when not."""
@@ -62,7 +62,7 @@ def get_pending_approval(
 def decide_approval(
     session_id: str,
     body: ApprovalDecision,
-    store: SessionStore = Depends(get_store),
+    store: UserSessions = Depends(get_store),
     components: Components = Depends(get_components),
 ) -> Message:
     """HITL: approve or reject the paused action; the graph resumes and the final reply is saved."""
@@ -82,7 +82,7 @@ def _sse(event: str, data: object) -> str:
 def stream_message(
     session_id: str,
     body: SendMessage,
-    store: SessionStore = Depends(get_store),
+    store: UserSessions = Depends(get_store),
     components: Components = Depends(get_components),
 ) -> StreamingResponse:
     """Server-sent events: `user` (the saved, PII-masked user message), `token` (text piece) ...

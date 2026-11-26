@@ -16,3 +16,4 @@ data/checkpoints.sqlite*
 data/research/
 evals/results/vectors/
 scrollcraft/builds/*/lab/
+data/accounts.sqlite*

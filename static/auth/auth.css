@@ -1,0 +1,132 @@
+/* Access sheet: one screen, no scroll. Left: a dark drafting plate with a lock cylinder whose pins
+   settle as a password is typed and a key cut from it. Right: the paper desk with the forms.
+   Fields are rules, not boxes: a hairline that draws itself on focus, with a label that lifts. */
+@font-face { font-family: "Archivo"; font-weight: 400; font-display: swap; src: url("../fonts/archivo-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Archivo"; font-weight: 500; font-display: swap; src: url("../fonts/archivo-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "Archivo"; font-weight: 600; font-display: swap; src: url("../fonts/archivo-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Archivo"; font-weight: 700; font-display: swap; src: url("../fonts/archivo-latin-700-normal.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 400; font-display: swap; src: url("../fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 500; font-display: swap; src: url("../fonts/jetbrains-mono-latin-500-normal.woff2") format("woff2"); }
+
+:root {
+  --navy: #0D2740; --navy-2: #12324F;
+  --ink: #EAF0F6; --ink-soft: #9DB4CA;
+  --paper: #EEF2F6; --paper-card: #FBFCFD;
+  --pink: #12304C; --pink-soft: #46617D;        /* paper ink */
+  --accent: #FF6B45; --accent-paper: #C2410C; --accent-ink: #1A0D08;
+  --danger: #B42318;
+  --line: color-mix(in oklab, var(--ink) 70%, transparent);
+  --line-faint: color-mix(in oklab, var(--ink) 16%, transparent);
+  --pline: color-mix(in oklab, var(--pink) 70%, transparent);
+  --pline-faint: color-mix(in oklab, var(--pink) 14%, transparent);
+  --grid: 28px;
+  --display: "Archivo", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--navy); color: var(--ink); font: 15px/1.55 var(--display); -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+[hidden] { display: none !important; }
+
+/* ---------- layout: one screen ---------- */
+.access { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); height: 100%; min-height: 100svh; }
+@media (min-width: 900px) and (min-height: 620px) { html, body { overflow: hidden; } }
+@media (max-width: 899px) { .access { grid-template-columns: 1fr; height: auto; } }
+
+/* ---------- the plate ---------- */
+.plate {
+  position: relative; display: flex; flex-direction: column; justify-content: center; gap: 22px;
+  padding: clamp(28px, 6vh, 64px) clamp(24px, 5vw, 64px);
+  background:
+    linear-gradient(var(--line-faint) 1px, transparent 1px) 0 0 / var(--grid) var(--grid),
+    linear-gradient(90deg, var(--line-faint) 1px, transparent 1px) 0 0 / var(--grid) var(--grid),
+    var(--navy);
+  overflow: hidden;
+}
+.plate::after { /* a drawing margin */
+  content: ""; position: absolute; inset: 12px; pointer-events: none; border: 1px solid var(--line-faint);
+}
+.plate-title { margin: 0; font: 600 clamp(28px, 3.4vw, 44px)/1.05 var(--display); letter-spacing: -0.02em; max-width: 14ch; text-wrap: balance; }
+.plate-lede { margin: 0; max-width: 40ch; color: var(--ink-soft); font-size: 15.5px; }
+
+.livekey-wrap { margin: 10px 0 0; }
+.livekey { width: 100%; max-width: 420px; display: block; overflow: visible; }
+.lk-bow { fill: none; stroke: var(--ink); stroke-width: 2; }
+.lk-hole { fill: var(--accent); }
+.lk-blade { fill: color-mix(in oklab, var(--ink) 8%, transparent); stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; transition: d 220ms var(--ease); }
+.lk-note { fill: var(--accent); font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.livekey-cap { margin: 10px 0 0; max-width: 34ch; font-size: 14px; color: var(--ink-soft); }
+
+
+/* ---------- the desk ---------- */
+.desk {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+  padding: clamp(28px, 6vh, 64px) clamp(24px, 5vw, 72px);
+  color: var(--pink);
+  background: var(--paper);
+}
+.desk-card {
+  width: min(100%, 460px); background: #fff; border: 1px solid color-mix(in oklab, var(--pink) 18%, transparent);
+  border-radius: 6px; padding: 28px 32px 32px; position: relative;
+  box-shadow: 0 1px 2px rgb(18 48 76 / .06), 0 12px 32px -16px rgb(18 48 76 / .25);
+}
+.desk-tabs { position: relative; display: flex; border-bottom: 1px solid color-mix(in oklab, var(--pink) 18%, transparent); margin-bottom: 24px; }
+.desk-tab { flex: 1; padding: 12px 0; border: 0; background: none; font: 500 14px/1 var(--display); color: var(--pink-soft); cursor: pointer; transition: color 140ms var(--ease); }
+.desk-tab[aria-selected="true"] { color: var(--pink); }
+#tab-signup, #tab-signup[aria-selected="true"] { color: #E02424; }
+.desk-ink { position: absolute; left: 0; bottom: -1px; height: 2px; width: 50%; background: var(--accent-paper); will-change: transform, width; }
+body[data-mode="verify"] .desk-tabs, body[data-mode="reset"] .desk-tabs { display: none; }
+
+.panels { position: relative; }
+.panel { display: none; flex-direction: column; gap: 18px; }
+.panel.is-on { display: flex; }
+/* without JavaScript the server-chosen panel still shows */
+body:not(.js)[data-mode="signin"] .panel[data-panel="signin"], body:not(.js)[data-mode="sent"] .panel[data-panel="signin"],
+body:not(.js)[data-mode="signup"] .panel[data-panel="signup"], body:not(.js)[data-mode="forgot"] .panel[data-panel="forgot"],
+body:not(.js)[data-mode="verify"] .panel[data-panel="verify"], body:not(.js)[data-mode="reset"] .panel[data-panel="reset"] { display: flex; }
+.panel-title { margin: 0; font: 600 24px/1.15 var(--display); letter-spacing: -0.01em; }
+
+/* fields: crisp boxes, label above */
+.field { display: flex; flex-direction: column; gap: 8px; }
+.field span { font: 500 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--pink-soft); }
+.field input {
+  width: 100%; height: 46px; padding: 0 14px; border: 1.5px solid color-mix(in oklab, var(--pink) 28%, transparent); border-radius: 4px;
+  background: #fff; color: var(--pink); font-size: 15px; min-width: 0;
+  transition: border-color 140ms var(--ease), box-shadow 140ms var(--ease);
+}
+.field input:hover { border-color: color-mix(in oklab, var(--pink) 50%, transparent); }
+.field input:focus { outline: 0; border-color: var(--accent-paper); box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent-paper) 14%, transparent); }
+.field input::placeholder { color: color-mix(in oklab, var(--pink-soft) 60%, transparent); }
+.field--code input { font: 600 26px/1 var(--mono); letter-spacing: .4em; text-align: center; height: 56px; }
+.field-hint { margin: -6px 0 0; font-size: 14px; color: var(--pink-soft); max-width: 44ch; }
+
+.panel-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 2px; }
+.kbtn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 20px;
+  border: 1px solid var(--pline); border-radius: 2px; background: transparent; color: inherit; font: 500 14px/1 var(--display);
+  cursor: pointer; overflow: hidden; transition: transform 120ms var(--ease), border-color 140ms var(--ease);
+}
+.kbtn--primary { background: var(--accent-paper); color: #FFF5F0; border-color: transparent; font-weight: 600; border-radius: 4px; min-height: 46px; padding: 0 22px; }
+.kbtn--primary::before { content: ""; position: absolute; inset: 0; background: color-mix(in oklab, var(--accent-paper) 80%, #000); transform: translateX(-101%); transition: transform 320ms var(--ease); }
+.kbtn--primary:hover::before { transform: translateX(0); }
+.kbtn--primary > span { position: relative; }
+.kbtn:active { transform: translateY(1px); }
+.kbtn--link { border-color: transparent; padding: 0 6px; color: var(--pink-soft); text-decoration: underline; text-underline-offset: .22em; }
+.kbtn--link:hover { color: var(--pink); }
+.kbtn[disabled] { opacity: .6; cursor: progress; }
+
+.desk-error { margin: 0 0 18px; padding: 10px 12px; border-left: 3px solid var(--danger); background: color-mix(in oklab, var(--danger) 8%, transparent); font-size: 14px; }
+.desk-note { margin: 0 0 18px; padding: 10px 12px; border-left: 3px solid var(--accent-paper); background: color-mix(in oklab, var(--accent-paper) 8%, transparent); font-size: 14px; }
+.desk-back { font: 500 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--pink-soft); text-decoration: none; }
+.desk-back:hover { color: var(--accent-paper); }
+
+/* entrance: hidden until Motion brings it in; without JS or with reduced motion, simply visible */
+.js [data-in] { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .js [data-in] { opacity: 1; }
+  .kbtn--primary::before { transition: none; }
+}

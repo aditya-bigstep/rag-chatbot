@@ -7,6 +7,7 @@ import re
 from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 from app.chat.engine import ChatEngine
 from app.chat.pii import redact_pii
@@ -14,7 +15,6 @@ from app.config import Settings
 from app.deps import Components
 from app.ingest.pipeline import ingest_file
 from app.models import EngineResult, Message, Session
-from app.storage.json_store import SessionStore
 
 logger = logging.getLogger(__name__)
 _SAFE_NAME = re.compile(r"[^A-Za-z0-9._-]+")
@@ -33,7 +33,7 @@ def _scope(session: Session) -> dict[str, str]:
     return {"scope": session.report_id} if session.report_id else {}
 
 
-def run_chat_turn(store: SessionStore, engine: ChatEngine, session_id: str, content: str) -> tuple[Message, Message]:
+def run_chat_turn(store: Any, engine: ChatEngine, session_id: str, content: str) -> tuple[Message, Message]:
     """Send one user message through the engine and save both messages."""
     session = store.get(session_id)  # raises SessionNotFoundError before we call the engine
     content = _mask_pii(content)
@@ -48,7 +48,7 @@ def run_chat_turn(store: SessionStore, engine: ChatEngine, session_id: str, cont
     return user_message, assistant_message
 
 
-def resolve_approval(store: SessionStore, engine: ChatEngine, session_id: str, approved: bool) -> Message:
+def resolve_approval(store: Any, engine: ChatEngine, session_id: str, approved: bool) -> Message:
     """HITL: resume a paused session with the human's decision and save the engine's final reply.
 
     Raises LookupError when nothing is waiting for approval in this session.
@@ -63,7 +63,7 @@ def resolve_approval(store: SessionStore, engine: ChatEngine, session_id: str, a
 
 
 def run_chat_turn_stream(
-    store: SessionStore, engine: ChatEngine, session_id: str, content: str
+    store: Any, engine: ChatEngine, session_id: str, content: str
 ) -> Iterator[str | Message]:
     """Like `run_chat_turn`, but yields answer text pieces and ends with the saved assistant Message.
 

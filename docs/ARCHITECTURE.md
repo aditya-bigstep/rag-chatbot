@@ -229,6 +229,18 @@ disagreements in the UI as "models disagree".
   Runs tab together with search calls and pages read.
 - Eval runs are tagged `eval` plus the version label, so two versions can be compared in LangSmith as well.
 
+## 8a. Accounts
+
+- `app/auth/` holds the rules (`service.py`), the pages and endpoints (`router.py`), the SQLite store (`store.py`)
+  and the Brevo mailer (`email.py`).
+- Sign-up creates an unverified user and e-mails a 6-digit code (15 minutes). Sign-in checks a bcrypt hash and sets
+  an http-only cookie. "Forgot" e-mails a one-time link (30 minutes). Ten wrong attempts lock the address for 15 minutes.
+- Login sessions, codes, reset tokens and rate-limit counters live in one key-value table with expiry times, so a
+  restart logs nobody out.
+- A middleware in `app/main.py` lets visitors reach only `/`, `/welcome`, `/auth` and static files.
+- Chats and reports store the id of the user who made them. `UserSessions` in `app/deps.py` and `get_service` in
+  `app/api/research.py` hide everything that belongs to someone else.
+
 ## 9. What we added beyond the brief
 
 | Extra | Why it matters | Latency cost |

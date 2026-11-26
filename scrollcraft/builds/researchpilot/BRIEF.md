@@ -36,3 +36,41 @@ Authored silence: none.
 Not used from the skill: the scrollcraft engine (the request asked for motion.dev, so scroll linking uses Motion's
 `scroll()`), generated photography (no key, and the grammar bans it), dimensional photo layering (not applicable to
 a live surface).
+
+
+---
+
+# Second build: the welcome page as a drawing set
+
+The first build above was replaced on request. The user asked for the same type of page as their other project
+(`~/Downloads/rag-chatbot`): "use this as inspiration and create the same type of ui for this project too",
+with "motion.dev and 3js for the home page" and "i use animation to show how our project work use that thing here too".
+Those are the user's words; the rest below are authored decisions under that direction.
+
+1. Vibe: engineering drawing, blueprint, exact, inspectable. Reference: the user's own routing-assembly page.
+2. Journey: P-1 assembly (topic box beside the rig), P-2 ledger, P-3 test run, P-4 details, P-5 wiring, P-6 start.
+3. Energy: quiet title sheet, a plain paper table, then the loudest stretch (the run), a calm rail, a diagram, a quiet close.
+4. Feeling and the one moment: "I can see every station my topic goes through." The moment: the sieve throws one
+   sentence out of its lane and the stamp says "1 sentence removed".
+5. What no other site does: your topic rides a 3D rig through plan, your approval, four parallel sections and a fact-check.
+6. Range: dense and technical, far from premium-minimal.
+7. Structure: distinct sheets (chapters), with one rig shared by the first and third.
+8. Assets: none generated. Fonts Archivo and JetBrains Mono, three.js, the scroll engine and the sheet styles are
+   reused from the user's reference project.
+
+Grammar: chaptered drawing set (title block as navigation, sheet codes, hard cuts between navy and paper grounds).
+It replaces the first build's live surface because the user asked for the reference project's structure.
+Signature move: the research assembly rig. Scroll drops the topic through five stations; the review iris opens when
+"you" approve; the packet splits into four lanes; the sieve ejects one sentence.
+
+Feeling curve
+- P-1 Assembly: curiosity. A machine and a box to type in.
+- P-2 Ledger: recognition. The three complaints about chatbot answers, in a plain table.
+- P-3 Test run (peak, 4.6 screens): suspense, then trust. The topic waits for you, splits, and loses a sentence.
+- P-4 Details: understanding. Five mechanisms on a rail.
+- P-5 Wiring: clarity. The graph draws itself, two boxes in red.
+- P-6 Start: your turn. A text box on paper.
+
+Peak: "It threw a sentence out because the source did not back it." Sheet P-3.
+Tell-someone sentence: It's the site where you scroll your own topic through a blueprint machine and watch it get fact-checked.
+The engine is used unedited. Numbers on the ledger are measured (uncited sentences 1.9 to 0 across 7 test topics).

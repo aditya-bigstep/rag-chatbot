@@ -54,12 +54,15 @@ class SessionStore:
                     title=session.title,
                     updated_at=session.updated_at,
                     message_count=len(session.messages),
+                    report_id=session.report_id,
+                    user_id=session.user_id,
                 )
             )
         return sorted(summaries, key=lambda s: s.updated_at, reverse=True)
 
-    def create(self, title: str | None = None, report_id: str | None = None) -> Session:
-        session = Session(id=uuid.uuid4().hex, title=(title or "").strip() or DEFAULT_TITLE, report_id=report_id)
+    def create(self, title: str | None = None, report_id: str | None = None, user_id: str | None = None) -> Session:
+        title = (title or "").strip() or DEFAULT_TITLE
+        session = Session(id=uuid.uuid4().hex, title=title, report_id=report_id, user_id=user_id)
         with self._lock:
             self._write(session)
         return session

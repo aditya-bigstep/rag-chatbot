@@ -1,0 +1,7 @@
+/* Small additions on top of the shared drawing-sheet styles. */
+.graph .nodes text { font-size: 14px; }
+.askform__row { flex-wrap: wrap; }
+.js-hero [data-hero] { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .js-hero [data-hero] { opacity: 1; } }
+.tb-head { position: relative; }
+.tb-auth { position: absolute; right: 12px; top: 14px; margin: 0; }

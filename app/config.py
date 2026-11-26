@@ -77,10 +77,21 @@ class Settings:
     research_verify: bool = True
     research_max_llm_calls: int = 40
 
+    auth_enabled: bool = False  # true = an account is needed for everything except the welcome page
+    brevo_api_key: str = ""
+    brevo_sender_email: str = ""
+    brevo_sender_name: str = "ResearchPilot"
+    app_base_url: str = "http://127.0.0.1:8000"
+    session_ttl_days: int = 14
+
     @property
     def checkpoint_db(self) -> Path:
         """SQLite file where LangGraph saves its checkpoints (see app/chat/checkpointing.py)."""
         return self.data_dir / "checkpoints.sqlite"
+
+    @property
+    def accounts_db(self) -> Path:
+        return self.data_dir / "accounts.sqlite"
 
     @property
     def research_dir(self) -> Path:
@@ -124,6 +135,12 @@ def load_settings() -> Settings:
         research_parallel_sections=_env_int("RESEARCH_PARALLEL_SECTIONS", 2),
         research_verify=_env_bool("RESEARCH_VERIFY", True),
         research_max_llm_calls=_env_int("RESEARCH_MAX_LLM_CALLS", 40),
+        auth_enabled=_env_bool("AUTH_ENABLED", False),
+        brevo_api_key=os.getenv("BREVO_API_KEY", ""),
+        brevo_sender_email=os.getenv("BREVO_SENDER_EMAIL", ""),
+        brevo_sender_name=os.getenv("BREVO_SENDER_NAME", "ResearchPilot"),
+        app_base_url=os.getenv("APP_BASE_URL", "http://127.0.0.1:8000").rstrip("/"),
+        session_ttl_days=_env_int("SESSION_TTL_DAYS", 14),
     )
 
 

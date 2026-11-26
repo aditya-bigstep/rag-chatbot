@@ -1,14 +1,19 @@
+{% from "partials/icons.html" import icon %}
 {% for m in messages %}
 <article class="message {{ m.role }}">
-  <div class="role">{{ m.role }}</div>
   <div class="content">{{ m.content }}</div>
   {% if m.sources %}
   <details class="sources">
-    <summary>{{ m.sources|length }} source(s)</summary>
+    <summary>{{ icon("chevron", 14) }}{{ m.sources|length }} source{{ "s" if m.sources|length != 1 }}</summary>
     <ul>
       {% for s in m.sources %}
-      <li><b>{{ s.source }}</b>{% if s.score is not none %} <span class="muted">({{ "%.2f"|format(s.score) }})</span>{% endif %}
-        {% if s.snippet %}<div class="snippet">{{ s.snippet }}</div>{% endif %}</li>
+      <li>
+        <div class="source-head">
+          <span class="source-name">{{ s.section or s.source }}</span>
+          {% if s.score is not none %}<span class="source-score">{{ "%.2f"|format(s.score) }}</span>{% endif %}
+        </div>
+        {% if s.snippet %}<div class="snippet">{{ s.snippet }}</div>{% endif %}
+      </li>
       {% endfor %}
     </ul>
   </details>

@@ -1,0 +1,23 @@
+/* Short computer science facts shown while a report is being written. */
+window.PILOT_FACTS = [
+  "The first recorded computer bug was a real moth, taped into the Harvard Mark II logbook in 1947.",
+  "The word algorithm comes from the name of the 9th century mathematician al-Khwarizmi.",
+  "Ada Lovelace published the first algorithm meant for a machine in 1843, a century before a computer could run it.",
+  "Unix time counts the seconds since midnight UTC on 1 January 1970.",
+  "Tony Hoare invented quicksort around 1960 while working on machine translation.",
+  "Dijkstra said he designed his shortest path algorithm in about twenty minutes, without pencil and paper.",
+  "The first e-mail between two computers was sent by Ray Tomlinson in 1971. He also chose the @ sign.",
+  "ARPANET switched to TCP/IP on 1 January 1983, a date often called the birthday of the internet.",
+  "The first website went online at CERN in 1991. It explained what the World Wide Web was.",
+  "Linus Torvalds wrote the first version of Git in 2005, in about ten days.",
+  "Python is named after Monty Python's Flying Circus, not the snake.",
+  "The word bit, short for binary digit, was coined by John Tukey and first printed by Claude Shannon in 1948.",
+  "ASCII was first published as a standard in 1963 and used 7 bits per character.",
+  "PageRank is named after Larry Page, not after web pages.",
+  "The BM in BM25, the keyword ranking used in this app's hybrid search, stands for Best Matching.",
+  "The transformer architecture behind today's language models was introduced in 2017 in a paper titled Attention Is All You Need.",
+  "The term retrieval-augmented generation comes from a 2020 paper by Patrick Lewis and colleagues.",
+  "Grace Hopper built one of the first compilers in 1952, when many believed computers could only do arithmetic.",
+  "The QWERTY keyboard layout dates from the 1870s and was designed for mechanical typewriters.",
+  "Alan Turing described a universal computing machine in 1936, before any electronic computer existed.",
+];

@@ -3,9 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}RAG Chatbot{% endblock %}</title>
-  <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+  <title>{% block title %}ResearchPilot{% endblock %}</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='4' fill='%230D2740'/><path d='M8 9h16M8 16h16M8 23h16' stroke='%23EAF0F6' stroke-width='2'/><circle cx='16' cy='16' r='3' fill='%23FF6B45'/></svg>">
+  <link rel="preload" href="{{ url_for('static', path='fonts/archivo-latin-400-normal.woff2') }}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}?v={{ static_v('style.css') }}">
   <script src="https://unpkg.com/htmx.org@2.0.4" defer></script>
+  <script src="{{ url_for('static', path='vendor/motion.js') }}"></script>
+  {% block head %}{% endblock %}
 </head>
 <body>
   {% block body %}{% endblock %}

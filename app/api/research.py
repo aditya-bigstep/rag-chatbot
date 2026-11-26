@@ -4,16 +4,16 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field
 
-from app.deps import Components, get_components, get_store
+from app.deps import Components, UserSessions, get_components, get_store, is_mine, user_id_of
 from app.research import events
 from app.research.render import report_markdown
 from app.research.service import ResearchService
 from app.research.store import ReportNotFoundError
-from app.storage.json_store import SessionNotFoundError, SessionStore
+from app.storage.json_store import SessionNotFoundError
 
 router = APIRouter(prefix="/api/research", tags=["research"])
 MAX_ACTIVE_RUNS = 2
@@ -40,11 +40,18 @@ class Feedback(BaseModel):
     action: str = ""
 
 
-def get_service(components: Components = Depends(get_components)) -> ResearchService:
-    if components.research is None:
+def get_service(request: Request, components: Components = Depends(get_components)) -> ResearchService:
+    """The research service. Also checks that the report in the URL belongs to the signed-in user."""
+    service = components.research
+    if service is None:
         reason = components.missing.get("research", "research service is not available")
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, reason)
-    return components.research
+    report_id = request.path_params.get("report_id")
+    if report_id:
+        report = _call(service.store.get, report_id)
+        if not is_mine(report.get("user_id"), user_id_of(request)):
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "Report not found")
+    return service
 
 
 def _call(action: Any, *args: Any, **kwargs: Any) -> Any:
@@ -57,15 +64,17 @@ def _call(action: Any, *args: Any, **kwargs: Any) -> Any:
 
 
 @router.get("")
-def list_reports(service: ResearchService = Depends(get_service)) -> list[dict[str, Any]]:
-    return service.summaries()
+def list_reports(request: Request, service: ResearchService = Depends(get_service)) -> list[dict[str, Any]]:
+    return service.summaries(user_id_of(request))
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-def create_report(body: NewReport, service: ResearchService = Depends(get_service)) -> dict[str, Any]:
+def create_report(
+    body: NewReport, request: Request, service: ResearchService = Depends(get_service)
+) -> dict[str, Any]:
     if len(service.active) >= MAX_ACTIVE_RUNS:
         raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, "Two reports are already running. Try again shortly.")
-    return service.create(body.topic)
+    return service.create(body.topic, user_id_of(request))
 
 
 @router.get("/{report_id}")
@@ -118,7 +127,7 @@ def analyse_report(report_id: str, service: ResearchService = Depends(get_servic
 def add_to_knowledge_base(
     report_id: str,
     service: ResearchService = Depends(get_service),
-    sessions: SessionStore = Depends(get_store),
+    sessions: UserSessions = Depends(get_store),
 ) -> dict[str, Any]:
     """Index the report and make sure it has a chat session bound to it."""
     report = _call(service.sync_kb, report_id)

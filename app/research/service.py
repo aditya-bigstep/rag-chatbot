@@ -47,10 +47,12 @@ class ResearchService:
         report["analysis_stale"] = bool(analysis) and analysis.get("fingerprint") != report_fingerprint(report)
         return report
 
-    def summaries(self) -> list[dict[str, Any]]:
+    def summaries(self, user_id: str | None = None) -> list[dict[str, Any]]:
         keys = ("id", "topic", "status", "created_at", "updated_at", "trust")
         rows = []
         for report in self.store.list():
+            if user_id is not None and report.get("user_id") not in (None, user_id):
+                continue
             row = {key: report.get(key) for key in keys}
             row["sections"] = len(report.get("outline", []))
             row["sources"] = len(number_sources(report))
@@ -58,10 +60,11 @@ class ResearchService:
         return rows
 
     # ------------------------------------------------------------------ actions
-    def create(self, topic: str) -> dict[str, Any]:
+    def create(self, topic: str, user_id: str | None = None) -> dict[str, Any]:
         report_id = uuid.uuid4().hex[:12]
         report: dict[str, Any] = {
             "id": report_id,
+            "user_id": user_id,
             "topic": topic.strip(),
             "status": "planning",
             "error": "",

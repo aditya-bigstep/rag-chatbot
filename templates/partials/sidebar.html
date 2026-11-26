@@ -1,0 +1,64 @@
+{% from "partials/icons.html" import icon %}
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <span class="brand-mark">{{ icon("mark", 18) }}</span>
+    <a class="brand-name" href="/" style="text-decoration:none">ResearchPilot</a>
+    <button type="button" class="icon-btn only-mobile" data-toggle="sidebar" aria-label="Close menu">{{ icon("x") }}</button>
+  </div>
+
+  <a class="btn wide" href="/">{{ icon("plus") }}New report</a>
+
+  <nav class="group sessions" aria-label="Reports">
+    <h2 class="group-label">Reports</h2>
+    {% for r in reports %}
+      <a class="session-link {% if report_id and r.id == report_id %}active{% endif %}" href="/research/{{ r.id }}" title="{{ r.topic }}">
+        <span class="session-title">{{ r.topic }}</span>
+        {% if r.status in ("planning", "researching", "revising") %}<span class="session-meta is-live">running</span>
+        {% elif r.status == "awaiting_outline" %}<span class="session-meta is-live">review</span>
+        {% elif r.trust %}<span class="session-meta" title="Trust score">{{ (r.trust * 100)|round|int }}%</span>{% endif %}
+      </a>
+    {% else %}
+      <p class="hint">No reports yet</p>
+    {% endfor %}
+  </nav>
+
+  <nav class="group sessions short" aria-label="Document chats">
+    <h2 class="group-label">Document chats</h2>
+    {% for s in sessions %}
+      <a class="session-link {% if current and s.id == current.id %}active{% endif %}" href="/sessions/{{ s.id }}" title="{{ s.title }}">
+        <span class="session-title">{{ s.title }}</span>
+        <span class="session-meta">{{ s.message_count }}</span>
+      </a>
+    {% endfor %}
+    <form method="post" action="/ui/sessions">
+      <button class="nav-link" type="submit" style="border:0;background:none;width:100%;cursor:pointer">{{ icon("plus", 14) }}New chat</button>
+    </form>
+  </nav>
+
+  {% if show_documents %}
+  <section class="group">
+    <h2 class="group-label">Documents</h2>
+    <form class="dropzone" id="dropzone" hx-post="/ui/documents" hx-encoding="multipart/form-data"
+          hx-target="#upload-status" hx-trigger="change" hx-indicator="#dropzone">
+      <label>
+        <input type="file" name="file" accept=".md,.txt" required class="visually-hidden">
+        <span class="dropzone-icon">{{ icon("upload", 18) }}</span>
+        <span class="dropzone-text"><b>Drop a file</b> or browse</span>
+        <span class="dropzone-meta">.md · .txt</span>
+        <span class="dropzone-busy">Indexing…</span>
+      </label>
+    </form>
+    <div id="upload-status" class="upload-status" aria-live="polite"></div>
+  </section>
+  {% endif %}
+
+  <a class="tour-link" href="/welcome">How it works {{ icon("external", 14) }}</a>
+  {% if user %}
+  <div class="account">
+    <span class="account-avatar" aria-hidden="true">{{ (user.name or user.email)[:1]|upper }}</span>
+    <span class="account-text"><b>{{ user.name or user.email.split("@")[0] }}</b><small>{{ user.email }}</small></span>
+    <form method="post" action="/auth/logout"><button class="icon-btn" type="submit" title="Sign out" aria-label="Sign out">{{ icon("x") }}</button></form>
+  </div>
+  {% endif %}
+</aside>
+<div class="scrim" data-toggle="sidebar" hidden></div>

@@ -1,40 +1,81 @@
-{% extends "pilot_base.html" %}
+{% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
 {% block title %}{{ topic }} · ResearchPilot{% endblock %}
-{% block tab_research %}on{% endblock %}
+{% block head %}
+<script src="{{ url_for('static', path='app/facts.js') }}?v={{ static_v('app/facts.js') }}" defer></script>
+<script src="{{ url_for('static', path='app/report.js') }}?v={{ static_v('app/report.js') }}" defer></script>
+{% endblock %}
 {% block body %}
-<div class="work" id="work" data-report="{{ report_id }}">
-  <aside class="rail">
-    <div>
-      <h3>Sections</h3>
-      <nav class="toc" id="toc" aria-label="Sections"></nav>
-    </div>
-    <div>
-      <h3>Activity</h3>
-      <div class="log" id="log" aria-live="polite"></div>
-    </div>
-  </aside>
+<div class="layout report" id="work" data-report="{{ report_id }}">
+  {% include "partials/sidebar.html" %}
 
-  <main class="main" id="main">
-    <article class="sheet" id="sheet"></article>
-    <div class="composer hidden" id="composer">
-      <form>
-        <input class="field" name="text" maxlength="600" placeholder="Ask for a change: add a section on government policy, make section 3 more detailed" aria-label="Change request">
-        <button class="btn go" type="submit">Revise</button>
-      </form>
+  <main class="chat">
+    <header class="chat-header">
+      <button type="button" class="icon-btn only-mobile" data-toggle="sidebar" aria-label="Open menu">{{ icon("menu") }}</button>
+      <span class="chat-title">{{ topic }}</span>
+      <span class="pill" id="r-status">Loading</span>
+      <details class="menu" id="r-menu">
+        <summary class="icon-btn" aria-label="Report actions" title="Report actions">{{ icon("chevron") }}</summary>
+        <div class="menu-list">
+          <a href="/api/research/{{ report_id }}/export.md">{{ icon("file", 14) }}Download Markdown</a>
+          <button type="button" data-print>{{ icon("external", 14) }}Print or save as PDF</button>
+          <button type="button" class="danger" data-delete>{{ icon("trash", 14) }}Delete report</button>
+        </div>
+      </details>
+      <button type="button" class="icon-btn panel-toggle" data-toggle="panel" aria-label="Show panel" title="Show panel">{{ icon("panel") }}</button>
+    </header>
+
+    <div class="scroll" id="scroll">
+      <div class="thread report-thread">
+        <h1>{{ topic }}</h1>
+        <div class="report-meta" id="r-meta"></div>
+
+        <section class="wait" id="wait" hidden aria-live="polite">
+          <div class="wait-sheet">
+            <svg viewBox="0 0 700 64" aria-hidden="true">
+              <path class="w-line" d="M50 24 H650"/>
+              {% for name in ["Plan", "Review", "Search", "Read", "Write", "Verify", "Report"] %}
+              <g class="w-node" data-stage="{{ loop.index0 }}">
+                <rect x="{{ 10 + loop.index0 * 100 }}" y="10" width="80" height="28" rx="2"/>
+                <text x="{{ 50 + loop.index0 * 100 }}" y="58">{{ name }}</text>
+              </g>
+              {% endfor %}
+              <circle class="w-packet" id="w-packet" cx="50" cy="24" r="6"/>
+            </svg>
+            <p class="wait-status" id="wait-status"></p>
+          </div>
+          <div class="wait-fact">
+            <small>While you wait</small>
+            <p id="wait-fact"></p>
+          </div>
+        </section>
+
+        <div id="sheet"></div>
+      </div>
     </div>
+
+    <form class="composer" id="composer" hidden>
+      <div class="composer-box">
+        <textarea name="text" rows="1" maxlength="600" placeholder="Ask for a change, for example: add a section on government policy" aria-label="Change request"></textarea>
+        <button class="send" type="submit" aria-label="Revise">{{ icon("send", 18) }}</button>
+      </div>
+      <p class="composer-hint">Only the sections your request touches are redone</p>
+    </form>
   </main>
 
-  <aside class="side">
-    <div class="side-tabs" role="tablist">
-      <button data-tab="sources" class="on">Sources</button>
-      <button data-tab="analysis">Analysis</button>
-      <button data-tab="chat">Chat</button>
-      <button data-tab="history">History</button>
-      <button data-tab="runs">Runs</button>
-    </div>
-    <div class="side-body" id="side"></div>
+  <aside class="panel" id="panel" aria-label="Report details">
+    <header class="panel-head">
+      <div class="panel-tabs" role="tablist">
+        <button class="panel-tab on" data-tab="outline">Outline</button>
+        <button class="panel-tab" data-tab="sources">Sources</button>
+        <button class="panel-tab" data-tab="analysis">Analysis</button>
+        <button class="panel-tab" data-tab="chat">Chat</button>
+        <button class="panel-tab" data-tab="activity">Activity</button>
+      </div>
+      <button type="button" class="icon-btn panel-close" data-toggle="panel" aria-label="Hide panel">{{ icon("x") }}</button>
+    </header>
+    <div class="panel-body" id="side"></div>
   </aside>
 </div>
-<div class="pop hidden" id="pop" role="dialog" aria-label="Evidence"></div>
+<div class="pop" id="pop" role="dialog" aria-label="Evidence" hidden></div>
 {% endblock %}
-{% block scripts %}<script src="{{ url_for('static', path='report.js') }}"></script>{% endblock %}
