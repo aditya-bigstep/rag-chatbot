@@ -172,6 +172,7 @@
     else html += report.outline.map(sectionHtml).join("") + references();
 
     sheet.innerHTML = html;
+    watchSections();
     if (state.fresh.length) {
       for (const id of state.fresh) $("#sec-" + id)?.classList.add("fresh");
       $("#sec-" + state.fresh[0])?.scrollIntoView({ block: "start" });
@@ -179,6 +180,21 @@
     } else if (!BUSY.includes(report.status)) {
       enter(".sec, .outline-item", sheet);
     }
+  }
+
+  // Highlight the section being read in the Outline tab.
+  let spy = null;
+  function markHere() {
+    for (const link of side.querySelectorAll(".toc-link")) link.classList.toggle("here", link.getAttribute("href") === "#" + state.here);
+  }
+  function watchSections() {
+    spy?.disconnect();
+    if (!("IntersectionObserver" in window)) return;
+    spy = new IntersectionObserver((entries) => {
+      for (const entry of entries) if (entry.isIntersecting) state.here = entry.target.id;
+      markHere();
+    }, { root: $("#scroll"), rootMargin: "-8% 0px -72% 0px" });
+    for (const section of sheet.querySelectorAll(".sec")) spy.observe(section);
   }
 
   function skeleton() {
@@ -387,7 +403,13 @@
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") hideEvidence();
   });
-  $("#scroll").addEventListener("scroll", hideEvidence, { passive: true });
+  const scroller = $("#scroll");
+  const readBar = $("#read-bar");
+  scroller.addEventListener("scroll", () => {
+    hideEvidence();
+    const room = scroller.scrollHeight - scroller.clientHeight;
+    if (readBar) readBar.style.transform = `scaleX(${room > 0 ? Math.min(1, scroller.scrollTop / room) : 0})`;
+  }, { passive: true });
 
   // ---------------------------------------------------------------- right panel
   $(".panel-tabs").addEventListener("click", (event) => {
@@ -418,7 +440,7 @@
       const section = report.sections[item.id];
       const doing = state.live[item.id];
       const trust = section && section.text ? Math.round(section.trust * 100) + "%" : "";
-      return `<a class="toc-link" href="#sec-${item.id}">
+      return `<a class="toc-link ${state.here === "sec-" + item.id ? "here" : ""}" href="#sec-${item.id}">
         <span class="toc-row"><span class="t">${i + 1}. ${esc(item.title)}</span>
         <span class="n ${doing ? "live" : ""}">${doing || trust}</span></span>
         <span class="meter"><i style="transform: scaleX(${section ? section.trust : 0})"></i></span></a>`;
@@ -450,10 +472,19 @@
     return { positive: "ok", negative: "bad" }[label] || "";
   }
 
+  // A diverging bar: it grows from the neutral midpoint towards -1 or +1, with the exact score beside it.
   function scale(score, lexicon) {
-    const at = (value) => Math.round((Math.max(-1, Math.min(1, value)) + 1) * 50);
-    const tick = lexicon === undefined ? "" : `<u style="left:${at(lexicon)}%" title="Word-list score ${lexicon}"></u>`;
-    return `<div class="scale" title="Score ${score}">${tick}<i style="left:${at(score)}%"></i></div>`;
+    const clamp = (value) => Math.max(-1, Math.min(1, Number(value) || 0));
+    const signed = (value) => (value > 0 ? "+" : value < 0 ? "\u2212" : "") + Math.abs(value).toFixed(2);
+    const value = clamp(score);
+    const tone = value >= 0.15 ? "pos" : value <= -0.15 ? "neg" : "mid";
+    const width = Math.max(Math.abs(value) * 50, 1.5);
+    const left = value < 0 ? 50 - width : 50;
+    const tick = lexicon === undefined || lexicon === null ? ""
+      : `<u style="left:${(clamp(lexicon) + 1) * 50}%" title="Word-list score ${signed(clamp(lexicon))}"></u>`;
+    return `<div class="scale ${tone}" role="img" aria-label="Score ${signed(value)} on a scale from \u22121 to +1">
+      <div class="scale-track"><i style="left:${left}%;width:${width}%"></i>${tick}</div>
+      <span class="scale-val">${signed(value)}</span></div>`;
   }
 
   function analysisHtml() {
@@ -465,21 +496,26 @@
         <button class="btn primary" data-analyse>Run analysis</button>`;
     }
     const titles = Object.fromEntries(report.outline.map((item, i) => [item.id, `${i + 1}. ${item.title}`]));
-    const group = (name, items) => !items.length ? "" : `<h3>${name}</h3>` + items.map((insight) =>
+    const kinds = { "Opportunities": "ok", "Risks": "bad", "Next steps": "next" };
+    const group = (name, items) => !items.length ? "" : `<h3 class="dot ${kinds[name] || ""}">${name}</h3>` + items.map((insight) =>
       `<div class="insight">${esc(insight.text)}<div class="card-row">
         ${insight.sections.map((sid) => `<a class="pill" href="#sec-${sid}" style="text-decoration:none">${esc(titles[sid] || sid)}</a>`).join("")}
         ${insight.sources.map((n) => `<span class="cite">${n}</span>`).join("")}</div></div>`).join("");
 
     return `${report.analysis_stale ? `<p class="notice" style="margin:0 0 16px">The report changed after this analysis. <button class="btn small" data-analyse>Run again</button></p>` : ""}
       <h3>Overall sentiment</h3>
-      <div class="senti"><span><span class="pill ${toneClass(analysis.overall.label)}">${analysis.overall.label}</span></span>
-        ${scale(analysis.overall.score)}<span class="why">${esc(analysis.overall.why)}</span></div>
+      <div class="senti overall">
+        <div class="senti-head"><span class="senti-title">Whole report</span><span class="pill ${toneClass(analysis.overall.label)}">${analysis.overall.label}</span></div>
+        ${scale(analysis.overall.score)}
+        <div class="scale-axis" aria-hidden="true"><span>Negative</span><span>Neutral</span><span>Positive</span></div>
+        <span class="why">${esc(analysis.overall.why)}</span></div>
       <h3>By section</h3>
       ${analysis.sections.map((row) => `<div class="senti">
-        <span>${esc(titles[row.id] || row.id)} <span class="pill ${toneClass(row.label)}">${row.label}</span>
-          ${row.agrees ? "" : '<span class="pill warn" title="The word-list score points the other way. Read this section yourself.">models disagree</span>'}</span>
+        <div class="senti-head"><a class="senti-title" href="#sec-${row.id}">${esc(titles[row.id] || row.id)}</a>
+          ${row.agrees ? "" : '<span class="pill warn" title="The word-list score points the other way. Read this section yourself.">models disagree</span>'}
+          <span class="pill ${toneClass(row.label)}">${row.label}</span></div>
         ${scale(row.score, row.lexicon_score)}<span class="why">${esc(row.why)}</span></div>`).join("")}
-      <p class="hint" style="margin-top:8px">Dot: LLM reading. Tick: word-list score, a free second opinion.</p>
+      <p class="hint" style="margin-top:10px">Bar: LLM reading, from \u22121 to +1. Tick: word-list score, a free second opinion.</p>
       ${group("Key takeaways", analysis.takeaways)}${group("Opportunities", analysis.opportunities)}
       ${group("Risks", analysis.risks)}${group("Next steps", analysis.next_steps)}`;
   }
@@ -571,8 +607,15 @@
         <button class="btn primary" data-ingest>Add to knowledge base</button>`;
       return;
     }
+    if (!state.synced) {
+      // Once per visit: make sure the index matches the report. Unchanged sections are skipped, so this is
+      // cheap, and it repairs the index after the embedding model (and so the collection) was switched.
+      state.synced = true;
+      try { report.kb = (await api("/kb", { method: "POST" })).kb; } catch { /* chat still works on the old index */ }
+      if (state.tab !== "chat") return;
+    }
     const session = await fetch("/api/sessions/" + report.session_id).then((r) => (r.ok ? r.json() : { messages: [] }));
-    const asks = report.outline.flatMap((item) => item.questions || []).slice(0, 3);
+    const asks = ["Summarise this report", ...report.outline.flatMap((item) => item.questions || []).slice(0, 2)];
     side.innerHTML = `<div class="pchat">
       <div class="messages" id="chat-log"></div>
       ${session.messages.length ? "" : `<div class="starters" id="asks">${asks.map((q) => `<button class="starter" data-ask>${esc(q)}</button>`).join("")}</div>`}
@@ -592,18 +635,20 @@
     bubble.innerHTML = '<div class="content"></div>';
     bubble.firstChild.textContent = text;
     log.append(bubble);
-    showFrom(bubble, sources);
+    showFrom(bubble, sources, text);
     log.scrollTop = log.scrollHeight;
     return bubble;
   }
 
-  function showFrom(bubble, sources) {
-    if (!sources || !sources.length) return;
+  function showFrom(bubble, sources, text = "") {
+    // A "not found" reply has nothing to attribute, so it gets no source line.
+    if (!sources || !sources.length || /^I couldn't (find|verify)/.test(text)) return;
     const sections = [...new Set(sources.map((s) => s.section).filter(Boolean))];
+    const where = sections.length > 3 ? `the whole report (${sections.length} sections)` : sections.map(esc).join(", ");
     const urls = [...new Set(sources.flatMap((s) => s.urls || []))].slice(0, 4);
     const from = document.createElement("div");
     from.className = "msg-from";
-    from.innerHTML = `From ${sections.map(esc).join(", ") || esc(sources[0].source)}` +
+    from.innerHTML = `From ${where || esc(sources[0].source)}` +
       (urls.length ? " · " + urls.map((url) => `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(new URL(url).hostname.replace("www.", ""))}</a>`).join(", ") : "");
     bubble.append(from);
   }
@@ -615,11 +660,12 @@
     if (!content) return;
     form.content.value = "";
     form.querySelector("button").disabled = true;
+    form.content.disabled = true;
     $("#asks")?.remove();
     addMessage("user", content);
     const reply = addMessage("assistant", "");
     const body = reply.firstChild;
-    reply.insertAdjacentHTML("afterbegin", '<div class="thinking"><span class="slots" aria-hidden="true">' + "<i></i>".repeat(6) + "</span><span>Searching the report</span></div>");
+    reply.insertAdjacentHTML("afterbegin", '<div class="thinking"><span class="slots" aria-hidden="true">' + "<i></i>".repeat(6) + "</span><span>Reading the report</span></div>");
     try {
       const response = await fetch(`/api/sessions/${state.report.session_id}/messages/stream`, {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ content }),
@@ -638,7 +684,7 @@
           const data = JSON.parse(dataLine.slice(6));
           if (kind === "token" || kind === "done") reply.querySelector(".thinking")?.remove();
           if (kind === "token") body.textContent += data;
-          if (kind === "done") { body.textContent = data.content; showFrom(reply, data.sources); }
+          if (kind === "done") { body.textContent = data.content; showFrom(reply, data.sources, data.content); }
           $("#chat-log").scrollTop = $("#chat-log").scrollHeight;
         }
       }
@@ -647,6 +693,7 @@
       body.textContent = "Something went wrong: " + error.message;
     }
     form.querySelector("button").disabled = false;
+    form.content.disabled = false;
     form.content.focus();
   }
 

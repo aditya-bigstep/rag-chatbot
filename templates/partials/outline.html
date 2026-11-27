@@ -1,0 +1,18 @@
+<form id="outline" class="card">
+  <h2>Review the outline</h2>
+  <p class="muted">Nothing is researched until you approve. Edit titles, change what a section should cover,
+    add or remove sections — then approve.</p>
+  <div class="rows">
+    {% for s in r.outline %}
+    <div class="row">
+      <input name="title" value="{{ s.title }}" placeholder="Section title" maxlength="120" aria-label="Section title">
+      <input name="guidance" value="{{ s.guidance }}" placeholder="What it should cover" maxlength="400" aria-label="What it should cover">
+      <button type="button" class="remove danger" aria-label="Remove section">✕</button>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="row">
+    <button type="button" id="add-row">+ Add section</button>
+    <button type="submit" class="primary">Approve and write the report</button>
+  </div>
+</form>

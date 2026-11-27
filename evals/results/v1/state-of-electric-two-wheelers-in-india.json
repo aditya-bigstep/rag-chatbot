@@ -1,0 +1,117 @@
+{
+ "topic": "State of electric two-wheelers in India",
+ "version": "v1",
+ "system": {
+  "latency_s": 20.4,
+  "input_tokens": 8189,
+  "output_tokens": 1809,
+  "cost_usd": 0.00231,
+  "llm_calls": 6,
+  "search_calls": 10,
+  "pages_fetched": 32,
+  "pages_failed": 17
+ },
+ "report": {
+  "words": 1242,
+  "url_valid": 1.0,
+  "references": 21,
+  "claims": 35,
+  "groundedness": 1.0,
+  "citation_coverage": 0.943,
+  "citation_support": 1.0,
+  "coverage": 1.0,
+  "source_diversity": 0.905,
+  "top_domain_share": 0.091,
+  "readability": 1.0,
+  "flow": 1.0
+ },
+ "chat": {
+  "questions": 5,
+  "faithfulness": 1.0,
+  "answer_relevancy": 1.0,
+  "answer_correct": 1.0,
+  "context_precision": 0.417,
+  "context_recall": 0.333,
+  "idk_correct": 1.0,
+  "false_refusals": 0.0,
+  "rows": [
+   {
+    "question": "What government schemes support the adoption of electric two-wheelers in India?",
+    "expected": "The Indian government supports electric two-wheelers through schemes such as the Production Linked Incentive (PLI) Scheme for the Automotive Sector with a budget of INR 25,938 crore, the Faster Adoption and Manufacturing of Hybrid and Electric Vehicles (FAME-II) scheme, and revised guidelines to expand public EV charging infrastructure. These include subsidies, tax benefits like a reduced GST rate of 5%, and incentives at central and state levels such as capital investment subsidies, power tariff discounts, and exemptions from road tax and registration fees.",
+    "answerable": true,
+    "answer": "The government schemes that support the adoption of electric two-wheelers in India include:\n\n- The Production Linked Incentive (PLI) Scheme for the Automotive Sector, launched in September 2021, with a budget of INR 25,938 crore ($3.1 billion) to enhance domestic manufacturing of advanced automotive technologies, including electric vehicles.\n- The Faster Adoption and Manufacturing of Hybrid and Electric Vehicles (FAME-II) scheme, which stimulates demand for electric vehicles and supports manufacturers in research and development.\n- Revised guidelines to expand public electric vehicle charging infrastructure.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      true,
+      false,
+      false
+     ],
+     "context_complete": false
+    }
+   },
+   {
+    "question": "How has the market share of TVS changed in the electric two-wheeler segment?",
+    "expected": "TVS has increased its market share in the electric two-wheeler segment from 11% to 20%, reflecting a strong consumer shift towards electric options.",
+    "answerable": true,
+    "answer": "TVS has increased its market share in the electric two-wheeler segment from 11% to 20%.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      false,
+      false,
+      false
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "What technological advancements have improved electric two-wheelers in India?",
+    "expected": "Technological advancements include improved battery safety, reliability, and lifespan; faster charging capabilities; advanced thermal management systems; and battery passport systems developed by companies like MaxVolt. Additionally, the charging infrastructure has expanded significantly, with a 640% increase in public charging stations over two years and growth in the battery-swapping sector projected from US$ 10.2 million in 2022 to US$ 61.57 million by 2030.",
+    "answerable": true,
+    "answer": "Recent advancements in battery technology for electric two-wheelers in India have significantly improved:\n\n- Safety\n- Reliability\n- Lifespan\n- Vehicle performance\n\nInnovations such as faster charging capabilities and better thermal management have reduced charging times and improved efficiency. Additionally, companies are developing battery passport systems to track battery lifecycle and performance, supporting better management and sustainability in the electric mobility sector.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      true,
+      false,
+      false
+     ],
+     "context_complete": false
+    }
+   },
+   {
+    "question": "What is the boiling point of tungsten?",
+    "expected": "",
+    "answerable": false,
+    "answer": "I couldn't find that in the documents.",
+    "refused": true,
+    "chunks": 4
+   },
+   {
+    "question": "What is the average cost of an electric two-wheeler in India as of 2024?",
+    "expected": "",
+    "answerable": false,
+    "answer": "I couldn't find that in the documents.",
+    "refused": true,
+    "chunks": 4
+   }
+  ]
+ },
+ "markdown": "# State of electric two-wheelers in India\n\n## 1. Introduction to Electric Two-Wheelers in India\n\nElectric two-wheelers in India encompass a range of battery-powered scooters, mopeds, and motorcycles designed for personal mobility and short commutes, as well as last-mile commercial use [1]. The market includes low-speed scooters that do not require a license and high-speed models equipped with advanced features such as lithium-ion batteries and smart connectivity [1]. The growing urbanization in India, characterized by increasing population density and traffic congestion, positions electric two-wheelers as a practical solution for efficient urban commuting [2]. With an average range of 100-150 km on a single charge, these vehicles address key consumer concerns regarding range and usability [2].\n\nThe importance of electric two-wheelers in the Indian market is underscored by their projected growth rate of 7.55% CAGR over the coming years, driven by favorable government policies and decreasing battery costs [3]. The market is also benefiting from the rising fuel costs and the need for sustainable transportation options, making electric two-wheelers an attractive choice for daily commuters and businesses [4]. Key players in the industry include established manufacturers like TVS Motor Company, Ather Energy, and Ola Electric, alongside various startups and technology-driven firms [4][5]. In the financial year 2024-25, electric two-wheeler sales reached 1,149,334 units, marking a 21% increase from the previous year, reflecting the growing acceptance and demand for these vehicles in India [5].\n\n## 2. Government Policies and Incentives\n\nThe Indian government has implemented several initiatives to promote electric two-wheelers, aiming to establish the country as a leader in the electric vehicle (EV) sector. Key among these is the Production Linked Incentive (PLI) Scheme for the Automotive Sector, launched in September 2021, which has a budgetary outlay of INR 25,938 crore ($3.1 billion) to enhance domestic manufacturing of advanced automotive technologies, including electric vehicles [6][7]. Additionally, the Faster Adoption and Manufacturing of Hybrid and Electric Vehicles (FAME-II) scheme has been introduced to stimulate demand for electric vehicles and support manufacturers in research and development [8]. The government has also revised guidelines to expand public electric vehicle charging infrastructure, encouraging private players to install charging stations across the nation [6].\n\nTo further incentivize consumers, various subsidies and incentives have been established at both central and state levels. For instance, the FAME program provides financial support for both commercial and private electric vehicles, while state governments offer additional incentives such as capital investment subsidies, power tariff discounts, and exemptions from road tax and registration fees [9][10]. These measures significantly reduce the purchase price of electric vehicles, making them more competitive with conventional vehicles [9]. Furthermore, the government has implemented tax benefits, such as a reduced GST rate of 5% for electric vehicles compared to higher rates for conventional vehicles, which lowers the total cost of ownership [10][11]. \n\nThe regulatory framework surrounding electric two-wheelers in India is designed to address structural challenges in the adoption of EVs, including high vehicle costs and inadequate charging infrastructure [7]. The government’s comprehensive approach, combining subsidies, tax incentives, and infrastructure development, aims to facilitate a smoother transition to electric mobility and promote a greener future for the country [8].\n\n## 3. Market Trends and Consumer Adoption\n\nThe electric two-wheeler market in India is experiencing significant growth, driven by various consumer preferences and market dynamics. A notable trend is the increasing demand for electric two-wheelers, with manufacturers like Ola and TVS reporting substantial sales figures. For instance, TVS has increased its market share from 11% to 20% in the electric two-wheeler segment, reflecting a strong consumer shift towards electric options [12]. Additionally, the availability of diverse product choices and improved real-world range has made electric two-wheelers more appealing to consumers, who are also motivated by the cost-effectiveness compared to traditional fossil fuel vehicles [13].\n\nSeveral factors are propelling the adoption of electric two-wheelers in India. Government incentives under schemes like FAME-II and production-linked incentives have significantly reduced the effective prices for consumers, making electric vehicles more affordable [14]. Furthermore, companies have invested heavily in marketing and enhancing their supply chains, which has improved product quality and consumer confidence [14]. However, challenges remain, such as the recent decline in sales attributed to subsidy cuts under the FAME program, which has created uncertainty among potential buyers [12]. Despite these challenges, the overall trajectory for electric two-wheelers in India appears positive, with expectations of surpassing one million units sold in 2024 [13].\n\n## 4. Technological Advancements\n\nRecent advancements in battery technology for electric two-wheelers in India have significantly improved safety, reliability, and lifespan, while also enhancing vehicle performance. Innovations such as faster charging capabilities and better thermal management have been pivotal in reducing charging times and improving efficiency, which are crucial for increasing EV adoption [15]. The introduction of advanced thermal management systems helps maintain optimal battery performance, thereby extending longevity and reliability [15]. Additionally, companies like MaxVolt are developing battery passport systems to track battery lifecycle and performance, which supports better management and sustainability in the electric mobility sector [16].\n\nThe charging infrastructure in India is also evolving rapidly, with a notable increase in the number of public charging stations, which surged by 640% over the past two years [17]. This expansion is essential to alleviate range anxiety and improve the overall convenience of using electric two-wheelers [17]. Furthermore, the battery-swapping sector is gaining momentum, projected to grow from approximately US$ 10.2 million in 2022 to around US$ 61.57 million by 2030, driven by the advantages of reduced initial costs and elimination of charging wait times [17]. As the charging network becomes denser and more efficient, it is expected to further enhance the performance and appeal of electric two-wheelers in the Indian market [18].\n\nOverall, the interplay between technological advancements in battery systems and the development of robust charging infrastructure is crucial for the performance and adoption of electric two-wheelers in India. As these technologies continue to evolve, they are likely to contribute significantly to the growth of the electric vehicle sector, aligning with India's vision for a sustainable future in mobility [15][18].\n\n## 5. Future Outlook and Challenges\n\nThe future outlook for the electric two-wheeler market in India is promising, with projections indicating a compound annual growth rate (CAGR) of 9.94% for the electric bike segment [19]. The market is expected to expand significantly, with ambitious plans to increase manufacturing capacity to over 30 million units annually by 2026, representing a 50% increase from previous sales records [19]. This growth is largely driven by rising environmental awareness among consumers, who are increasingly seeking eco-friendly transportation options due to concerns about climate change and air pollution [2]. Government initiatives, such as the Faster Adoption and Manufacturing of Hybrid and Electric Vehicles (FAME-II) scheme and various state-level subsidies, are also expected to bolster market growth [1].\n\nHowever, the electric two-wheeler market faces several challenges that could impede its progress. Key issues include a lack of adequate charging infrastructure, dependence on imported battery materials, and safety concerns related to electric vehicles [20][21]. Additionally, policy volatility poses a risk to manufacturers, as shifts in subsidy structures could affect planning and investment [20]. Despite these challenges, the Indian government remains committed to promoting green mobility, as evidenced by budget allocations aimed at supporting the electric vehicle sector and initiatives like the National Green Hydrogen Mission [21][19]. The interplay of these factors will be crucial in determining the trajectory of the electric two-wheeler market in India, as sustainability continues to play a pivotal role in shaping future developments.\n\n## References\n\n- [1] India Electric Two-Wheeler Market Size, Share Analysis 2034 — <https://www.imarcgroup.com/india-electric-two-wheeler-market>\n- [2] India Electric Two Wheeler Market Size, Growth Report 2035 — <https://www.marketresearchfuture.com/reports/india-electric-two-wheeler-market-54182>\n- [3] India Two-Wheeler Market Size, Share, Trends, Report 2035 — <https://www.marketresearchfuture.com/reports/india-two-wheeler-market-21400>\n- [4] Electric 2-Wheeler Manufacturers in India: Complete List — <https://electricvehicletalks.com/electric-2-wheeler-manufacturers-in-india/>\n- [5] Top EV Two-Wheeler & Three-Wheeler Companies in India 2026Top 10 Electric Two-Wheeler Companies in India | Sup — <https://www.blackridgeresearch.com/blog/top-electric-vehicle-e-auto-bike-scooter-two-2-three-wheeler-ev-companies-firms-makers-manufacturers-oems-in-india>\n- [6] Government's EV Policies Driving India's Green Revolution — <https://www.investindia.gov.in/team-india-blogs/governments-ev-policies-driving-indias-green-revolution>\n- [7] ELECTRIC VEHICLES - Press Information Bureau — <https://pib.gov.in/Pressreleaseshare.aspx?PRID=1946361>\n- [8] Government Policies and Incentives for Electric Vehicles in IndiaELECTRIC VEHICLES - Press Information BureauA — <https://e-vehicleinfo.com/government-policies-and-incentives-for-electric-vehicles-in-india/>\n- [9] Electric Vehicle Subsidy by State in India 2026 - Full List — <https://www.bankbazaar.com/two-wheeler-loan/electric-bike-subsidy.html>\n- [10] EV subsidies in India 2026: Central and state incentives — <https://www.tatapower.com/blogs/ev-subsidies-in-india-2026-central-and-state-incentives>\n- [11] EV Subsidies by State in India: Full List (2026) - EVsMirror — <https://evsmirror.com/ev-subsidy-by-state-india/>\n- [12] Who dominated the electric two-wheeler race in 2023? — <https://economictimes.indiatimes.com/industry/renewables/who-dominated-the-electric-two-wheeler-race-in-2023/articleshow/106512592.cms>\n- [13] Record-breaking year for electric two-wheeler sales, Ola ... — <https://www.autocarpro.in/analysis-sales/electric-2w-sales-hit-record-857000-units-in-cy2023-118447>\n- [14] Electric two-wheeler sales figures in India FY23 & FY24 — <https://www.bikeleague.in/motorcycle-articles/motorcycle-analysis-articles/electric-two-wheeler-sales-figures-in-india-fy23-fy24/>\n- [15] Latest Indian EV Battery Technology Advancements — <https://kushmandapower.com/what-are-the-latest-advancements-in-indian-made-ev-battery-technology-for-two-wheelers-and-four-wheelers/>\n- [16] MaxVolt Energy Develops LFP Two-Wheeler Battery Packs ... — <https://www.autocarpro.in/news/maxvolt-energy-develops-lfp-two-wheeler-battery-packs-explores-21700-cells-136091>\n- [17] The Evolution of Electric Vehicle Infrastructure in India - IBEF — <https://www.ibef.org/blogs/charging-ahead-the-evolution-of-electric-vehicle-infrastructure-in-india>\n- [18] India Electric Vehicle Report 2023 - Bain & Company — <https://www.bain.com/insights/india-electric-vehicle-report-2023/>\n- [19] Challenges faced by India’s electric bike market, and the way ...Electric Two-Wheeler Sales & Production Marke — <https://timesofindia.indiatimes.com/blogs/voices/challenges-faced-by-indias-electric-bike-market-and-the-way-ahead/>\n- [20] Future of Electric Two-Wheelers in India (2026-2030) — <https://diyguru.org/guide/future-of-electric-two-wheelers-in-india-2026-2030/>\n- [21] Electric Bike EV Two Wheeler Market India Challenges Facing ... — <https://news.abplive.com/auto/electric-bike-ev-two-wheeler-market-india-challenges-facing-indias-electric-bike-market-solution-charging-infrastructure-high-costs-1590693>\n"
+}

@@ -64,13 +64,15 @@ def build_auth(settings: Settings):  # type: ignore[no-untyped-def]
     from app.auth.store import SqliteKV, SqliteUsers, connect
 
     database = connect(settings.accounts_db)
-    return AuthService(
+    service = AuthService(
         users=SqliteUsers(database),
         kv=SqliteKV(database),
         mailer=get_mailer(settings),
         base_url=settings.app_base_url,
         session_ttl_days=settings.session_ttl_days,
     )
+    service.ensure_admin(settings.admin_login, settings.admin_password)
+    return service
 
 
 # Anyone may open these without an account. Everything else needs a login cookie.

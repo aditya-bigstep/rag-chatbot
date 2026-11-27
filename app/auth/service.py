@@ -89,6 +89,33 @@ class AuthService:
         self.mailer = mailer
         self.base_url = base_url.rstrip("/")
         self.session_ttl = session_ttl_days * 24 * 3600
+        self.admin_login = ""
+
+    # --- built-in admin account ----------------------------------------------------
+    def ensure_admin(self, login: str, password: str) -> None:
+        """Create the admin account from .env (ADMIN_LOGIN / ADMIN_PASSWORD), or bring its password in step.
+
+        It signs in with a plain name instead of an e-mail, is already verified (there is no inbox to
+        confirm) and is exempt from the password length rule, because the owner chose it in .env.
+        """
+        login = (login or "").strip().lower()
+        if not login or not password:
+            return
+        self.admin_login = login
+        row = self.users.by_email(login)
+        if row is None:
+            user_id = uuid.uuid4().hex
+            self.users.create(user_id, login, "Admin", _hash(password))
+        else:
+            user_id = row["id"]
+            if not _check(password, row["password_hash"]):
+                self.users.set_password(user_id, _hash(password))
+        self.users.set_verified(user_id)
+
+    def _login_name(self, email: str) -> str:
+        """The sign-in box takes an e-mail, or the admin's login name."""
+        name = (email or "").strip().lower()
+        return name if self.admin_login and name == self.admin_login else _norm_email(email)
 
     # --- rate limiting -------------------------------------------------------------
     def _throttle(self, bucket: str, key: str) -> None:
@@ -143,7 +170,7 @@ class AuthService:
     def signin(self, email: str, password: str) -> tuple[User, str | None]:
         """(user, token). token is None when the account still needs its e-mail confirmed
         (a fresh code is sent in that case)."""
-        email = _norm_email(email)
+        email = self._login_name(email)
         self._throttle("signin", email)
         row = self.users.by_email(email)
         if not row or not _check(password or "", row["password_hash"]):

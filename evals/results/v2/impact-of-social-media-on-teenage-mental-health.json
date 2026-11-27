@@ -1,0 +1,118 @@
+{
+ "topic": "Impact of social media on teenage mental health",
+ "version": "v2",
+ "system": {
+  "latency_s": 20.1,
+  "input_tokens": 17677,
+  "output_tokens": 1779,
+  "cost_usd": 0.00372,
+  "llm_calls": 11,
+  "search_calls": 10,
+  "pages_fetched": 36,
+  "pages_failed": 13,
+  "claims_dropped": 16
+ },
+ "report": {
+  "words": 761,
+  "url_valid": 1.0,
+  "references": 22,
+  "claims": 27,
+  "groundedness": 1.0,
+  "citation_coverage": 1.0,
+  "citation_support": 1.0,
+  "coverage": 1.0,
+  "source_diversity": 0.909,
+  "top_domain_share": 0.133,
+  "readability": 1.0,
+  "flow": 1.0
+ },
+ "chat": {
+  "questions": 5,
+  "faithfulness": 1.0,
+  "answer_relevancy": 1.0,
+  "answer_correct": 1.0,
+  "context_precision": 0.333,
+  "context_recall": 1.0,
+  "idk_correct": 1.0,
+  "false_refusals": 0.0,
+  "rows": [
+   {
+    "question": "What percentage of teens feel connected to friends through social media platforms?",
+    "expected": "74% of teens report that they feel connected to friends through social media platforms.",
+    "answerable": true,
+    "answer": "Approximately 74% of teens aged 13-17 report feeling more connected to their friends through social media platforms.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      true,
+      false,
+      false
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "What are some negative effects of cyberbullying on teens?",
+    "expected": "32% of teens targeted by cyberbullying report experiencing at least one symptom of stress, such as anxiety, depression, and sleep problems. Cyberbullying can lead to a heightened risk of suicidal thoughts and self-harm, and its emotional harm can persist long after incidents, eroding self-esteem and social connections.",
+    "answerable": true,
+    "answer": "Some negative effects of cyberbullying on teens include:\n\n- Experiencing symptoms of stress, such as anxiety, depression, and sleep problems.\n- A heightened risk of suicidal thoughts and self-harm.\n- Emotional harm that can persist long after the incidents, eroding self-esteem and social connections.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      false,
+      false,
+      false
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "How has parental monitoring of children's online activities changed recently?",
+    "expected": "Recent data shows that 84% of US parents monitor their children's online activities, an increase from 78% in 2020.",
+    "answerable": true,
+    "answer": "Parental monitoring of children's online activities has increased recently, with 84% of US parents now monitoring their children's activities, up from 78% in 2020.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      false,
+      false,
+      false
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "What is the tallest mountain in Africa?",
+    "expected": "",
+    "answerable": false,
+    "answer": "I couldn't find that in the documents, so I'd rather not guess. Try rephrasing, or upload a document that covers it.",
+    "refused": true,
+    "chunks": 0
+   },
+   {
+    "question": "What specific social media platforms have the highest rates of cyberbullying among teenagers?",
+    "expected": "",
+    "answerable": false,
+    "answer": "I couldn't find that in the documents.",
+    "refused": true,
+    "chunks": 4
+   }
+  ]
+ },
+ "markdown": "# Impact of social media on teenage mental health\n\n## 1. Introduction\n\nSocial media refers to platforms that facilitate interaction, connection, and content creation by users, playing a significant role in modern communication and information sharing [1]. Among teenagers, social media serves as a vital tool for maintaining friendships and engaging in social interactions, with 74% of teens reporting that they feel connected to friends through these platforms [2]. For instance, while 19% of teens believe that social media has harmed their mental health, many also recognize its importance in fostering connections [2].\n\nData from 2021-2023 indicates that 20% of adolescents reported anxiety symptoms, while 18% reported symptoms of depression [3]. The prevalence of mental health issues among teens is alarming, with 1 in 3 experiencing poor mental health or a mental health disorder in a given year [4]. This crisis has been exacerbated by factors such as academic stress and family conflict, which contribute significantly to anxiety and depression among adolescents [4].\n\n## 2. Positive Effects of Social Media\n\nApproximately 74% of teens aged 13-17 report feeling more connected to their friends through social media platforms, which also facilitate the establishment of new friendships and the maintenance of existing relationships with peers and family members [5]. This connectivity is particularly beneficial for those who may lack offline support, as social media provides a safe space for seeking social support and connecting with others who share similar identities [5][6].\n\nTeens utilize these platforms to explore their interests, share their talents, and receive positive feedback, which can boost their confidence and self-esteem [7][8]. For instance, many adolescent girls report that platforms like TikTok and Instagram provide identity-affirming content, allowing them to express their opinions and engage in emotional self-expression [5]. Furthermore, social media can empower marginalized groups, such as LGBTQ+ and BIPOC individuals, by connecting them with supportive communities and enabling them to share their experiences [9][10].\n\n## 3. Negative Effects of Social Media\n\nResearch shows that 32% of teens targeted by cyberbullying report experiencing at least one symptom of stress, which can manifest as anxiety, depression, and sleep problems [11]. The psychological impact of being bullied online often exceeds that of traditional bullying, with affected teens facing a heightened risk of suicidal thoughts and self-harm [12]. Furthermore, the emotional harm from cyberbullying can persist long after the incidents, eroding self-esteem and social connections [13].\n\nAdolescents frequently encounter unrealistic standards and body image pressures online, which can lead to intense dissatisfaction with themselves [14]. This comparison mindset can distort a teen's self-worth and hinder healthy identity formation, contributing to long-term confidence issues [15]. Moreover, the addictive nature of social media can exacerbate these problems, as teens may struggle to regulate their usage, leading to withdrawal symptoms and neglect of real-life interactions [14].\n\n## 4. Current Research Findings\n\nA meta-analysis published in JAMA Pediatrics in 2024 reviewed 40 studies and found a dose-response relationship, where increased time spent on social media correlates with greater risks of depressive symptoms among teens [16]. Additionally, the Cyberbullying Research Center reports that one in five teens experiences online harassment annually, which can lead to lower academic performance and social withdrawal [16]. Despite these risks, social media also provides opportunities for connection and support, particularly for marginalized youth, as it facilitates community building and access to mental health resources [17].\n\nWhile some research has traditionally focused on the negative effects of increased social media use, recent findings suggest that this relationship may be oversimplified [18]. For instance, a narrative review indicates that social media influences mental health through multiple pathways, with modest individual effects but significant population-level implications due to widespread adolescent engagement [19]. Furthermore, the American Psychological Association and other organizations have raised concerns about the potential harms of excessive social media use, particularly for vulnerable populations [17].\n\n## 5. Future Outlook\n\nRecent data shows that 84% of US parents monitor their children's online activities, a significant increase from 78% in 2020, highlighting a growing concern among parents regarding social media's influence on their teens [20]. However, despite this vigilance, fewer than 1% of minors have parents utilizing built-in parental controls on social media platforms, suggesting a gap in effective monitoring strategies [20]. As social media continues to dominate youth media consumption, with platforms being central to daily life, the regulatory scrutiny surrounding youth safety and privacy is expected to shape future social media features and marketing strategies [21].\n\nPreliminary evidence suggests that social media-based interventions can improve mental health outcomes among adolescents, indicating a potential for these platforms to serve as tools for positive engagement [22].\n\n## References\n\n- [1] What is Social Media? Definition of Social Media, Social ... — <https://economictimes.indiatimes.com/definition/social-media>\n- [2] Teen Mental Health Statistics 2026: Trends and Care — <https://psychology.com/teen-mental-health-statistics/>\n- [3] Data and Statistics on Children's Mental Health — <https://www.cdc.gov/children-mental-health/data-research/index.html>\n- [4] Teenage Mental Health Statistics 2026 - worldmetrics.org — <https://worldmetrics.org/teenage-mental-health-statistics/>\n- [5] Benefits of Social Media - aap.org — <https://www.aap.org/en/patient-care/media-and-children/center-of-excellence-on-social-media-and-youth-mental-health/qa-portal/qa-portal-library/qa-portal-library-questions/benefits-of-social-media/>\n- [6] Benefits of Social Media for Teens Under 16 - aap.org — <https://www.aap.org/en/patient-care/media-and-children/center-of-excellence-on-social-media-and-youth-mental-health/qa-portal/qa-portal-library/qa-portal-library-questions/benefits-of-social-media-for-teens-under-16/>\n- [7] The Positives of Social Media for Teens and How Parents Can ... — <https://www.urmc.rochester.edu/news/publications/health-matters/the-positives-of-social-media-for-teens-and-how-parents-can-guide-safe-use>\n- [8] Benefits of Social Media for Teens - FamilyEducation — <https://www.familyeducation.com/teens/benefits-of-social-media-for-teens>\n- [9] 4 Ways Social Media Can Be Good for Your Mental Health — <https://www.verywellmind.com/ways-social-media-can-be-good-for-your-mental-health-8712748>\n- [10] Social media and mental health: Positive and negative effectsHow Social Media Impacts Mental Health - Positive — <https://www.medicalnewstoday.com/articles/social-media-and-mental-health>\n- [11] Effects of Cyberbullying on Children and Teens - Parents — <https://www.parents.com/what-are-the-effects-of-cyberbullying-460558>\n- [12] How Cyberbullying Affects Teens: Mental Health and Beyond — <https://biologyinsights.com/how-cyberbullying-affects-teens-mental-health-and-beyond/>\n- [13] How Does Cyberbullying Affect Teens? | ManagedMethods — <https://managedmethods.com/blog/how-does-cyberbullying-affect-teens/>\n- [14] Social Media Effects on Teens: Benefits, Risks, and More — <https://www.healthline.com/health/social-media-effects-on-teens>\n- [15] Cyberbullying Effects on Teen Mental Health — <https://therecover.com/cyberbullying-effects-on-teen-mental-health/>\n- [16] Social Media and Teen Mental Health: What 2026 Reveals — <https://healthcarereaders.com/insights/social-media-impact-on-teen-minds-health>\n- [17] The Impact of Social Media on Youth Mental Health: Risks ... — <https://behavioralhealthnews.org/the-impact-of-social-media-on-youth-mental-health-risks-benefits-and-family-approaches/>\n- [18] Social Media and Youth Mental Health: Does More Use Always ... — <https://medicine.yale.edu/news-article/social-media-and-youth-mental-health/>\n- [19] Social Media and Adolescent Mental Health: A Comprehensive ... — <https://pmc.ncbi.nlm.nih.gov/articles/PMC12967810/>\n- [20] Statistics About Social Media and Kids 2026: Teen Usage & Trends — <https://brighterly.com/blog/statistics-about-social-media-and-kids/>\n- [21] Youth Media Consumption Trends 2026 - accio.com — <https://www.accio.com/business/media_consumption_trends_of_youth>\n- [22] Social media-based interventions for adolescent and young ... — <https://pmc.ncbi.nlm.nih.gov/articles/PMC9530477/>\n"
+}

@@ -1,0 +1,118 @@
+{
+ "topic": "Solid-state batteries for electric vehicles",
+ "version": "v2",
+ "system": {
+  "latency_s": 596.6,
+  "input_tokens": 16212,
+  "output_tokens": 1970,
+  "cost_usd": 0.00361,
+  "llm_calls": 11,
+  "search_calls": 10,
+  "pages_fetched": 32,
+  "pages_failed": 17,
+  "claims_dropped": 10
+ },
+ "report": {
+  "words": 914,
+  "url_valid": 1.0,
+  "references": 19,
+  "claims": 32,
+  "groundedness": 0.969,
+  "citation_coverage": 1.0,
+  "citation_support": 0.969,
+  "coverage": 1.0,
+  "source_diversity": 0.947,
+  "top_domain_share": 0.154,
+  "readability": 1.0,
+  "flow": 1.0
+ },
+ "chat": {
+  "questions": 5,
+  "faithfulness": 0.917,
+  "answer_relevancy": 1.0,
+  "answer_correct": 0.667,
+  "context_precision": 0.75,
+  "context_recall": 0.667,
+  "idk_correct": 1.0,
+  "false_refusals": 0.0,
+  "rows": [
+   {
+    "question": "What are the advantages of solid-state batteries compared to traditional lithium-ion batteries?",
+    "expected": "Solid-state batteries achieve significantly higher energy densities, often exceeding 350 Wh/kg compared to below 300 Wh/kg for lithium-ion batteries. They use lithium metal anodes for increased energy capacity and solid electrolytes that are non-flammable and non-volatile, reducing risks of leakage and thermal runaway.",
+    "answerable": true,
+    "answer": "The advantages of solid-state batteries compared to traditional lithium-ion batteries include:\n\n- Higher energy densities, often exceeding 350 Wh/kg, compared to below 300 Wh/kg for lithium-ion batteries.\n- Use of lithium metal anodes, contributing to increased energy capacity.\n- Non-flammable and non-volatile solid electrolytes, which reduce risks of leakage and thermal runaway.\n- Potential for lighter battery packs and faster charging times.\n- Improved safety due to reduced fire risks associated with liquid electrolytes.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      true,
+      true,
+      true
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "Which companies are actively developing solid-state batteries and what are their targets?",
+    "expected": "Key players include Solid Power, Toyota, and CATL. Solid Power has completed pilot lines for sulfide-based solid electrolytes and aims for partnerships with BMW and Ford. Toyota has been researching solid-state batteries since 2010 and targets commercial production by 2026, supported by a substantial patent portfolio.",
+    "answerable": true,
+    "answer": "The companies actively developing solid-state batteries include:\n\n- Solid Power, which aims for commercial partnerships with major automakers like BMW and Ford.\n- Toyota, which has been building its solid-state battery research program since 2010 and is targeting commercial production by 2026. \n\nAdditionally, major automotive manufacturers are planning to roll out solid-state options by 2027.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      true,
+      false,
+      false
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "What are the projected market growth rates and adoption timelines for solid-state batteries in electric vehicles?",
+    "expected": "The market is projected to grow at a CAGR of approximately 28.6% from 2023 to 2033. Broader adoption in the automotive industry is expected between 2028 and 2030, with initial commercialization anticipated in the late 2020s, contingent on overcoming cost and manufacturing scalability challenges.",
+    "answerable": true,
+    "answer": "The projected market growth rate for solid-state batteries is indicated by a compound annual growth rate (CAGR) of 22% in patent registrations from 2017 to 2024. Broader adoption in the automotive industry is expected between 2028 and 2030, with initial commercialization anticipated in the late 2020s. However, as of 2026, solid-state batteries are still in the transition phase from prototypes to automotive-scale commercialization.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 0.75,
+     "relevant": 1,
+     "correct": false,
+     "chunk_relevant": [
+      true,
+      true,
+      true,
+      false
+     ],
+     "context_complete": false
+    }
+   },
+   {
+    "question": "Which planet is known as the Red Planet?",
+    "expected": "",
+    "answerable": false,
+    "answer": "I couldn't find that in the documents, so I'd rather not guess. Try rephrasing, or upload a document that covers it.",
+    "refused": true,
+    "chunks": 0
+   },
+   {
+    "question": "What specific materials are used in the solid electrolytes of solid-state batteries developed by CATL?",
+    "expected": "",
+    "answerable": false,
+    "answer": "I couldn't find that in the documents.",
+    "refused": true,
+    "chunks": 4
+   }
+  ]
+ },
+ "markdown": "# Solid-state batteries for electric vehicles\n\n## 1. Introduction to Solid-State Batteries\n\nA solid-state battery (SSB) is an advanced energy storage device that utilizes a solid electrolyte to facilitate ion conduction between electrodes, as opposed to the liquid or gel polymer electrolytes found in traditional lithium-ion batteries [1][2]. This fundamental change in design allows solid-state batteries to achieve significantly higher energy densities, often exceeding 350 Wh/kg, compared to the typical energy densities of lithium-ion batteries, which are generally below 300 Wh/kg [1][3]. The use of lithium metal anodes in solid-state batteries contributes to this increased energy capacity, making them particularly advantageous for applications requiring compact and long-lasting power sources, such as electric vehicles [1][2].\n\nThe solid electrolytes used in these batteries are non-flammable and non-volatile, which mitigates risks associated with leakage and thermal runaway that are prevalent in conventional lithium-ion batteries [3][4]. Major manufacturers are actively pursuing the commercialization of solid-state battery technology, indicating its potential to revolutionize the electric vehicle market in the near future [4].\n\n## 2. Current State of Technology\n\nKey players in the market, such as Solid Power, Toyota, and CATL, are actively developing solid-state batteries that utilize various electrolytes, including sulfide, oxide, and polymer types, to enhance energy density and safety [5][6]. Solid Power, for instance, has completed pilot lines for its sulfide-based solid electrolytes, aiming for commercial partnerships with major automakers like BMW and Ford [5]. Toyota has been building its solid-state battery research program since 2010 and is targeting commercial production by 2026, supported by a substantial portfolio of patents [6].\n\nIssues related to long-term performance, specific power, and economic viability remain critical hurdles [7]. The need for fast-conducting solid electrolytes and high-performance anodes is paramount to achieving the desired energy density and safety standards [7]. Furthermore, the technology is still in early commercialization stages, with many companies focusing on semi-solid battery solutions as a more practical interim step [8][9]. The competitive landscape is also intense, with numerous companies vying for breakthroughs, which may complicate market entry for new entrants [9].\n\n## 3. Applications in Electric Vehicles\n\nThese batteries replace the liquid or gel electrolytes found in traditional batteries with solid electrolytes, which could lead to lighter battery packs and faster charging times [10]. However, as of 2026, solid-state batteries are still in the transition phase from prototypes to automotive-scale commercialization, meaning they are not yet a mainstream technology in the passenger EV market [10]. Despite this, several automakers are actively pursuing the development of EVs powered by solid-state batteries, with some models already available in select markets and others planned for future release [11].\n\nThey promise greater driving range due to their higher energy density, which allows for smaller and lighter battery packs without sacrificing range [12]. Additionally, the improved safety of solid-state batteries stems from their non-flammable solid electrolytes, which reduce the risk of fires associated with liquid electrolytes [10]. As research and development continue, advancements in solid-state technology are expected to close the performance gap with traditional batteries, making them a viable option for the future of energy storage in the automotive sector [13]. While full-scale deployment may still be years away, the ongoing innovations indicate that solid-state batteries could reshape the landscape of electric vehicles in the coming decade [13].\n\n## 4. Market Trends and Projections\n\nThe market is projected to grow at a compound annual growth rate (CAGR) of approximately 28.6% from 2023 to 2033, with a historic growth rate of 22.3% noted previously [14]. The ongoing expansion of the electric vehicle sector is a major factor propelling this growth, as governments worldwide set ambitious targets for electric mobility, thereby intensifying the demand for high-performance energy storage solutions [15].\n\nFuture projections indicate that solid-state batteries will begin to see broader adoption in the automotive industry between 2028 and 2030, contingent on overcoming challenges related to cost and manufacturing scalability [16]. The transition to solid-state technology is expected to be phased, with initial commercialization anticipated in the late 2020s [16]. Factors influencing this market growth include escalating research and development efforts aimed at reducing battery costs, the rising use of electronic devices, and the increasing deployment of Internet of Things (IoT) technologies [17]. However, challenges such as high manufacturing costs and complex production processes remain significant hurdles that need to be addressed for widespread adoption [17].\n\n## 5. Outlook and Future Developments\n\nResearch and patenting activities in solid-state battery technology have surged, with a compound annual growth rate (CAGR) of 22% in patent registrations from 2017 to 2024, indicating a robust interest in this area [1]. Major automotive manufacturers, such as Toyota, are leading efforts to commercialize these batteries, with plans to roll out solid-state options by 2027 [18]. The transition to solid-state technology is expected to enhance safety, energy density, and charging efficiency, potentially allowing EVs to outperform traditional gasoline vehicles [18][16].\n\nHowever, the successful integration of solid-state batteries into the market will depend not only on technological advancements but also on cost and scalability [16]. The gap between technical feasibility and commercial viability remains a challenge, as the market must align cost, scale, and supply chain maturity for widespread adoption [16]. Regulatory frameworks, such as the EU Battery Regulation, are also shaping the landscape by mandating comprehensive lifecycle management for batteries, which includes the introduction of a \"battery passport\" for tracking [19]. These regulations aim to mitigate environmental impacts and ensure sustainable practices in battery production and disposal, further influencing the future development of solid-state batteries in the EV sector [19].\n\n## References\n\n- [1] Solid-state battery - Wikipedia — <https://en.wikipedia.org/wiki/Solid-state_battery>\n- [2] What Is a Solid State Battery? Technology, Advantages, and ... — <https://thebatterytips.com/battery-specifications/what-is-a-solid-state-battery/>\n- [3] Solid State Battery vs Lithium Ion: Complete Technical Comparison — <https://wesbattery.com/guides-solid-state-battery-vs-lithium-ion/>\n- [4] Solid-State Battery vs. Lithium-Ion: The Complete Comparison — <https://www.intelligentliving.co/solid-state-battery-vs-lithium-ion/>\n- [5] Top 10: Solid State EV Battery Manufacturers | EV Magazine — <https://evmagazine.com/top10/top-10-solid-state-ev-battery-manufacturers>\n- [6] 10 Solid-State Battery Companies to Watch In 2026 - GreyBTop 132 Startups, developing energy-efficient batteri — <https://greyb.com/blog/solid-state-battery-companies/>\n- [7] Challenges in speeding up solid-state battery development — <https://www.nature.com/articles/s41560-023-01208-9>\n- [8] Top 10 Solid State Battery Companies in 2026 — <https://www.xtbattery.com/news/top-10-solid-state-battery-companies-in-2026-best-manufacturers-technology-market-trends/>\n- [9] 7 Solid-State Battery Stocks to Watch in 2025 - MoneyWiseTop 10 Solid State Battery Companies in 2026: How to  — <https://moneywise.com/investing/stocks/solid-state-battery-stocks>\n- [10] Solid-State Batteries: The Future of Electric Vehicles — <https://electricvehicletalks.com/solid-state-batteries/>\n- [11] All Current And Upcoming EVs With Solid-State Batteries — <https://insideevs.com/news/771402/every-solid-state-battery-ev/>\n- [12] What Is A Solid-State Battery, And Why Is Everyone Talking ... — <https://www.motor1.com/features/815631/what-are-solid-state-batteries-viral-videos-evs/>\n- [13] How solid-state battery technology is changing energy storage — <https://www.cas.org/resources/cas-insights/solid-state-battery-technology>\n- [14] Solid State Battery Market Size, Share & Statistics 2034Solid State Battery Market Size & Share 2023-2030Solid — <https://www.factmr.com/report/solid-state-battery-market>\n- [15] Solid State Battery Market Size, Share | CAGR of 31.0% — <https://market.us/report/solid-state-battery-market/>\n- [16] The future of solid-state batteries in electric vehicles ... — <https://www.fastmarkets.com/insights/the-future-of-solid-state-batteries-in-electric-vehicles-from-innovation-to-commercial-reality/>\n- [17] Solid State Battery Market|Size,Share,Growth|2023-2030 — <https://virtuemarketresearch.com/report/solid-state-battery-market>\n- [18] Solid-State Batteries EV Industry: Future of Electric Cars — <https://editorialge.com/solid-state-batteries-ev-industry-impact/>\n- [19] Electric vehicle - Wikipedia — <https://en.wikipedia.org/wiki/Electric_vehicle>\n"
+}

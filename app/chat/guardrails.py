@@ -108,6 +108,7 @@ def format_context(chunks: list[str], sources: list[str]) -> str:
 
 _WORD = re.compile(r"[a-z0-9]+")
 _NUMBER = re.compile(r"\d+(?:\.\d+)?")
+_LIST_MARKER = re.compile(r"^\s*\d+[.)]\s", re.MULTILINE)  # "1. " / "2) " numbering is layout, not a claim
 _STOPWORDS = frozenset(
     "about above after again also another because been before being between both could does doing each from have "
     "having here into just like made many more most much must only other over same should some such than that their "
@@ -145,7 +146,7 @@ def check_grounding(answer: str, context: list[str]) -> GroundingResult:
     ctx_stems = {_stem(w) for w in _content_words(haystack)}
     score = sum(_stem(w) in ctx_stems for w in words) / len(words)
     ctx_numbers = set(_NUMBER.findall(haystack))
-    missing = [n for n in _NUMBER.findall(answer) if n not in ctx_numbers]
+    missing = [n for n in _NUMBER.findall(_LIST_MARKER.sub("", answer)) if n not in ctx_numbers]
     if missing:  # a number that is nowhere in the documents is the classic hallucination
         return GroundingResult(False, score, f"numbers_not_in_context:{','.join(missing[:3])}")
     if score < SUPPORT_THRESHOLD:

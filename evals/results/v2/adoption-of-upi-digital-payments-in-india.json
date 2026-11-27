@@ -1,0 +1,118 @@
+{
+ "topic": "Adoption of UPI digital payments in India",
+ "version": "v2",
+ "system": {
+  "latency_s": 95.8,
+  "input_tokens": 17388,
+  "output_tokens": 1982,
+  "cost_usd": 0.0038,
+  "llm_calls": 11,
+  "search_calls": 10,
+  "pages_fetched": 33,
+  "pages_failed": 16,
+  "claims_dropped": 13
+ },
+ "report": {
+  "words": 855,
+  "url_valid": 1.0,
+  "references": 22,
+  "claims": 29,
+  "groundedness": 0.966,
+  "citation_coverage": 1.0,
+  "citation_support": 0.966,
+  "coverage": 1.0,
+  "source_diversity": 1.0,
+  "top_domain_share": 0.114,
+  "readability": 1.0,
+  "flow": 1.0
+ },
+ "chat": {
+  "questions": 5,
+  "faithfulness": 1.0,
+  "answer_relevancy": 1.0,
+  "answer_correct": 1.0,
+  "context_precision": 0.417,
+  "context_recall": 1.0,
+  "idk_correct": 1.0,
+  "false_refusals": 0.0,
+  "rows": [
+   {
+    "question": "What is the Compound Annual Growth Rate (CAGR) of UPI transaction volume and value from FY 2017-18 to December 11, 2023?",
+    "expected": "The CAGR of UPI transaction volume is 147% and the CAGR of transaction value is 168% during this period.",
+    "answerable": true,
+    "answer": "The Compound Annual Growth Rate (CAGR) of UPI transaction volume is 147%, and for transaction value, it is 168% from FY 2017-18 to December 11, 2023.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      false,
+      false,
+      false
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "What are some of the technical challenges limiting UPI adoption in rural areas?",
+    "expected": "A significant technical challenge is the dependency on stable internet connectivity, which limits access in rural areas where network infrastructure may be inadequate.",
+    "answerable": true,
+    "answer": "Some of the technical challenges limiting UPI adoption in rural areas include:\n\n- Dependency on stable internet connectivity, which may be inadequate in these regions.\n- Daily and per-transaction limits imposed by UPI, which can restrict users needing to make larger payments.\n- Integration with various local payment systems, requiring compliance with different regulatory frameworks and security standards across regions.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      false,
+      false,
+      false
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "What government initiatives have supported the growth and adoption of UPI?",
+    "expected": "The RBI launched features like UPI Lite and UPI AutoPay, introduced a regulatory sandbox for fintech innovation, and supported the Bharat Bill Pay System (BBPS). The government also expanded UPI capabilities with UPI 123PAY for feature phone users and collaborated with fintech companies like PhonePe and Google Pay.",
+    "answerable": true,
+    "answer": "The government initiatives that have supported the growth and adoption of UPI include:\n\n- The RBI's launch of innovative features such as UPI Lite and UPI AutoPay.\n- The introduction of a regulatory sandbox by the RBI to facilitate the testing of new fintech applications.\n- The Bharat Bill Pay System (BBPS), which has contributed to the digitization of bill payments.\n- The expansion of UPI's capabilities to include features for users beyond smartphone owners, such as UPI 123PAY for feature phone users.\n- Collaborations with fintech companies like PhonePe and Google Pay to accelerate UPI's adoption.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      false,
+      true,
+      true
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "How many moons does Jupiter have?",
+    "expected": "",
+    "answerable": false,
+    "answer": "I couldn't find that in the documents, so I'd rather not guess. Try rephrasing, or upload a document that covers it.",
+    "refused": true,
+    "chunks": 0
+   },
+   {
+    "question": "What is the average transaction fee charged by banks for UPI payments in India?",
+    "expected": "",
+    "answerable": false,
+    "answer": "I couldn't find that in the documents.",
+    "refused": true,
+    "chunks": 4
+   }
+  ]
+ },
+ "markdown": "# Adoption of UPI digital payments in India\n\n## 1. Introduction to UPI and Its Significance\n\nIt facilitates real-time bank transfers through mobile devices, allowing users to send and receive money using a unique identifier known as a UPI ID or Virtual Payment Address (VPA) [1][2]. UPI operates on existing systems like the Immediate Payment Service (IMPS) and is regulated by the Reserve Bank of India, ensuring secure and efficient transactions [3][4]. Since its inception, UPI has transformed the landscape of digital payments in India, processing over 20 billion transactions monthly and significantly reducing reliance on cash [2][5].\n\nThe importance of digital payments in India has grown tremendously, particularly following the government's demonetization initiative in November 2016, which accelerated the adoption of digital payment methods [6]. UPI has played a crucial role in this shift by providing a user-friendly platform that supports both peer-to-peer and person-to-merchant transactions, making financial transactions more accessible and convenient for the general public [3][5]. The system's ability to link multiple bank accounts within a single mobile app has further enhanced its appeal, contributing to its rapid acceptance across various demographics [5].\n\n## 2. Current Adoption Rates and Trends\n\nThe adoption of Unified Payments Interface (UPI) in India has seen remarkable growth, with UPI transactions increasing from 92 crore in FY 2017-18 to 8,572 crore by December 11, 2023, reflecting a Compound Annual Growth Rate (CAGR) of 147% in volume and 168% in value, which surged from ₹1 lakh crore to ₹139 lakh crore during the same period [7][8]. UPI now commands a substantial 62% share of the digital payment market, underscoring its dominance in the financial ecosystem [8]. The continuous enhancements and innovations in UPI, such as the introduction of UPI123Pay and UPI Lite, have significantly contributed to its widespread acceptance and usage among consumers [9].\n\nThe integration of UPI with digital wallets has further democratized access to digital payments, allowing users to transact easily through QR codes and enhancing financial inclusion [10]. In comparison to other payment methods, UPI has emerged as the most popular choice among consumers, driven by its ease of use and the backing of major fintech players [10].\n\n## 3. Challenges to UPI Adoption\n\nOne significant technical challenge is the dependency on stable internet connectivity, which limits access in rural areas where network infrastructure may be inadequate [11]. Additionally, UPI imposes daily and per-transaction limits, which can restrict users who need to make larger payments, further complicating its usability for certain transactions [11]. The integration of UPI with various local payment systems also presents operational challenges, as it requires compliance with different regulatory frameworks and security standards across regions [12].\n\nThe National Payments Corporation of India (NPCI) has recognized these risks and introduced the UPI Information Security Compliance Framework 2025 to enhance the security and resilience of the UPI system [13]. This framework aims to ensure compliance with key cybersecurity principles and to proactively manage risks associated with emerging technologies [13]. Furthermore, user awareness and education remain critical barriers to adoption, as many individuals lack the necessary digital literacy to navigate UPI applications effectively [11]. Limited understanding of UPI's functionalities can prevent potential users from fully utilizing its benefits, underscoring the need for targeted educational initiatives to promote safe practices and enhance user confidence in digital payments [11].\n\n## 4. Government Initiatives and Support\n\nThe RBI has played a crucial role in the development and promotion of UPI, launching innovative features such as UPI Lite and UPI AutoPay, which cater to diverse user needs and enhance the payment experience [14]. Furthermore, the RBI's introduction of a regulatory sandbox has facilitated the testing of new fintech applications, thereby fostering innovation within the sector [15]. This supportive regulatory environment has been instrumental in increasing UPI's adoption rate, which rose from 73.4% in 2022-23 to 79.7% in 2023-24 [16].\n\nThe Bharat Bill Pay System (BBPS), launched in 2015, has contributed to the digitization of bill payments and has seen substantial growth over the years [16]. The government's vision of a digitally empowered and financially inclusive India is reflected in the expansion of UPI's capabilities, which now includes features designed for users beyond just smartphone owners, such as UPI 123PAY for feature phone users [17]. Collaborations with fintech companies like PhonePe and Google Pay have further accelerated UPI's adoption, making it a leading payment method in the country [16].\n\n## 5. Future Outlook for UPI in India\n\nExperts predict that UPI will become the dominant payment method in India by 2030, driven by international expansion and the integration of credit facilities [18]. The platform is already operational in 11 countries, including recent expansions into Greece and the Maldives, which supports cross-border payment capabilities and enhances India's digital payment infrastructure globally [19]. Furthermore, projections indicate that UPI could reach 1 billion transactions per day by FY28, reflecting its increasing adoption and utility [20].\n\nInnovations such as offline payment capabilities using SMS or NFC, voice-based transactions in regional languages, and AI-based fraud detection are on the horizon [18]. However, challenges such as cybersecurity threats and infrastructure stability will need to be addressed to sustain this growth and maintain user trust [21][22].\n\n## References\n\n- [1] Unified Payments Interface - Wikipedia — <https://en.wikipedia.org/wiki/Unified_Payments_Interface>\n- [2] UPI Payment: What It Is and How It WorksUPI - What is UPI? Check its Features and Benefits - BankBazaarWhat is — <https://paytm.com/blog/payments/upi/what-is-upi-payment-and-how-it-works/>\n- [3] Unified Payments Interface (UPI): How It Works and Its Benefits — <https://www.investopedia.com/terms/u/unified-payment-interface-upi.asp>\n- [4] What is UPI?: Unified Payments Interface Features and How UPI ... — <https://razorpay.com/blog/what-is-upi-and-how-it-works/>\n- [5] How Does UPI Work? - GeeksforGeeks — <https://www.geeksforgeeks.org/blogs/how-does-upi-work/>\n- [6] History of Digital Payments in India - oneindiaonline.com — <https://oneindiaonline.com/history-of-digital-payments-in-india.php>\n- [7] Rising UPI Transactions: A Paradigm Shift in India’s Digital ... — <https://taxguru.in/rbi/upi-transactions-growth-india-2023.html>\n- [8] Press Release Page | Press Information Bureau — <https://www.pib.gov.in/PressReleasePage.aspx?PRID=1987764>\n- [9] Annual Report | Official Website of Reserve Bank of India — <https://www.rbi.org.in/scripts/AnnualReportPublications.aspx?Id=1409>\n- [10] India: UPI usage by platform 2026 | Statista — <https://www.statista.com/statistics/1034443/india-upi-usage-by-platform/>\n- [11] UPI Problems, Challenges and Limitations Explained | Bajaj ... — <https://www.bajajfinserv.in/challenges-and-limitations-of-upi>\n- [12] Navigating the Challenges of UPI's Global Expansion, ETBFSI — <https://bfsi.economictimes.indiatimes.com/articles/what-are-the-challenges-for-upis-global-expansion/133943987>\n- [13] Unified Payments Interface (UPI) Information Security ... — <https://kpmg.com/in/en/insights/2025/07/unified-payments-interface-upi-information-security-compliance-framework-2025.html>\n- [14] NPCI and RBI Role in UPI System Development – Full Guide 2026 — <https://finbankingtech.com/fintech/npci-and-rbi-role-in-upi-system-development/>\n- [15] RBI played significant role in widespread adoption of UPI ...Digital Payments: UPI has become the backbone of  — <https://government.economictimes.indiatimes.com/news/digital-payments/rbi-played-significant-role-in-widespread-adoption-of-upi-rbi-governor-shaktikanta-das/107643251>\n- [16] A Cashless Future: Government initiatives shaping India’s ... — <https://tele.net.in/a-cashless-future-government-initiatives-shaping-indias-digital-payment-landscape/>\n- [17] UPI: From a digital payment platform to an engine of India’s ... — <https://ddnews.gov.in/en/upi-from-a-digital-payment-platform-to-an-engine-of-indias-digital-transformation/>\n- [18] UPI Future in India: Growth and 2030 Forecast — <https://www.webtradecrunch.com/upi-future-in-india-growth-forecast/>\n- [19] UPI Statistics 2026: Key Data, Trends, Transaction Insights ... — <https://dailymarketstats.com/upi-statistics-2026>\n- [20] UPI’s decade of growth: How India built a digital payments ... — <https://english.mathrubhumi.com/columns/upi-india-payment-revolution-2026-q12tq86f>\n- [21] India Unified Payments Interface (UPI) Market Analysis, Size ... — <https://www.technavio.com/report/unified-payments-interface-upi-market-industry-in-india-analysis>\n- [22] Growth Potential and Challenges of UPI Payments in India — <https://www.shriramfinance.in/shriram-one/articles/future-of-upi-payments-in-india>\n"
+}

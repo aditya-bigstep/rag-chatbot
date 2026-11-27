@@ -145,3 +145,22 @@ def test_one_user_cannot_open_another_users_chat(walled: TestClient, outbox: Out
     sign_up("h@example.com")
     assert walled.get(f"/api/sessions/{session_id}").status_code == 404
     assert walled.get("/api/sessions").json() == []
+
+
+def test_admin_signs_in_with_a_plain_name(outbox: Outbox, tmp_path: Path) -> None:
+    service = AuthService(SqliteUsers(connect(tmp_path / "accounts.sqlite")), MemoryKV(), outbox, "http://test")
+    with pytest.raises(AuthError):  # no admin configured: "admin" is just an invalid e-mail
+        service.signin("admin", "1234")
+
+    service.ensure_admin("admin", "1234")
+    service.ensure_admin("admin", "1234")  # every start-up calls it again
+    user, token = service.signin(" Admin ", "1234")
+    assert token and user.verified and outbox.sent == []
+    assert service.user_for_token(token).email == "admin"  # type: ignore[union-attr]
+    with pytest.raises(AuthError):
+        service.signin("admin", "wrong")
+
+    service.ensure_admin("admin", "new-password")  # changed in .env
+    with pytest.raises(AuthError):
+        service.signin("admin", "1234")
+    assert service.signin("admin", "new-password")[1]

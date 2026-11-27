@@ -78,6 +78,8 @@ class Settings:
     research_max_llm_calls: int = 40
 
     auth_enabled: bool = False  # true = an account is needed for everything except the welcome page
+    admin_login: str = ""  # a built-in account that signs in with this name instead of an e-mail ("" = none)
+    admin_password: str = ""
     brevo_api_key: str = ""
     brevo_sender_email: str = ""
     brevo_sender_name: str = "ResearchPilot"
@@ -136,6 +138,8 @@ def load_settings() -> Settings:
         research_verify=_env_bool("RESEARCH_VERIFY", True),
         research_max_llm_calls=_env_int("RESEARCH_MAX_LLM_CALLS", 40),
         auth_enabled=_env_bool("AUTH_ENABLED", False),
+        admin_login=os.getenv("ADMIN_LOGIN", "").strip().lower(),
+        admin_password=os.getenv("ADMIN_PASSWORD", ""),
         brevo_api_key=os.getenv("BREVO_API_KEY", ""),
         brevo_sender_email=os.getenv("BREVO_SENDER_EMAIL", ""),
         brevo_sender_name=os.getenv("BREVO_SENDER_NAME", "ResearchPilot"),

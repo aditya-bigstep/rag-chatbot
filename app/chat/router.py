@@ -30,10 +30,11 @@ class Route(StrEnum):
     FOLLOWUP = "followup"
     COMPARE = "compare"
     DOCUMENT = "document"
+    OVERVIEW = "overview"  # report chat only: "summarise it" -> read the whole report, not the top-k chunks
 
 
 # Routes that need the vector store. Everything else skips retrieval.
-RETRIEVAL_ROUTES = frozenset({Route.DOCUMENT, Route.FOLLOWUP, Route.COMPARE})
+RETRIEVAL_ROUTES = frozenset({Route.DOCUMENT, Route.FOLLOWUP, Route.COMPARE, Route.OVERVIEW})
 # Routes whose question must be rewritten into a standalone query before searching.
 REWRITE_ROUTES = frozenset({Route.FOLLOWUP, Route.COMPARE})
 
@@ -88,6 +89,22 @@ _TOOL = re.compile(
     r"\b(delete|remove|erase)\b.{0,40}\b(document|file|\.md|\.txt)\b)",
     re.IGNORECASE,
 )
+
+# Whole-report asks: "summarise it", "give me an overview", "key takeaways", "tl;dr". A similarity search
+# for "summarise it" matches nothing useful, so these read every chunk of the report instead.
+# The first branch tolerates typos ("sumamrise", "sumarize", "summerise").
+_OVERVIEW = re.compile(
+    r"(\bsum+[ae]?m*[ae]?r+[iy]|\boverview\b|\btl;?dr\b|\bgist\b|\brecap\b|\bin\s+(brief|short|a\s+nutshell)\b|"
+    r"\b(key|main|major|important|top)\s+(points?|takeaways?|findings?|ideas?|insights?|conclusions?|themes?)\b|"
+    r"\bwhat\s+(is|are|does)\s+(this|the|it)\s*(report|research|document|study)?\s*(all\s+)?(about|say|cover|conclude)\b|"
+    r"\b(explain|describe|outline)\s+(this|the)\s+(whole\s+|entire\s+)?(report|research|document)\b)",
+    re.IGNORECASE,
+)
+
+
+def is_overview(message: str) -> bool:
+    """True when the message asks about the report as a whole rather than one fact in it."""
+    return bool(_OVERVIEW.search(message))
 
 
 def classify(message: str, has_history: bool) -> Route:

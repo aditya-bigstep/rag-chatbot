@@ -79,7 +79,7 @@ from app.chat.guardrails import (
 from app.chat.llm import get_llm
 from app.chat.memory import ConversationMemory
 from app.chat.options import EngineOptions
-from app.chat.router import RETRIEVAL_ROUTES, REWRITE_ROUTES, Route, classify
+from app.chat.router import RETRIEVAL_ROUTES, REWRITE_ROUTES, Route, classify, is_overview
 from app.models import EngineResult, Message, Source
 from app.observability import annotate_run, build_run_config, traced_node
 from app.tools import get_tools
@@ -136,6 +136,15 @@ COMPARE_INSTRUCTIONS = (
     "one line per document starting with '- ', e.g.\n"
     "<Aspect>:\n- <Document 1 name>: <what it says>\n- <Document 2 name>: <what it says>\n"
     "Leave a blank line between aspects. Keep it concise and skip any closing summary sentence."
+)
+OVERVIEW_INSTRUCTIONS = (
+    "\n\nThe user is asking about the report AS A WHOLE (a summary, overview or the key points). The context "
+    "above is the full report, one <document> per passage, in order. Words like 'it' or 'this' mean the report. "
+    "Never reply that you couldn't find it: write the summary from the context.\n"
+    "Start with two or three sentences that give the overall picture, then the most important points as lines "
+    "starting with '- ' (at most 7, covering the different sections rather than only the first one). "
+    "Keep figures exactly as written in the report. Plain text only, no numbered lists, no closing remark. "
+    "If the user asked for a specific length or focus, follow that instead."
 )
 MAX_REWRITE_CHARS = 300
 
@@ -395,6 +404,10 @@ class _GraphBuilder:
 
     def route(self, state: ChatState) -> dict[str, Any]:
         """Feature 2: decide the path. Without routing everything is DOCUMENT = retrieve on every turn."""
+        # Report chat: "summarise it" must read the whole report. Searching for those words finds nothing.
+        if state.get("scope") and is_overview(_last_user_text(state)):
+            annotate_run(route=Route.OVERVIEW.value)
+            return {"route": Route.OVERVIEW.value}
         if not self.options.routing:
             return {"route": Route.DOCUMENT.value}
         has_history = len(state["messages"]) > 1
@@ -436,7 +449,11 @@ class _GraphBuilder:
         scope = state.get("scope")
         if scope and hasattr(retriever, "scoped"):
             retriever = retriever.scoped({"report_id": scope})
-        hits = retriever.retrieve(state["query"] or _last_user_text(state), k)
+        hits = []
+        if state["route"] == Route.OVERVIEW.value and hasattr(retriever, "everything"):
+            hits = retriever.everything()
+        if not hits:
+            hits = retriever.retrieve(state["query"] or _last_user_text(state), k)
         annotate_run(retrieved_chunks=len(hits), top_score=max((h.score for h in hits), default=None), scope=scope)
         return {
             "context": [h.chunk.text for h in hits],
@@ -466,6 +483,8 @@ class _GraphBuilder:
                 prompt = RAG_PROMPT + docs
                 if route == Route.COMPARE and state["context"]:
                     prompt += COMPARE_INSTRUCTIONS
+                if route == Route.OVERVIEW and state["context"]:
+                    prompt += OVERVIEW_INSTRUCTIONS
         else:
             prompt = {Route.DIRECT: CHAT_PROMPT, Route.HISTORY: HISTORY_PROMPT, Route.TOOL: TOOL_PROMPT}[route]
             if state["context"]:  # retrieval was forced (ALWAYS_RETRIEVE) — still pass it, as untrusted data
@@ -481,7 +500,7 @@ class _GraphBuilder:
         return (
             self.options.grounding == "enforce"
             and self.retriever is not None
-            and state["route"] in (Route.DOCUMENT.value, Route.COMPARE.value)
+            and state["route"] in (Route.DOCUMENT.value, Route.COMPARE.value, Route.OVERVIEW.value)
             and not state["context"]
             and not isinstance(state["messages"][-1], ToolMessage)
         )

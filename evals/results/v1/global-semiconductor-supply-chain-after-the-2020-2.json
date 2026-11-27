@@ -1,0 +1,117 @@
+{
+ "topic": "Global semiconductor supply chain after the 2020-2022 chip shortage",
+ "version": "v1",
+ "system": {
+  "latency_s": 202.5,
+  "input_tokens": 7560,
+  "output_tokens": 1705,
+  "cost_usd": 0.00216,
+  "llm_calls": 6,
+  "search_calls": 10,
+  "pages_fetched": 31,
+  "pages_failed": 17
+ },
+ "report": {
+  "words": 1214,
+  "url_valid": 1.0,
+  "references": 23,
+  "claims": 42,
+  "groundedness": 0.905,
+  "citation_coverage": 0.762,
+  "citation_support": 1.0,
+  "coverage": 1.0,
+  "source_diversity": 0.783,
+  "top_domain_share": 0.154,
+  "readability": 1.0,
+  "flow": 1.0
+ },
+ "chat": {
+  "questions": 5,
+  "faithfulness": 1.0,
+  "answer_relevancy": 1.0,
+  "answer_correct": 1.0,
+  "context_precision": 0.5,
+  "context_recall": 1.0,
+  "idk_correct": 1.0,
+  "false_refusals": 0.0,
+  "rows": [
+   {
+    "question": "What were the main causes of the global semiconductor shortage from 2020 to 2022?",
+    "expected": "The global semiconductor shortage from 2020 to 2022 was driven by a surge in demand for consumer electronics due to the COVID-19 pandemic, manufacturing disruptions, and supply chain bottlenecks. The transition to remote work and online learning increased demand for devices like laptops and smartphones, while factory closures and labor shortages caused production delays.",
+    "answerable": true,
+    "answer": "The main causes of the global semiconductor shortage from 2020 to 2022 included:\n\n- A surge in demand for consumer electronics due to the COVID-19 pandemic.\n- Manufacturing disruptions.\n- Supply chain bottlenecks.\n- Factory closures and labor shortages.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      false,
+      false,
+      false
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "How are semiconductor manufacturers responding to geopolitical pressures and supply chain vulnerabilities?",
+    "expected": "In response to geopolitical pressures and supply chain vulnerabilities, there has been a shift towards onshoring semiconductor manufacturing capabilities. Countries are investing in domestic fabrication plants, with 65% of U.S. investments in 2023 directed towards expanding or establishing new chip fabrication facilities. Companies like TSMC, Intel, and Micron Technology are building new fabs in the U.S., Europe, and Southeast Asia to decentralize production and enhance supply chain resilience.",
+    "answerable": true,
+    "answer": "Semiconductor manufacturers are responding to geopolitical pressures and supply chain vulnerabilities by shifting towards onshoring their manufacturing capabilities. Countries are investing in domestic fabrication plants, with a significant portion of U.S. investments in 2023 directed towards expanding or establishing new chip fabrication facilities. Major companies like TSMC, Intel, and Micron Technology are constructing new fabs in the United States, Europe, and Southeast Asia to decentralize production and enhance supply chain resilience. This trend also fosters collaboration between chipmakers and equipment suppliers, accelerating innovation.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      false,
+      true,
+      true
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "What government initiatives have been introduced to strengthen the semiconductor supply chain in the United States?",
+    "expected": "The Biden-Harris Administration introduced the CHIPS for America initiative, providing funding for construction, expansion, or modernization of semiconductor manufacturing facilities in the U.S. This initiative aims to strengthen the supply chain and create economic resilience by encouraging regional suppliers to participate. The CHIPS Act also mandates programs to incentivize investment in semiconductor supply chains.",
+    "answerable": true,
+    "answer": "The Biden-Harris Administration has introduced the CHIPS for America initiative, which provides funding opportunities for projects focused on the construction, expansion, or modernization of semiconductor manufacturing facilities in the United States. This initiative aims to strengthen the semiconductor supply chain and create economic resilience by encouraging regional suppliers to participate alongside other institutions.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      false,
+      false,
+      true
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "How long is an Olympic swimming pool?",
+    "expected": "",
+    "answerable": false,
+    "answer": "I can only help with questions about these documents.",
+    "refused": true,
+    "chunks": 4
+   },
+   {
+    "question": "What specific environmental regulations have been implemented globally to reduce the carbon footprint of semiconductor manufacturing?",
+    "expected": "",
+    "answerable": false,
+    "answer": "I couldn't find that in the documents.",
+    "refused": true,
+    "chunks": 4
+   }
+  ]
+ },
+ "markdown": "# Global semiconductor supply chain after the 2020-2022 chip shortage\n\n## 1. Introduction to the Semiconductor Supply Chain\n\nThe semiconductor supply chain is a complex network that plays a crucial role in the global economy, powering a wide range of technologies from smartphones to electric vehicles and artificial intelligence systems. As of 2026, the global semiconductor industry is projected to approach a valuation of nearly US$1 trillion, highlighting its significance for economic competitiveness and technological leadership [1]. The demand for semiconductors is driven primarily by advancements in AI, cloud computing, and industrial automation, which necessitate a diverse array of semiconductor components, including logic and memory chips [1]. \n\nKey players in the semiconductor industry include major manufacturers and foundries that have undergone significant consolidation in recent years, driven by the need for economies of scale and access to new technologies [2]. This consolidation has resulted in a competitive landscape dominated by a few firms, each holding substantial market shares [2]. However, the industry faces ongoing challenges such as supply chain disruptions, geopolitical tensions, and the need for substantial investments in advanced manufacturing technologies [3]. The importance of semiconductors extends beyond mere economic metrics; they are foundational to national security and innovation, making the decisions made today critical for future technological leadership [3].\n\n## 2. Impact of the 2020-2022 Chip Shortage\n\nThe global semiconductor shortage from 2020 to 2022 was driven by a combination of factors, including a surge in demand for consumer electronics due to the COVID-19 pandemic, manufacturing disruptions, and supply chain bottlenecks. As millions transitioned to remote work and online learning, the demand for devices such as laptops and smartphones skyrocketed, straining the already limited semiconductor supply [4][5]. Additionally, factory closures and labor shortages exacerbated the situation, leading to significant delays in production and distribution [6]. The automotive industry was particularly affected, experiencing production cuts and increased vehicle prices as a direct consequence of the chip shortage [7][5].\n\nThe effects of the semiconductor shortage rippled across various industries, with the automotive sector facing the most severe impacts. Many car manufacturers had to halt production, resulting in revenue losses and a scarcity of vehicles in the market [8][5]. Other sectors, including consumer electronics and industrial equipment, also reported significant disruptions, highlighting the interconnectedness of modern supply chains [7]. The shortage underscored the fragility of a supply chain optimized for efficiency but lacking flexibility, revealing the need for multi-sourcing and strategic stock management to mitigate future risks [9].\n\nLessons learned from the chip shortage emphasize the importance of diversifying supply chains and investing in semiconductor manufacturing capabilities. The crisis highlighted the vulnerabilities inherent in relying on single sources for critical components and the necessity for industries to adapt to changing market conditions [9][7]. As companies work to stabilize their supply chains, the semiconductor landscape is expected to evolve, with ongoing investments aimed at increasing manufacturing capacity and resilience against future disruptions [7][6].\n\n## 3. Current Trends in Semiconductor Manufacturing\n\nThe semiconductor manufacturing landscape is undergoing significant transformation driven by technological advancements and shifts in production locations. The integration of digital solutions is enabling manufacturers to navigate the increasing complexity of chip design and production, allowing for faster and more accurate processes [10]. The rise of artificial intelligence (AI) has also spurred innovation, particularly in the development of advanced multi-die systems, which are becoming essential to meet the diverse performance needs across various industries [11]. As a result, the semiconductor industry is expected to grow substantially, with revenues projected to reach US$1 trillion by 2030, necessitating investments in advanced manufacturing technologies and materials [12].\n\nIn response to geopolitical pressures and supply chain vulnerabilities, there has been a notable shift towards onshoring semiconductor manufacturing capabilities. Countries are increasingly investing in domestic fabrication plants, with 65% of U.S. investments in 2023 directed towards expanding or establishing new chip fabrication facilities [13]. Major companies like TSMC, Intel, and Micron Technology are actively constructing new fabs in the United States, Europe, and Southeast Asia, reflecting a strategic move to decentralize production that was historically concentrated in regions like Taiwan [14]. This trend not only aims to enhance supply chain resilience but also fosters collaboration between chipmakers and equipment suppliers, thereby accelerating innovation within the semiconductor ecosystem [13].\n\n## 4. Government Policies and Initiatives\n\nIn response to the semiconductor shortage experienced between 2020 and 2022, governments worldwide have implemented various policies and initiatives aimed at bolstering domestic supply chains and enhancing national security. The Biden-Harris Administration, for instance, has introduced the CHIPS for America initiative, which provides funding opportunities for projects focused on the construction, expansion, or modernization of semiconductor manufacturing facilities in the United States. This initiative is designed to strengthen the semiconductor supply chain and create economic resilience by encouraging regional suppliers to participate alongside other institutions [15]. Additionally, countries are increasingly focused on protecting their semiconductor supply chains due to associated national security risks, particularly concerning the acquisition of sensitive technologies by hostile states [16].\n\nInternational collaborations and trade policies have also evolved in response to the semiconductor crisis. The U.S. semiconductor industry, which holds over 53% of the global market share, is actively pursuing a market-opening trade agenda to enhance competitiveness and facilitate exports [17]. In 2025, the United States exported approximately $57.8 billion in semiconductors, highlighting the importance of maintaining strong trade relationships, particularly with major partners like China [17]. Furthermore, the strategic interests of policymakers have shifted towards ensuring that semiconductor manufacturing remains a priority, as evidenced by the ongoing emphasis on localization and sustainability within the industry [18].\n\nLooking ahead, future regulations are likely to continue shaping the semiconductor landscape. The CHIPS Act mandates the establishment of programs to incentivize investment in semiconductor supply chains, which will play a crucial role in determining the industry's trajectory [15]. As countries navigate the complexities of global trade and national security, the semiconductor sector will remain a focal point for regulatory frameworks aimed at fostering innovation while mitigating risks associated with supply chain vulnerabilities [16].\n\n## 5. Future Outlook for the Semiconductor Supply Chain\n\nThe future outlook for the semiconductor supply chain indicates a complex landscape shaped by emerging technologies and geopolitical factors. Predictions suggest that while semiconductor supply chains demonstrated resilience in 2024, the industry may face vulnerabilities in 2025, particularly due to the anticipated dominance of generative AI chips, which could account for up to 50% of sales [19][20]. The ongoing geopolitical fragmentation, characterized by tariffs and an East vs. West production split, is contributing to a decline in buyer confidence, with only 65% of leaders feeling secure in their supply chains, down from 82% the previous year [21]. Furthermore, constraints in advanced nodes, particularly sub-8nm technologies, are expected to exacerbate supply challenges, highlighting the need for strategic resilience measures such as smart reuse and node flexibility [21].\n\nLong-term strategies for resilience in the semiconductor supply chain will likely involve collaboration with governments to enhance supply chain robustness and market access [22]. Initiatives like onshoring, reshoring, nearshoring, and friendshoring are still in their infancy but are essential for mitigating risks associated with geopolitical tensions and climate-driven disruptions [20]. As the industry continues to evolve, investments in research and development will be crucial to support the technologies that underpin AI and other critical sectors, ensuring that the semiconductor industry remains a cornerstone of global innovation [23].\n\n## References\n\n- [1] Semiconductors in 2026: Market Trends and Supply Chain — <https://www.semiconproduct.com/semiconductors-in-2026-market-trends-and-supply-chain-outlook/>\n- [2] Semiconductor Industry Consolidation: Key Players & Market ...2023 Semiconductor Industry Outlook | Deloitte G — <https://www.globalmarketstudies.com/semiconductor-industry-consolidation-key-players-and-market-trends/>\n- [3] 2026 State of the Industry Report: Historic Growth Amid ... — <https://www.semiconductors.org/2026-state-of-the-industry-report-historic-growth-amid-intensifying-global-competition/>\n- [4] 2020–2023 global chip shortage - Wikipedia — <https://en.wikipedia.org/wiki/2020–2023_global_chip_shortage>\n- [5] How is the Chip Shortage Affecting the Automotive Industry — <https://marqstats.com/insights/how-is-the-chip-shortage-affecting-the-automotive-industry/>\n- [6] How auto companies are adapting to the global chip shortage — <https://mitsloan.mit.edu/ideas-made-to-matter/how-auto-companies-are-adapting-to-global-chip-shortage>\n- [7] Semiconductor Shortage 2026: Enduring Global Impact — <https://globalinsightwire.com/semiconductor-shortage-2026-s-enduring-global-impact/>\n- [8] When the Chips Went Down: Motor Vehicle Production and the ... — <https://www.federalreserve.gov/econres/notes/feds-notes/when-the-chips-went-down-motor-vehicle-production-and-the-2021-2022-semiconductor-shortages-20260928.html>\n- [9] Why Did the Chip Shortage Happen? A Retrospective — <https://www.partandstock.com/blog/why-the-chip-shortage-happened-lessons-learned>\n- [10] Semiconductor Industry Report: Mid-2023 Trends and Insights — <https://blogs.sw.siemens.com/electronics-semiconductors/2023/09/18/semiconductor-industry-report-mid-2023-trends-and-insights/>\n- [11] 2023 Semiconductor Industry Trends: AI & Beyond - Synopsys — <https://www.synopsys.com/blogs/chip-design/semiconductor-industry-trends-2023.html>\n- [12] 2023 Semiconductor Industry Outlook | Deloitte Global — <https://www.deloitte.com/an/en/Industries/tmt/perspectives/semiconductor-industry-outlook.html>\n- [13] Innovation Lightbulb: Zooming in on Domestic Semiconductor ... — <https://www.csis.org/analysis/innovation-lightbulb-zooming-domestic-semiconductor-investments-2023>\n- [14] The Latest Trends in Semiconductor Fabrication Plants — <https://www.tel.com/museum/magazine/report/202312_01/>\n- [15] Biden-Harris Administration Announces CHIPS for America ... — <https://www.nist.gov/news-events/news/2023/09/biden-harris-administration-announces-chips-america-funding-opportunity>\n- [16] National semiconductor strategy - GOV.UKCHIPS Incentives Funding Opportunities | NISTBiden-Harris Administrati — <https://www.gov.uk/government/publications/national-semiconductor-strategy/national-semiconductor-strategy>\n- [17] Global Trade Policy | SIA | Semiconductor Industry Association — <https://www.semiconductors.org/policies/trade/>\n- [18] Global Policy Analysis on Semiconductor Localization 2023 ... — <https://www.prnewswire.com/news-releases/global-policy-analysis-on-semiconductor-localization-2023-impact-of-the-policies-on-the-semiconductor-industrys-1-trillion-dream-301856617.html>\n- [19] 2025 semiconductor industry outlook | Deloitte Insights — <https://www.deloitte.com/us/en/insights/industry/technology/technology-media-telecom-outlooks/semiconductor-industry-outlook/2025.html>\n- [20] 2025 global semiconductor industry outlook - Deloitte US — <https://www.deloitte.com/us/en/Industries/tmt/articles/2025-global-semiconductor-industry-outlook.html>\n- [21] State of Semiconductors 2025 - Kearney — <https://www.kearney.com/service/product-excellence-and-renewal-lab/state-of-semiconductors-2025>\n- [22] 2025 State of the Industry Report: Investment and Innovation ... — <https://www.semiconductors.org/2025-state-of-the-industry-report-investment-and-innovation-amidst-global-challenges-and-opportunities/>\n- [23] Emerging Technologies – Semiconductor Industry Association — <https://www.semiconductors.org/policies/tax/emerging-technologies/?type=post>\n"
+}

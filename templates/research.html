@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}ResearchPilot{% endblock %}
+{% block body %}
+<main class="page">
+  <header class="page-head">
+    <h1>ResearchPilot</h1>
+    <a href="/">Document chat →</a>
+  </header>
+  <p class="muted">Give a topic. The agent plans an outline, waits for your approval, then searches the web and
+    writes a cited report you can steer, analyse and chat with.</p>
+
+  <form id="new-report" class="card row">
+    <input name="topic" placeholder="e.g. State of electric two-wheelers in India" minlength="3" maxlength="200" required>
+    <button class="primary" type="submit">Start research</button>
+  </form>
+
+  <h2>Reports</h2>
+  {% for r in reports %}
+    <a class="card report-link" href="/research/{{ r.id }}">
+      <span>{{ r.topic }}</span>
+      <span class="badge {{ r.status }}">{{ r.status|replace("_", " ") }}</span>
+    </a>
+  {% else %}
+    <p class="muted">No reports yet.</p>
+  {% endfor %}
+</main>
+<script>
+  document.getElementById('new-report').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    form.querySelector('button').disabled = true;
+    const res = await fetch('/api/research', {
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({topic: form.topic.value}),
+    });
+    if (res.ok) location.href = '/research/' + (await res.json()).id;
+    else { alert('Could not start: HTTP ' + res.status); form.querySelector('button').disabled = false; }
+  });
+</script>
+{% endblock %}

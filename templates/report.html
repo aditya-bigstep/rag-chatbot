@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}{{ r.topic }} — ResearchPilot{% endblock %}
+{% block body %}
+<main class="page wide" data-id="{{ r.id }}" data-status="{{ r.status }}">
+  <header class="page-head">
+    <div>
+      <a href="/research">← All reports</a>
+      <h1>{{ r.topic }}</h1>
+    </div>
+    <span class="badge {{ r.status }}">{{ r.status|replace("_", " ") }}</span>
+  </header>
+
+  {% if busy %}<p class="card banner">Working ({{ r.status }})… this page refreshes by itself.</p>{% endif %}
+  {% if r.error %}<p class="card banner error">{{ r.error }}</p>{% endif %}
+  {% if r.notice %}<p class="card banner">{{ r.notice }}</p>{% endif %}
+
+  {% if r.status == "awaiting_outline" %}{% include "partials/outline.html" %}{% endif %}
+
+  {% if r.sections and r.status != "awaiting_outline" %}
+  <div class="columns">
+    <article class="card report">
+      {% for s in r.sections %}
+        <section id="{{ s.id }}">
+          <h2>{{ s.number }}. {{ s.title }}</h2>
+          {{ bodies[s.id]|safe }}
+          <p class="meta">revision {{ s.revision }}{% if s.checked %} · {{ s.checked }} sentences checked,
+            {{ s.dropped }} removed as unsupported{% endif %}</p>
+        </section>
+      {% endfor %}
+      <h2>References</h2>
+      <ol class="references">
+        {% for ref in r.references %}
+          <li id="ref-{{ ref.n }}" value="{{ ref.n }}">{{ ref.title }} —
+            <a href="{{ ref.url }}" target="_blank" rel="noopener noreferrer">{{ ref.domain }}</a></li>
+        {% endfor %}
+      </ol>
+      <p><a href="/api/research/{{ r.id }}/export.md">Download as Markdown</a></p>
+    </article>
+    <aside class="side">{% include "partials/report_side.html" %}</aside>
+  </div>
+  {% endif %}
+</main>
+<script>
+  const page = document.querySelector('main.page');
+  const api = '/api/research/' + page.dataset.id;
+
+  async function post(path, body, button) {
+    if (button) button.disabled = true;
+    const res = await fetch(api + path, {
+      method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body || {}),
+    });
+    if (!res.ok) { alert('Request failed: ' + ((await res.json()).detail || res.status)); if (button) button.disabled = false; }
+    return res;
+  }
+  async function postThenReload(path, body, button) { if ((await post(path, body, button)).ok) location.reload(); }
+
+  // While the agent is working, poll the record and reload as soon as the status changes.
+  if ({{ 'true' if busy else 'false' }}) setInterval(async () => {
+    const res = await fetch(api);
+    if (res.ok && (await res.json()).status !== page.dataset.status) location.reload();
+  }, 2500);
+
+  // ---- outline review (HITL 1)
+  const outline = document.getElementById('outline');
+  if (outline) {
+    const rows = outline.querySelector('.rows');
+    outline.querySelector('#add-row').onclick = () => {
+      const row = rows.firstElementChild.cloneNode(true);
+      row.querySelectorAll('input').forEach(i => i.value = '');
+      rows.append(row);
+    };
+    rows.addEventListener('click', (e) => { if (e.target.matches('.remove') && rows.children.length > 1) e.target.parentElement.remove(); });
+    outline.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const sections = [...rows.children].map(row => ({
+        title: row.querySelector('[name=title]').value.trim(), guidance: row.querySelector('[name=guidance]').value.trim(),
+      })).filter(s => s.title);
+      postThenReload('/outline', {sections}, outline.querySelector('button.primary'));
+    });
+  }
+
+  // ---- change request (HITL 2), analysis, knowledge base
+  const feedback = document.getElementById('feedback');
+  if (feedback) feedback.addEventListener('submit', (e) => {
+    e.preventDefault();
+    postThenReload('/feedback', {text: feedback.text.value}, feedback.querySelector('button'));
+  });
+  document.querySelectorAll('[data-post]').forEach(button => {
+    button.onclick = () => { button.textContent = 'Working…'; postThenReload(button.dataset.post, {}, button); };
+  });
+
+  // ---- chat with the report
+  const chat = document.getElementById('chat');
+  if (chat) chat.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const box = document.getElementById('chat-log');
+    const question = chat.text.value.trim();
+    if (!question) return;
+    chat.text.value = '';
+    const add = (cls, text) => { const p = document.createElement('div'); p.className = 'bubble ' + cls; p.textContent = text; box.append(p); box.scrollTop = box.scrollHeight; return p; };
+    add('user', question);
+    const reply = add('assistant', '…');
+    const res = await post('/chat', {text: question}, chat.querySelector('button'));
+    chat.querySelector('button').disabled = false;
+    if (!res.ok) { reply.textContent = 'Error'; return; }
+    const data = await res.json();
+    reply.textContent = data.answer;
+    for (const s of data.sources) {
+      const line = document.createElement('div');
+      line.className = 'chat-source';
+      line.append('From ' + s.section + ' ');
+      for (const ref of s.references) {
+        const a = document.createElement('a');
+        a.href = ref.url; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = '[' + ref.n + ']'; a.title = ref.title;
+        line.append(a, ' ');
+      }
+      reply.append(line);
+    }
+    box.scrollTop = box.scrollHeight;
+  });
+</script>
+{% endblock %}

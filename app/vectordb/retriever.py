@@ -66,6 +66,19 @@ class VectorRetriever:
         """Same retriever, limited to chunks whose metadata matches `where` (e.g. one report)."""
         return VectorRetriever(self.store, self.embedder, self.k, self.min_score, self.mode, where)
 
+    def everything(self, max_chars: int = 40_000) -> list[RetrievedChunk]:
+        """Every chunk in scope, in document order — for "summarise it", where no search query fits."""
+        if not hasattr(self.store, "all_chunks"):
+            return []
+        chunks = sorted(self.store.all_chunks(self.where), key=lambda c: (c.doc_id, c.position))  # type: ignore[attr-defined]
+        hits, size = [], 0
+        for chunk in chunks:
+            size += len(chunk.text)
+            if hits and size > max_chars:
+                break
+            hits.append(RetrievedChunk(chunk=chunk, score=1.0))
+        return hits
+
     def _dense(self, query: str, k: int) -> list[RetrievedChunk]:
         vector = self.embedder.embed_query(query)
         if self.where:

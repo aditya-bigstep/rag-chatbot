@@ -1,0 +1,117 @@
+{
+ "topic": "Green hydrogen as a clean energy source",
+ "version": "v1",
+ "system": {
+  "latency_s": 137.3,
+  "input_tokens": 7302,
+  "output_tokens": 1677,
+  "cost_usd": 0.0021,
+  "llm_calls": 6,
+  "search_calls": 10,
+  "pages_fetched": 30,
+  "pages_failed": 16
+ },
+ "report": {
+  "words": 1186,
+  "url_valid": 1.0,
+  "references": 22,
+  "claims": 38,
+  "groundedness": 0.947,
+  "citation_coverage": 0.895,
+  "citation_support": 0.971,
+  "coverage": 1.0,
+  "source_diversity": 0.909,
+  "top_domain_share": 0.133,
+  "readability": 1.0,
+  "flow": 1.0
+ },
+ "chat": {
+  "questions": 5,
+  "faithfulness": 1.0,
+  "answer_relevancy": 1.0,
+  "answer_correct": 1.0,
+  "context_precision": 0.667,
+  "context_recall": 1.0,
+  "idk_correct": 1.0,
+  "false_refusals": 0.0,
+  "rows": [
+   {
+    "question": "What is green hydrogen and how is it produced?",
+    "expected": "Green hydrogen is hydrogen produced through the electrolysis of water using renewable energy sources, resulting in very low or zero carbon emissions. The process involves splitting water into hydrogen and oxygen using electricity from renewable sources such as wind, solar, or hydro power.",
+    "answerable": true,
+    "answer": "Green hydrogen is hydrogen produced through the electrolysis of water using renewable energy sources, resulting in very low or zero carbon emissions. The process involves splitting water into hydrogen and oxygen, with the electricity for electrolysis coming from renewable sources such as wind, solar, or hydro power.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      false,
+      false,
+      true
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "What are the main renewable energy sources used for producing green hydrogen?",
+    "expected": "The three main renewable energy sources used for producing green hydrogen are hydroelectricity, wind power generated through turbines, and solar energy harnessed via photovoltaic panels.",
+    "answerable": true,
+    "answer": "The main renewable energy sources used for producing green hydrogen are:\n\n- Hydroelectricity\n- Wind power\n- Solar energy",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      true,
+      true,
+      false
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "What are the current challenges facing green hydrogen production?",
+    "expected": "Challenges include high production costs ranging from $5.00 to $7.50 per kilogram, increased capital costs for electrolysis systems due to rising material costs, availability of purified water, inefficiencies and costs in hydrogen transportation infrastructure, and lack of clear and supportive regulatory frameworks.",
+    "answerable": true,
+    "answer": "The current challenges facing green hydrogen production include:\n\n- High production costs, ranging from $5.00 to $7.50 per kilogram in Europe, with targets of $2.00 per kilogram by 2026.\n- Increased capital costs for electrolysis systems, which have risen by a median of 57% between 2022 and 2024.\n- The need for significant volumes of purified water, which can be a challenge in water-scarce regions.\n- Inefficient transportation due to hydrogen's low volumetric energy density, requiring specialized infrastructure.\n- A lack of a clear and supportive regulatory framework, leading to inconsistent policies and insufficient incentives for industry growth.\n- Economic feasibility challenges that necessitate ongoing research and development.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      true,
+      false,
+      true
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "Who won the first season of the Indian Premier League?",
+    "expected": "",
+    "answerable": false,
+    "answer": "I can only help with questions about these documents.",
+    "refused": true,
+    "chunks": 4
+   },
+   {
+    "question": "What are the specific environmental impacts of green hydrogen production on local aquatic ecosystems?",
+    "expected": "",
+    "answerable": false,
+    "answer": "I couldn't find that in the documents.",
+    "refused": true,
+    "chunks": 4
+   }
+  ]
+ },
+ "markdown": "# Green hydrogen as a clean energy source\n\n## 1. Introduction to Green Hydrogen\n\nGreen hydrogen is defined as hydrogen produced through the electrolysis of water using renewable energy sources, resulting in very low or zero carbon emissions [1][2]. This process involves splitting water into hydrogen and oxygen, with the electricity required for electrolysis coming from renewable sources such as wind, solar, or hydro power [2][3]. Green hydrogen is considered the cleanest energy vector available, capable of generating heat or electricity without producing harmful emissions, thus supporting global decarbonization efforts [3][4].\n\nThe importance of green hydrogen in the clean energy transition cannot be overstated, as it plays a central role in decarbonizing sectors that are difficult to electrify, such as heavy industry and transportation [3][5]. While green hydrogen currently accounts for less than 1% of annual hydrogen production, its potential to decarbonize large sectors of the global economy is significant [4]. In comparison to other types of hydrogen, such as grey and blue hydrogen, green hydrogen stands out as the most sustainable option. Grey hydrogen is produced from fossil fuels and emits significant greenhouse gases, while blue hydrogen involves capturing and storing emissions but still relies on fossil fuels [5]. As the world moves towards a more sustainable future, green hydrogen is seen as the ultimate goal for achieving a fully decarbonized energy system [5].\n\n## 2. Production Methods\n\nThe production of green hydrogen primarily relies on the electrolysis process, which involves using renewable electricity to split water molecules into hydrogen and oxygen. This method is foundational for generating hydrogen in a clean and carbon-neutral manner, as it emits only water vapor as a byproduct when powered by renewable energy sources such as solar, wind, or hydroelectric systems [6]. The efficiency of modern electrolysis systems typically ranges from 70 to 80 percent, with some advancements pushing efficiencies up to 95 percent, thereby enhancing the economic viability of green hydrogen production [6].\n\nRenewable energy sources play a crucial role in the electrolysis process. The three main sources of carbon-free electricity utilized for this purpose are hydroelectricity, wind power, and solar energy [7]. Hydroelectricity is the leading source globally, followed by wind power generated through turbines, and solar energy harnessed via photovoltaic panels [7]. These renewable sources ensure that the hydrogen produced is classified as \"green\" or \"renewable,\" distinguishing it from hydrogen produced using fossil fuels [7][6]. \n\nCurrent technologies in the field of electrolysis include alkaline electrolyzers, which are mature and cost-effective for large-scale production, although they are less suited for intermittent renewable energy sources [8]. Innovations are also being explored, such as biocatalyzed electrolysis, which utilizes microbial fuel cells to generate hydrogen from various aquatic plants [9]. Additionally, research into photoelectrochemical water splitting and thermochemical water splitting is ongoing, although these methods have not yet achieved large-scale production [8]. Overall, the combination of established and emerging technologies is paving the way for a significant expansion in green hydrogen production capabilities [8].\n\n## 3. Applications and Benefits\n\nGreen hydrogen is emerging as a versatile energy source with applications across various sectors, particularly in transportation and heavy industry. In transportation, hydrogen is positioned as a viable alternative for long-distance travel, especially in shipping and aviation, where traditional batteries face limitations due to their low energy density [3][10]. Fuel cell vehicles and hydrogen-derived synthetic fuels, such as ammonia and methanol, are paving the way for cleaner mobility solutions [8][3]. In heavy industry, green hydrogen serves as a crucial feedstock for processes like steelmaking and the production of green ammonia, which are challenging to decarbonize through electrification alone [8][11].\n\nThe environmental benefits of green hydrogen are significant, as its production does not release greenhouse gases, unlike grey hydrogen derived from fossil fuels [12][13]. By utilizing renewable energy sources such as solar and wind for its production, green hydrogen contributes to climate change mitigation and supports the transition to a sustainable energy future [13]. Additionally, green hydrogen can be stored at scale, providing a flexible energy carrier that helps stabilize power grids and enhances energy security [3][11]. Economically, the growth of green hydrogen applications is expected to expand as electrolyser technology advances and renewable energy costs decline, positioning hydrogen as a central component of the global clean energy system [11]. The monetization of by-products, such as oxygen from electrolysis, further enhances its economic viability [12].\n\n## 4. Challenges and Limitations\n\nThe production of green hydrogen faces significant challenges primarily due to high costs associated with its generation and infrastructure requirements. The current production costs for green hydrogen range from $5.00 to $7.50 per kilogram in Europe, with targets aiming for $2.00 per kilogram by 2026, necessitating substantial reductions in electrolyzer capital expenditures and electricity prices [14]. The capital costs for electrolysis systems have increased by a median of 57% between 2022 and 2024, driven by rising material costs and slower deployment rates, which hinder anticipated cost reductions [15]. Additionally, the availability of purified water is a critical factor, as electrolysis requires significant volumes, and regions with water scarcity face higher production costs and limitations on land eligibility for hydrogen production [16].\n\nInfrastructure requirements further complicate the scalability of green hydrogen. Transporting hydrogen is inefficient due to its low volumetric energy density, necessitating specialized infrastructure for liquefied hydrogen, ammonia, or liquid organic hydrogen carriers, each with distinct cost profiles and energy losses [17]. Moreover, the lack of a clear and supportive regulatory framework poses risks to the industry's growth, as inconsistent policies and insufficient incentives hinder the establishment of unified standards for hydrogen usage [18]. These technological barriers, combined with the economic feasibility challenges, underscore the need for ongoing research and development to enhance the viability of green hydrogen as a clean energy source.\n\n## 5. Future Outlook\n\nThe future outlook for green hydrogen as a clean energy source is marked by significant market trends and policy developments. Demand for hydrogen has been increasing, with projections indicating that it will continue to rise as industries seek cleaner alternatives for emissions reduction, particularly in heavy industry and freight transportation [19]. The International Energy Agency (IEA) reports that the number of hydrogen policies and projects worldwide has expanded rapidly, reflecting unprecedented political and business momentum [20]. This growth is supported by over 1,000 hydrogen policies that have been announced or implemented globally since 2020, indicating a robust framework for the hydrogen market [21].\n\nPolicy developments are crucial for the future of green hydrogen, as they provide the necessary regulatory frameworks to ensure the market's expansion. The U.S. National Hydrogen Strategy and Roadmap outlines opportunities for hydrogen to contribute to national goals and presents a strategic framework for achieving large-scale production and use by 2050 [22]. Furthermore, cooperative efforts among nations to establish monitoring and verification systems for clean hydrogen will enhance its competitiveness and availability [19]. As these policies take shape, they are expected to direct investments and innovations towards the most effective uses of clean hydrogen, thereby facilitating its adoption across various sectors [19]. Overall, the combination of increasing demand, supportive policies, and strategic frameworks suggests a promising future for green hydrogen as a key player in the transition to a cleaner energy landscape.\n\n## References\n\n- [1] What is Green Hydrogen — <https://gh2.org/what-green-hydrogen>\n- [2] What is green hydrogen? - ghd.com — <https://www.ghd.com/en-us/explainers/energy-and-resources/what-is-green-hydrogen>\n- [3] Green hydrogen: what it is, benefits and applications | BBVA CIB — <https://www.bbvacib.com/insights/news/green-hydrogen-what-is-it-benefits-applications/>\n- [4] Explainer: What Is Green Hydrogen? - Earth.Org — <https://earth.org/green-hydrogen/>\n- [5] Green, grey and blue hydrogen: What’s the difference? — <https://drivinghydrogen.com/2024/08/12/green-grey-and-blue-hydrogen-whats-the-difference/>\n- [6] How Is Green Hydrogen Produced? - WestAir — <https://westairgases.com/blog/how-is-green-hydrogen-produced/>\n- [7] Green Hydrogen Production Process Explained - ENGIE — <https://www.engie.com/en/explore/explainer/green-hydrogen-production-how-does-it-work/>\n- [8] Green hydrogen - Wikipedia — <https://en.wikipedia.org/wiki/Green_hydrogen>\n- [9] Hydrogen production - Wikipedia — <https://en.wikipedia.org/wiki/Hydrogen_production>\n- [10] Green Hydrogen Applications: Eight Ways Forward Toward ... — <https://www.plugpower.com/blog/green-hydrogen-applications-eight-ways-forward-toward-sustainability/>\n- [11] Hydrogen Applications: Real-World Uses & Growth Through 2040 — <https://www.power-h2.com/insights/hydrogen-applications-real-world-uses-of-hydrogen-today-and-through-2040>\n- [12] Green Hydrogen, Meaning, Benefits, Production, Applications — <https://vajiramandravi.com/upsc-exam/green-hydrogen/>\n- [13] What Are The Benefits Of Green Hydrogen On The Environment? — <https://hyenr.com/blogs/news/what-are-the-benefits-of-green-hydrogen-on-the-environment>\n- [14] Green hydrogen electrolyser costs in 2026: where the price ... — <https://e-fuels.com/blog/green-hydrogen-electrolyser-costs-2026.html>\n- [15] Green Hydrogen Price Tracker 2026 | Global Market — <https://epignosisinsights.com/reports/global-green-hydrogen-price-tracker>\n- [16] Green Hydrogen Cost Economics 2026: The Real Path to Price ... — <https://www.greenfueljournal.com/post/green-hydrogen-cost-economics-2026-the-real-path-to-price-parity>\n- [17] Green Hydrogen Cost Trends 2026: Production Cost per kg — <https://sector-signals.net/en/themes/sustainability/articles/green-hydrogen-cost-trend-2026>\n- [18] Green hydrogen value chain challenges and global readiness ... — <https://pmc.ncbi.nlm.nih.gov/articles/PMC12270943/>\n- [19] Clean Hydrogen Measures in U.S. Climate Policy | World ... — <https://www.wri.org/us-climate-policy-implementation/sectors/hydrogen>\n- [20] The Future of Hydrogen - IEA — <https://www.iea.org/reports/the-future-of-hydrogen>\n- [21] Global Hydrogen Review 2026 - IEA — <https://www.iea.org/reports/global-hydrogen-review-2026>\n- [22] Policies and Acts | Hydrogen Program — <https://www.hydrogen.energy.gov/library/policies-acts>\n"
+}

@@ -1,0 +1,118 @@
+{
+ "topic": "Central bank digital currencies (CBDCs)",
+ "version": "v2",
+ "system": {
+  "latency_s": 201.8,
+  "input_tokens": 14518,
+  "output_tokens": 1895,
+  "cost_usd": 0.00331,
+  "llm_calls": 11,
+  "search_calls": 10,
+  "pages_fetched": 29,
+  "pages_failed": 20,
+  "claims_dropped": 7
+ },
+ "report": {
+  "words": 921,
+  "url_valid": 1.0,
+  "references": 19,
+  "claims": 33,
+  "groundedness": 0.939,
+  "citation_coverage": 1.0,
+  "citation_support": 0.939,
+  "coverage": 1.0,
+  "source_diversity": 0.632,
+  "top_domain_share": 0.222,
+  "readability": 1.0,
+  "flow": 1.0
+ },
+ "chat": {
+  "questions": 5,
+  "faithfulness": 1.0,
+  "answer_relevancy": 1.0,
+  "answer_correct": 1.0,
+  "context_precision": 0.583,
+  "context_recall": 1.0,
+  "idk_correct": 1.0,
+  "false_refusals": 0.0,
+  "rows": [
+   {
+    "question": "What are Central Bank Digital Currencies (CBDCs) and what benefits do they offer?",
+    "expected": "CBDCs are digital forms of a country's fiat currency issued and regulated by central banks, fixed in value by the government. They aim to enhance financial stability, lower transaction costs, improve monetary policy efficiency, and provide a safe digital asset free from credit or liquidity risks.",
+    "answerable": true,
+    "answer": "Central Bank Digital Currencies (CBDCs) are digital forms of a country's fiat currency issued and regulated by central banks. They aim to enhance financial stability, lower transaction costs, and improve the efficiency of monetary policy implementation. \n\nThe benefits of CBDCs include:\n- Faster payments\n- Lower transaction costs\n- Improved financial inclusion\n- Enhanced resilience of payment systems\n- Support for digital economies\n- Reduction of high cross-border transaction costs\n- Potential support for the dominance of the U.S. dollar in global markets\n\nThese benefits depend on the design, implementation, and regulatory framework surrounding the CBDC.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      true,
+      false,
+      false
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "Which countries have fully operational CBDCs and what is the status of the United States regarding CBDCs?",
+    "expected": "The Bahamas (Sand Dollar), Nigeria (eNaira), and Jamaica (JAM-DEX) have fully operational CBDCs. The United States has paused its federal CBDC initiatives as of January 2025, with some states introducing legislation to ban state payments using CBDCs due to privacy concerns.",
+    "answerable": true,
+    "answer": "Countries with fully operational CBDCs include:\n\n- The Bahamas (Sand Dollar)\n- Nigeria (eNaira)\n- Jamaica (JAM-DEX)\n\nAs for the United States, it has paused its federal CBDC initiatives as of January 2025, with some states introducing legislation to ban state payments using CBDCs due to privacy concerns.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      true,
+      false,
+      false
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "What are the main regulatory challenges faced in implementing CBDCs?",
+    "expected": "Key regulatory challenges include ensuring data privacy and cybersecurity, managing risks related to cross-border CBDCs such as foreign-exchange controls and conflicting legal frameworks, and developing enforceable standards to operate CBDCs efficiently and securely globally. Additionally, concerns include bank disintermediation and centralized control, especially in authoritarian regimes.",
+    "answerable": true,
+    "answer": "The main regulatory challenges faced in implementing CBDCs include:\n\n- Data privacy concerns, with 68% of central banks identifying it as their biggest challenge.\n- The complexities associated with cross-border CBDCs, including foreign-exchange controls and conflicting legal frameworks.\n- The need for a clear regulatory framework to define the rights and obligations of all stakeholders involved.\n- Risks related to bank disintermediation and centralized control, especially in authoritarian regimes.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      true,
+      true,
+      false
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "What is the chemical symbol for gold?",
+    "expected": "",
+    "answerable": false,
+    "answer": "I couldn't find that in the documents, so I'd rather not guess. Try rephrasing, or upload a document that covers it.",
+    "refused": true,
+    "chunks": 0
+   },
+   {
+    "question": "How do CBDCs impact the interest rates set by central banks?",
+    "expected": "",
+    "answerable": false,
+    "answer": "I couldn't find that in the documents.",
+    "refused": true,
+    "chunks": 4
+   }
+  ]
+ },
+ "markdown": "# Central bank digital currencies (CBDCs)\n\n## 1. Introduction to CBDCs\n\nCentral Bank Digital Currencies (CBDCs) are defined as digital forms of a country's fiat currency that are issued and regulated by central banks, ensuring they are fixed in value by the government [1]. These digital currencies aim to enhance financial stability, lower transaction costs, and improve the efficiency of monetary policy implementation [1]. CBDCs are designed to be widely available to the general public, functioning as a digital liability of the central bank, which makes them the safest digital asset available, free from credit or liquidity risks [2].\n\nThe importance of CBDCs in the financial system lies in their potential to improve financial inclusion and provide a stable alternative to private digital currencies [3]. As governments and central banks explore the implications of CBDCs, they recognize the need to maintain public access to central bank money in an increasingly digital economy [3]. In contrast to cryptocurrencies, which are decentralized and often volatile, CBDCs are regulated by central authorities, providing consumers with guaranteed protection and stability [4][5]. This regulatory oversight positions CBDCs as a complementary element to existing financial systems rather than a replacement, highlighting their role in preventing fragmentation within the payment landscape [4].\n\n## 2. Current Global Landscape\n\nThe global landscape of central bank digital currencies (CBDCs) is rapidly evolving, with over 130 jurisdictions actively engaged in research, piloting, or implementing CBDCs, representing 98 percent of global GDP [6]. Notable examples of fully operational CBDCs include the Bahamas' Sand Dollar, Nigeria's eNaira, and Jamaica's JAM-DEX, all of which have been rolled out in recent years [6].\n\nThe European Central Bank is also preparing for a digital euro, while the United States has paused its federal CBDC initiatives as of January 2025, with some states even introducing legislation to ban state payments using CBDCs due to privacy concerns [3][7]. The motivations for exploring CBDCs vary, with many countries aiming to enhance financial inclusion, improve payment efficiency, and maintain competitiveness in the evolving digital economy [8][9]. As the landscape continues to develop, the focus remains on addressing the technical and policy challenges associated with both wholesale and retail CBDCs [10].\n\n## 3. Benefits and Challenges\n\nCentral bank digital currencies (CBDCs) present several potential benefits, including faster payments, lower transaction costs, and improved financial inclusion, which could enhance the resilience of payment systems and support digital economies [11]. By establishing a direct connection between consumers and central banks, CBDCs could eliminate the need for expensive infrastructure typically associated with traditional banking systems [1]. Furthermore, CBDCs may help reduce high cross-border transaction costs and could potentially support the dominance of the U.S. dollar in global markets [1]. However, the realization of these benefits largely depends on the design, implementation, and regulatory framework surrounding the CBDC [11].\n\nConcerns about privacy, cybersecurity threats, and the potential for low public adoption are prevalent [12]. The transition to a CBDC could disrupt traditional banking systems, affecting deposits, lending, and overall financial stability [11]. Central banks must navigate these risks carefully, as the implications of a CBDC's adoption could vary significantly based on its design and the existing financial structure [12]. Additionally, the need for transparency and public trust is critical, as historical shifts in monetary systems have often required time for societal acceptance [13]. As central banks continue to explore CBDCs, they face the dual challenge of harnessing their benefits while mitigating associated risks [14].\n\n## 4. Regulatory Considerations\n\nA clear regulatory framework is essential for determining how CBDCs can be issued, distributed, and used, as well as for defining the rights and obligations of all stakeholders involved, including central banks, commercial banks, and consumers [15]. Privacy and cybersecurity are particularly pressing concerns, with 68% of central banks identifying data privacy as their biggest challenge in CBDC implementation [16]. Furthermore, the need for regulatory clarity is underscored by the potential risks associated with cross-border CBDCs, which introduce complexities related to foreign-exchange controls and conflicting legal frameworks [12].\n\nThe Bank for International Settlements (BIS) Committee on Payments and Market Infrastructures (CPMI) plays a significant role in this regard, with 30 central banks regularly sharing regulatory practices [16]. The development of enforceable standards is vital for ensuring that CBDCs can operate efficiently and securely on a global scale, promoting trust and financial inclusion [17]. As countries explore CBDC initiatives, the alignment of regulatory frameworks will be essential to mitigate risks such as bank disintermediation and to address concerns over centralized control, particularly in authoritarian regimes [16].\n\n## 5. Future Outlook\n\nMajor developments in the CBDC space include the evolution of retail and wholesale CBDCs, cross-border interoperability, and the integration of CBDCs with existing banking infrastructure, which suggests a gradual rather than a disruptive transition [18]. Central banks are increasingly focusing on financial stability, user adoption, and the legal frameworks necessary for digital currencies, highlighting the importance of a well-regulated environment for successful implementation [18].\n\nThe potential impact of CBDCs on the global financial system is profound, as they could enhance financial inclusion and improve transaction efficiency [19]. By providing a widely accepted means of payment that does not rely on private intermediaries, CBDCs may help central banks maintain relevance in an increasingly cashless society [19]. However, the introduction of CBDCs also poses risks and challenges, including potential disruptions to existing market dynamics and the need for careful management of regulatory frameworks to mitigate unforeseen consequences [19]. As governments and central banks prioritize digital payments and strategic competition with stablecoins, the landscape of global finance is poised for transformation [18].\n\n## References\n\n- [1] Understanding Central Bank Digital Currencies (CBDCs): A ... — <https://www.investopedia.com/terms/c/central-bank-digital-currency-cbdc.asp>\n- [2] Central Bank Digital Currency (CBDC) - Federal Reserve Board — <https://www.federalreserve.gov/newsevents/central-bank-digital-currency.htm>\n- [3] Central bank digital currency - Wikipedia — <https://en.wikipedia.org/wiki/Central_bank_digital_currency>\n- [4] How are CBDCs different from cryptocurrencies and stablecoins? — <https://www.weforum.org/stories/financial-and-monetary-systems/cbdcs-how-different-cryptocurrency-stablecoin>\n- [5] CBDCs vs. Cryptocurrencies: Understanding the Key Differences — <https://www.kaleido.io/blockchain-blog/cbdcs-vs-cryptocurrencies>\n- [6] Central bank digital currencies by country - Wikipedia — <https://en.wikipedia.org/wiki/Central_bank_digital_currencies_by_country>\n- [7] Countries Developing a Central Bank Digital Currency (CBDC) — <https://www.investopedia.com/countries-developing-central-bank-digital-currency-cbdc-5221005>\n- [8] Central Bank Digital Currency Tracker - Atlantic Council — <https://www.atlanticcouncil.org/cbdctracker/>\n- [9] CBDC Projects Around the World in 2026 - Blockchain Council — <https://www.blockchain-council.org/digital-assets/cbdc-projects-around-the-world-digital-currency-pilots/>\n- [10] CBDCs — Central Bank Digital Currency Country Guide 2026 — <https://cryptoandmoneysearch.com/cbdc>\n- [11] Central Bank Digital Currencies Explained - Blockchain Council — <https://www.blockchain-council.org/digital-assets/central-bank-digital-currencies-how-cbdcs-work/>\n- [12] CBDC Risks and Challenges Explained - Blockchain Council — <https://www.blockchain-council.org/digital-assets/cbdc-risks-challenges-adoption-security-privacy-banking-impact/>\n- [13] What are Central bank digital currencies (CBDCs)? | World ... — <https://www.weforum.org/stories/financial-and-monetary-systems/what-are-central-bank-digital-currencies-advantages-risks>\n- [14] Implementing a CBDC: The challenges and a solution - Quant — <https://quant.network/research/implementing-a-cbdc-the-challenges-and-a-solution/>\n- [15] CBDC Regulatory Challenges: Legal and Compliance — <https://www.blockchain-council.org/digital-assets/cbdc-regulatory-challenges-legal-compliance-governance/>\n- [16] CBDC Regulations Statistics 2026: Global Rules • CoinLaw — <https://coinlaw.io/cbdc-regulations-statistics/>\n- [17] Central Bank Digital Currency Global Interoperability ... — <https://www.weforum.org/publications/central-bank-digital-currency-global-interoperability-principles>\n- [18] From Crypto to CBDCs: Digital currency and the future of ... — <https://business.cornell.edu/centers/2026/02/04/from-crypto-to-cbdcs/>\n- [19] How Will CBDCs Impact the Global Financial System? - ZenLedger — <https://zenledger.io/blog/how-cbdcs-could-affect-the-global-financial-system/>\n"
+}

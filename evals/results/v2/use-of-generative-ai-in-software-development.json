@@ -1,0 +1,118 @@
+{
+ "topic": "Use of generative AI in software development",
+ "version": "v2",
+ "system": {
+  "latency_s": 214.4,
+  "input_tokens": 16728,
+  "output_tokens": 1994,
+  "cost_usd": 0.00371,
+  "llm_calls": 11,
+  "search_calls": 10,
+  "pages_fetched": 37,
+  "pages_failed": 11,
+  "claims_dropped": 18
+ },
+ "report": {
+  "words": 855,
+  "url_valid": 1.0,
+  "references": 25,
+  "claims": 28,
+  "groundedness": 0.929,
+  "citation_coverage": 1.0,
+  "citation_support": 0.929,
+  "coverage": 1.0,
+  "source_diversity": 0.8,
+  "top_domain_share": 0.212,
+  "readability": 1.0,
+  "flow": 1.0
+ },
+ "chat": {
+  "questions": 5,
+  "faithfulness": 1.0,
+  "answer_relevancy": 1.0,
+  "answer_correct": 1.0,
+  "context_precision": 0.417,
+  "context_recall": 1.0,
+  "idk_correct": 1.0,
+  "false_refusals": 0.0,
+  "rows": [
+   {
+    "question": "What are some current applications of generative AI in software development?",
+    "expected": "Current applications of generative AI in coding include automating code generation, bug detection, testing automation, and project management, which streamline various stages of the development process.",
+    "answerable": true,
+    "answer": "Current applications of generative AI in software development include:\n\n- Automating code generation\n- Bug detection\n- Testing automation\n- Project management\n\nThese applications help streamline various stages of the software development lifecycle.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      true,
+      false,
+      false
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "How does generative AI impact team collaboration in software development?",
+    "expected": "Generative AI fosters a more inclusive environment by bridging the gap between technical and non-technical users, enhancing communication and innovation across teams, and encouraging a shared understanding among team members crucial for maintaining Agile values and delivering customer value.",
+    "answerable": true,
+    "answer": "Generative AI fosters a more inclusive environment by bridging the gap between technical and non-technical users, enhancing communication and innovation across teams. It encourages a shared understanding among team members, which is crucial for maintaining Agile values and focusing on delivering customer value. Additionally, AI's ability to analyze project data in real-time helps project managers identify inefficiencies and make informed decisions quickly, leading to improved project outcomes.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      true,
+      false,
+      false,
+      false
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "What are some challenges developers face when using generative AI tools?",
+    "expected": "Developers may face issues such as inaccuracies in code generation, overreliance on AI tools, and potential security vulnerabilities, necessitating careful implementation and oversight.",
+    "answerable": true,
+    "answer": "Developers may face the following challenges when using generative AI tools:\n\n- Inaccuracies in code generation\n- Overreliance on AI tools\n- Potential security vulnerabilities\n\nThese issues necessitate careful implementation and oversight.",
+    "refused": false,
+    "chunks": 4,
+    "grade": {
+     "faithful": 1.0,
+     "relevant": 1.0,
+     "correct": true,
+     "chunk_relevant": [
+      false,
+      true,
+      false,
+      true
+     ],
+     "context_complete": true
+    }
+   },
+   {
+    "question": "What is the capital city of Mongolia?",
+    "expected": "",
+    "answerable": false,
+    "answer": "I couldn't find that in the documents, so I'd rather not guess. Try rephrasing, or upload a document that covers it.",
+    "refused": true,
+    "chunks": 0
+   },
+   {
+    "question": "What specific programming languages are most commonly supported by generative AI tools in software development?",
+    "expected": "",
+    "answerable": false,
+    "answer": "I couldn't find that in the documents.",
+    "refused": true,
+    "chunks": 4
+   }
+  ]
+ },
+ "markdown": "# Use of generative AI in software development\n\n## 1. Introduction to Generative AI\n\nIt utilizes advanced machine learning models, particularly deep learning algorithms, to identify and encode patterns from large datasets, enabling the generation of new data that resembles the original input [1][2][3]. This technology has found applications across various fields, including content creation, chatbots, and even code generation tools like GitHub Copilot, enhancing user experiences by providing personalized and relevant outputs [4].\n\nInitially, AI research faced significant challenges, leading to periods of stagnation known as \"AI winters.\" However, advancements in computational power and the availability of large datasets in the early 2000s revitalized the field, culminating in breakthroughs such as deep learning and the transformer architecture, which have been pivotal in the evolution of generative AI [5][6]. As generative AI continues to evolve, it raises important ethical considerations regarding its potential for misuse, including the creation of misinformation and deepfakes [3].\n\n## 2. Generative AI in Software Development\n\nIt serves as an active programming partner, augmenting developers' capabilities and improving the efficiency and quality of the software development lifecycle (SDLC) [7]. Current applications of generative AI in coding include automating code generation, bug detection, testing automation, and project management, which streamline various stages of the development process [8]. A recent survey indicated that most developers are already integrating AI code assistants into their workflows, with predictions suggesting that 75% of enterprise software engineers will adopt these tools by 2028 [9].\n\nFor instance, tools like GitHub Copilot provide AI-powered code completion, while others can generate entire applications from natural language descriptions [10][11]. These generative AI tools not only assist in writing and debugging code but also adapt to individual coding styles, making them more intuitive for developers [12]. Developers may face issues such as inaccuracies in code generation, overreliance on AI tools, and potential security vulnerabilities, necessitating careful implementation and oversight [7].\n\n## 3. Impact on Software Development Processes\n\nAI tools are enhancing coding efficiency by automating the generation of code snippets and entire functions, allowing developers to concentrate on higher-level tasks such as problem-solving and architectural design rather than routine coding and bug detection [8]. The introduction of chat-oriented programming further alters the workflow by facilitating requirement analysis and code review through conversational interfaces, which streamlines the development lifecycle [13].\n\nIn terms of team collaboration, generative AI fosters a more inclusive environment by bridging the gap between technical and non-technical users, thereby enhancing communication and innovation across teams [8]. The use of AI-powered tools encourages a shared understanding among team members, which is crucial for maintaining Agile values and ensuring that the focus remains on delivering customer value [14]. Moreover, AI's ability to analyze project data in real-time allows project managers to identify inefficiencies and make informed decisions quickly, which can lead to improved project outcomes and reduced surprises during execution [15].\n\nThe ongoing evolution of these technologies suggests that the future of software development will continue to be influenced by AI advancements, necessitating a shift in the skill sets required for developers and project managers alike [13].\n\n## 4. Case Studies and Success Stories\n\nFor instance, a survey by Sonar in January 2026 indicated that 42% of committed code was either AI-generated or assisted, showcasing the growing reliance on AI tools in coding practices [16]. Additionally, JetBrains reported that 93% of developers regularly use AI tools, with many experiencing time savings of 25-50% on routine tasks [17].\n\nCompanies have noted speed improvements of 20-50% in developer productivity, particularly in tasks such as code reviews, testing, and debugging [9]. Furthermore, McKinsey's 2025 global survey revealed that 39% of respondents acknowledged AI's contribution to enterprise-wide earnings before interest and taxes (EBIT), although most reported impacts below 5% [18].\n\nHigh-value AI projects often begin within a single function, where the costs and benefits are easier to measure [18]. As generative AI continues to evolve, companies are encouraged to focus on specific use cases that align with their operational needs to maximize the technology's potential [19].\n\n## 5. Future Outlook and Trends\n\nThese tools are expected to evolve, enabling them to process large-scale codebases and integrate complex documentation more seamlessly [20]. As generative AI technologies mature, organizations are likely to see positive returns on investment, particularly as they adopt language models and build the necessary infrastructure to support these advancements [21]. The role of developers is also shifting, as they transition from traditional coding tasks to overseeing AI-generated outputs and engaging in \"prompt engineering\" to guide AI in producing effective code [22].\n\nIssues surrounding intellectual property rights and the origins of training data remain unresolved, raising questions about the ownership of AI-generated code [23]. Additionally, the potential for AI to amplify biases present in training data poses risks in various applications, necessitating careful oversight and governance [24]. Developers must also be aware of the ethical implications of relying heavily on AI, as overuse could weaken their problem-solving skills and blur the lines of accountability when AI-generated code leads to issues [24]. To address these concerns, practices such as explainable AI, provenance tracking, and collaborative governance are emerging as essential components for responsible AI code generation [25].\n\n## References\n\n- [1] Generative AI - Wikipedia — <https://en.wikipedia.org/wiki/Generative_AI>\n- [2] What is generative AI? - IBM — <https://www.ibm.com/think/topics/generative-ai>\n- [3] What is Generative AI? - Stanford HAI — <https://hai.stanford.edu/ai-definitions/what-is-generative-ai>\n- [4] What is Generative AI - GeeksforGeeks — <https://www.geeksforgeeks.org/artificial-intelligence/what-is-generative-ai/>\n- [5] What is generative AI? - Microsoft AI — <https://www.microsoft.com/en-us/ai/ai-101/what-is-generative-ai>\n- [6] History of artificial intelligence - Wikipedia — <https://en.wikipedia.org/wiki/History_of_artificial_intelligence>\n- [7] Generative AI for developers: Benefits and challenges - IBM — <https://www.ibm.com/think/topics/generative-ai-for-developers>\n- [8] AI in software development - IBM — <https://www.ibm.com/think/topics/ai-in-software-development>\n- [9] How GenAI Transforms Software Development in 11 Ways (2026) — <https://www.index.dev/blog/genai-software-development-use-cases>\n- [10] The AI Revolution in Software Development: How Generative AI ... — <https://aiinstitute.hbs.edu/the-ai-revolution-in-software-development-how-generative-ai-is-reshaping-coding-practices/>\n- [11] 16 Best Generative AI Coding Tools in 2026 ... - MarkTechPost — <https://www.marktechpost.com/2026/06/24/top-generative-ai-coding-tools-of-2026/>\n- [12] Best 10 Generative AI tools - Better Stack Community — <https://betterstack.com/community/comparisons/generative-ai-coding-tools/>\n- [13] Generative AI and the Transformation of Software Development ... — <https://arxiv.org/html/2510.10819v1>\n- [14] 13 Impacts of Generative AI That Changed Software Development — <https://agilemania.com/generative-ai-impact-on-software-development>\n- [15] AI in Project Management | IBM — <https://www.ibm.com/think/topics/ai-project-management>\n- [16] AI coding success stories and case studies | AI Developer Toolkit — <https://developertoolkit.ai/en/strategy/success-stories/>\n- [17] Top 10 AI Coding Tools Picked by Developers in 2026 — <https://kuberns.com/blogs/ai-tools-for-coding/>\n- [18] 10 Real AI Success Stories with Quantified Results (2026) — <https://theapplied.co/blog/ai-success-stories>\n- [19] 25 Generative AI Case Studies [In Depth] [2026] - DigitalDefynd — <https://digitaldefynd.com/IQ/generative-ai-case-studies/>\n- [20] Generative AI in Software Development: Trends & Predictions ... — <https://xbsoftware.com/blog/ai-in-software-development/>\n- [21] The future of generative AI: 10 trends to follow in 2026 — <https://www.techtarget.com/ai/feature/The-future-of-generative-AI-10-trends-to-follow-in-2026>\n- [22] AI’s Future in Software Development | Software Development ... — <https://www.microsoft.com/en-us/software-development-companies/resources/articles/future-of-ai-software-development>\n- [23] Ethical Considerations When Using AI Tools in Coding — <https://teachmeidea.com/ethical-considerations-using-ai-tools-in-coding/>\n- [24] What Are the Ethical Issues for AI in Software Development? - — <https://codewave.com/insights/ethical-issues-ai-software-development/>\n- [25] Ethical Considerations in AI Code Generation | Sanj — <https://sanj.dev/post/ethical-ai-code-generation/>\n"
+}

@@ -522,6 +522,9 @@ details[open] > summary .icon { transform: none; }
 .panel-body h3:first-child { margin-top: 0; }
 .toc-link { display: block; padding: 8px 10px; border-radius: 8px; text-decoration: none; color: var(--text-2); }
 .toc-link:hover { background: var(--raised); color: var(--text); }
+.toc-link { position: relative; transition: background-color 140ms var(--ease), color 140ms var(--ease); }
+.toc-link.here { color: var(--text); background: color-mix(in oklab, var(--accent) 7%, transparent); }
+.toc-link.here::before { content: ""; position: absolute; left: 0; top: 10px; bottom: 10px; width: 2px; border-radius: 2px; background: var(--accent); }
 .toc-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; }
 .toc-row .t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
 .toc-row .n { font: 12px var(--mono); color: var(--muted); }
@@ -529,16 +532,45 @@ details[open] > summary .icon { transform: none; }
 .log { display: flex; flex-direction: column; gap: 3px; font: 12px/1.5 var(--mono); color: var(--muted); }
 .log b { color: var(--text-2); font-weight: 500; }
 .card { padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); margin-bottom: 8px; transition: border-color 200ms var(--ease), box-shadow 200ms var(--ease); }
+.card:hover { border-color: var(--line-strong); }
 .card.on { border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 14%, transparent); }
 .card-title { display: block; font-weight: 500; font-size: 14px; color: var(--text); text-decoration: none; overflow-wrap: anywhere; }
 a.card-title:hover { text-decoration: underline; }
 .card-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; font-size: 13px; color: var(--muted); }
 .insight { padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; }
-.senti { display: grid; grid-template-columns: minmax(0, 1fr) 110px; gap: 6px 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; }
-.senti .why { grid-column: 1 / -1; font-size: 13px; color: var(--muted); }
-.scale { position: relative; height: 4px; border-radius: 2px; background: linear-gradient(to right, color-mix(in oklab, var(--danger) 45%, var(--raised)), var(--raised) 50%, color-mix(in oklab, var(--ok) 45%, var(--raised))); }
-.scale i { position: absolute; top: -4px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--text); border: 2px solid var(--side); }
-.scale u { position: absolute; top: -2px; width: 2px; height: 8px; background: var(--muted); }
+.panel-body h3.dot { display: flex; align-items: center; gap: 8px; }
+.panel-body h3.dot::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.panel-body h3.dot.ok::before { background: var(--ok); }
+.panel-body h3.dot.bad::before { background: var(--danger); }
+.panel-body h3.dot.next::before { background: var(--text-2); }
+
+/* sentiment: a diverging bar that grows from the neutral midpoint, with the exact score beside it */
+.senti { display: flex; flex-direction: column; gap: 8px; padding: 12px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.senti.overall { padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+.senti-head { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.senti-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; color: var(--text); text-decoration: none; }
+a.senti-title:hover { color: var(--accent); }
+.senti .why { font-size: 13px; line-height: 1.5; color: var(--muted); }
+.scale { --tone: var(--muted); display: grid; grid-template-columns: minmax(0, 1fr) 46px; align-items: center; gap: 10px; }
+.scale.pos { --tone: var(--ok); } .scale.neg { --tone: var(--danger); }
+.scale-track { position: relative; height: 6px; border-radius: 3px; background: var(--raised); }
+.scale-track::after { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--line-strong); }
+.scale-track i {
+  position: absolute; top: 0; bottom: 0; border-radius: 0 3px 3px 0; transform-origin: left;
+  background: linear-gradient(to right, color-mix(in oklab, var(--tone) 38%, var(--raised)), var(--tone));
+  animation: grow 700ms var(--ease) both;
+}
+.scale.neg .scale-track i {
+  border-radius: 3px 0 0 3px; transform-origin: right;
+  background: linear-gradient(to left, color-mix(in oklab, var(--tone) 38%, var(--raised)), var(--tone));
+}
+.scale-track u { position: absolute; z-index: 1; top: -4px; bottom: -4px; width: 2px; margin-left: -1px; border-radius: 1px; background: var(--text-2); box-shadow: 0 0 0 1.5px var(--side); cursor: help; }
+.scale-val { font: 500 12px var(--mono); font-variant-numeric: tabular-nums; text-align: right; color: var(--tone); }
+.scale.mid .scale-val { color: var(--text-2); }
+.scale-axis { display: flex; justify-content: space-between; margin: -2px 56px 0 0; font: 11px var(--mono); color: var(--muted); }
+.senti.overall .scale-track { height: 8px; border-radius: 4px; }
+.senti.overall .scale-val { font-size: 13px; }
+@keyframes grow { from { transform: scaleX(0); } }
 .diff { margin-top: 6px; font-size: 13px; color: var(--text-2); }
 .diff ins { background: color-mix(in oklab, var(--ok) 16%, transparent); color: var(--ok); text-decoration: none; }
 .diff del { background: color-mix(in oklab, var(--danger) 12%, transparent); color: var(--danger); }
@@ -551,12 +583,27 @@ table.runs th { color: var(--muted); font-weight: 400; }
 .pchat { display: flex; flex-direction: column; height: 100%; gap: 10px; }
 .pchat .messages { flex: 1; min-height: 0; overflow-y: auto; gap: 14px; }
 .pchat .message.user { max-width: 92%; }
-.pchat .content { font-size: 14px; }
-.msg-from { margin-top: 8px; font-size: 12.5px; color: var(--muted); }
+.pchat .content { font-size: 14px; line-height: 1.6; }
+.pchat .message.assistant { padding: 10px 12px; border: 1px solid var(--line); border-radius: 4px 14px 14px 14px; background: var(--card); }
+.pchat .starters { align-items: stretch; }
+.pchat .composer-box:has(input:disabled) { opacity: 0.7; }
+.msg-from { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 12.5px; line-height: 1.5; color: var(--muted); overflow-wrap: anywhere; }
 .msg-from a { color: var(--text-2); }
 .pchat .composer-box { padding: 6px 6px 6px 12px; border-radius: 12px; }
 .pchat .composer-box input { flex: 1; min-width: 0; height: 36px; border: 0; background: transparent; }
 .pchat .composer-box input:focus { outline: none; }
+
+/* reading progress + small polish for the report workspace */
+.chat-header { position: relative; }
+.read-bar { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform 120ms linear; pointer-events: none; }
+.panel-head { position: sticky; top: 0; z-index: 5; background: var(--side); }
+.panel-tab:active { transform: scale(0.97); }
+.sec-head .menu { opacity: 0.55; transition: opacity 140ms var(--ease); }
+.sec:hover .sec-head .menu, .sec-head .menu[open], .sec-head .menu:focus-within { opacity: 1; }
+.refs a { text-decoration-color: var(--line-strong); text-underline-offset: 3px; transition: text-decoration-color 140ms var(--ease); }
+.refs a:hover { text-decoration-color: var(--accent); }
+.btn:disabled { opacity: 0.6; cursor: default; }
+.scroll, .panel-body, .pchat .messages, .sidebar { scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
 
 /* evidence popover */
 .pop {
@@ -578,7 +625,7 @@ table.runs th { color: var(--muted); font-weight: 400; }
   .report-thread > h1 { font-size: 24px; }
 }
 @media print {
-  .sidebar, .panel, .composer, .chat-header, .scrim { display: none !important; }
+  .sidebar, .panel, .composer, .chat-header, .scrim, .pop { display: none !important; }
   .layout, .layout.report { display: block; height: auto; }
   .chat, .scroll { height: auto; overflow: visible; }
   body { background: #fff; }
