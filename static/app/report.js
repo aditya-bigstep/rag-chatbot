@@ -105,6 +105,7 @@
     const pill = $("#r-status");
     pill.textContent = STATUS[report.status] || report.status;
     pill.className = "pill " + ({ ready: "ok", failed: "bad", blocked: "bad" }[report.status] || "live");
+    $("#r-menu").classList.toggle("is-ready", report.status === "ready");
     const sources = Object.keys(report.numbers).length;
     $("#r-meta").innerHTML = [
       report.outline.length ? `<span class="pill">${report.outline.length} sections</span>` : "",
@@ -124,6 +125,10 @@
     factIndex = (factIndex + 1) % facts.length;
     box.textContent = facts[factIndex];
     if (!calm) animate(box, { opacity: [0, 1], y: [6, 0] }, { duration: 0.4 });
+    const timer = $("#wait-fact-timer");  // restart the bar that counts down to the next fact
+    timer.classList.remove("run");
+    void timer.offsetWidth;
+    timer.classList.add("run");
   }
 
   function drawWait() {
@@ -397,7 +402,7 @@
     document.querySelectorAll(".panel-tab").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
     state.chatFor = null;
     drawSide();
-    enter(".card, .insight, .senti, .toc-link", side);
+    enter(".card, .an-card, .toc-link", side);
   });
 
   function drawSide() {
@@ -450,10 +455,21 @@
     return { positive: "ok", negative: "bad" }[label] || "";
   }
 
-  function scale(score, lexicon) {
+  // A bar that fills from the neutral centre towards the score. Dot = LLM score, tick = word-list score.
+  function scale(score, lexicon, tone = "") {
     const at = (value) => Math.round((Math.max(-1, Math.min(1, value)) + 1) * 50);
+    const spot = at(score);
     const tick = lexicon === undefined ? "" : `<u style="left:${at(lexicon)}%" title="Word-list score ${lexicon}"></u>`;
-    return `<div class="scale" title="Score ${score}">${tick}<i style="left:${at(score)}%"></i></div>`;
+    return `<div class="scale ${tone}" title="Score ${score}"><b style="left:${Math.min(50, spot)}%;width:${Math.abs(spot - 50)}%"></b>${tick}<i style="left:${spot}%"></i></div>`;
+  }
+
+  const INSIGHT_GROUPS = [
+    ["takeaways", "Key takeaways", "tk"], ["opportunities", "Opportunities", "op"],
+    ["risks", "Risks", "rk"], ["next_steps", "Next steps", "nx"],
+  ];
+
+  function signed(score) {
+    return (score > 0 ? "+" : score < 0 ? "\u2212" : "") + Math.abs(score).toFixed(2);
   }
 
   function analysisHtml() {
@@ -465,23 +481,38 @@
         <button class="btn primary" data-analyse>Run analysis</button>`;
     }
     const titles = Object.fromEntries(report.outline.map((item, i) => [item.id, `${i + 1}. ${item.title}`]));
-    const group = (name, items) => !items.length ? "" : `<h3>${name}</h3>` + items.map((insight) =>
-      `<div class="insight">${esc(insight.text)}<div class="card-row">
-        ${insight.sections.map((sid) => `<a class="pill" href="#sec-${sid}" style="text-decoration:none">${esc(titles[sid] || sid)}</a>`).join("")}
-        ${insight.sources.map((n) => `<span class="cite">${n}</span>`).join("")}</div></div>`).join("");
+    const overall = analysis.overall;
+    const reading = (row, big = "") => `<span class="an-tone ${big} ${toneClass(row.label)}">${row.label}</span>
+      <span class="an-num" title="Score from -1 to +1">${signed(row.score)}</span>`;
+
+    const sections = analysis.sections.map((row) => `<div class="an-row">
+        <a class="an-title" href="#sec-${row.id}">${esc(titles[row.id] || row.id)}</a>
+        <div class="an-meter">${scale(row.score, row.lexicon_score, toneClass(row.label))}${reading(row)}</div>
+        <p class="an-why">${esc(row.why)}</p>
+        ${row.agrees ? "" : '<p class="an-warn"><span class="pill warn">models disagree</span> The word-list score points the other way. Read this section yourself.</p>'}
+      </div>`).join("");
+
+    const groups = INSIGHT_GROUPS.filter(([key]) => analysis[key].length).map(([key, name, tone]) => `
+      <h3 class="an-head"><i class="an-dot ${tone}"></i>${name}<span class="an-count">${analysis[key].length}</span></h3>
+      <ul class="an-card an-list">${analysis[key].map((insight) => `<li class="an-row">
+        <p>${esc(insight.text)}</p>
+        <div class="an-src">
+          <span class="an-from">${insight.sections.map((sid) => `<a href="#sec-${sid}">${esc(titles[sid] || sid)}</a>`).join("")}</span>
+          <span class="an-cites">${insight.sources.map((n) => `<span class="cite" title="Source ${n}">${n}</span>`).join("")}</span>
+        </div></li>`).join("")}</ul>`).join("");
 
     return `${report.analysis_stale ? `<p class="notice" style="margin:0 0 16px">The report changed after this analysis. <button class="btn small" data-analyse>Run again</button></p>` : ""}
       <h3>Overall sentiment</h3>
-      <div class="senti"><span><span class="pill ${toneClass(analysis.overall.label)}">${analysis.overall.label}</span></span>
-        ${scale(analysis.overall.score)}<span class="why">${esc(analysis.overall.why)}</span></div>
+      <div class="an-card an-overall">
+        <div class="an-meter">${reading(overall, "big")}</div>
+        ${scale(overall.score, undefined, toneClass(overall.label))}
+        <div class="scale-axis"><span>Negative</span><span>Neutral</span><span>Positive</span></div>
+        <p class="an-why">${esc(overall.why)}</p>
+      </div>
       <h3>By section</h3>
-      ${analysis.sections.map((row) => `<div class="senti">
-        <span>${esc(titles[row.id] || row.id)} <span class="pill ${toneClass(row.label)}">${row.label}</span>
-          ${row.agrees ? "" : '<span class="pill warn" title="The word-list score points the other way. Read this section yourself.">models disagree</span>'}</span>
-        ${scale(row.score, row.lexicon_score)}<span class="why">${esc(row.why)}</span></div>`).join("")}
-      <p class="hint" style="margin-top:8px">Dot: LLM reading. Tick: word-list score, a free second opinion.</p>
-      ${group("Key takeaways", analysis.takeaways)}${group("Opportunities", analysis.opportunities)}
-      ${group("Risks", analysis.risks)}${group("Next steps", analysis.next_steps)}`;
+      <div class="an-card">${sections}</div>
+      <p class="an-legend"><span><i></i>Dot: LLM reading</span><span><u></u>Tick: word-list score, a free second opinion</span></p>
+      ${groups}`;
   }
 
   // Activity = what each revision changed, then what each run cost.

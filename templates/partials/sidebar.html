@@ -11,12 +11,17 @@
   <nav class="group sessions" aria-label="Reports">
     <h2 class="group-label">Reports</h2>
     {% for r in reports %}
+      <div class="session-row">
       <a class="session-link {% if report_id and r.id == report_id %}active{% endif %}" href="/research/{{ r.id }}" title="{{ r.topic }}">
         <span class="session-title">{{ r.topic }}</span>
         {% if r.status in ("planning", "researching", "revising") %}<span class="session-meta is-live">running</span>
         {% elif r.status == "awaiting_outline" %}<span class="session-meta is-live">review</span>
         {% elif r.trust %}<span class="session-meta" title="Trust score">{{ (r.trust * 100)|round|int }}%</span>{% endif %}
       </a>
+      <button type="button" class="session-del" title="Delete report" aria-label="Delete report {{ r.topic }}"
+              data-del-kind="report" data-del-url="/api/research/{{ r.id }}" data-del-page="/research/{{ r.id }}"
+              data-del-name="{{ r.topic }}">{{ icon("trash", 14) }}</button>
+      </div>
     {% else %}
       <p class="hint">No reports yet</p>
     {% endfor %}
@@ -25,10 +30,15 @@
   <nav class="group sessions short" aria-label="Document chats">
     <h2 class="group-label">Document chats</h2>
     {% for s in sessions %}
+      <div class="session-row">
       <a class="session-link {% if current and s.id == current.id %}active{% endif %}" href="/sessions/{{ s.id }}" title="{{ s.title }}">
         <span class="session-title">{{ s.title }}</span>
         <span class="session-meta">{{ s.message_count }}</span>
       </a>
+      <button type="button" class="session-del" title="Delete chat" aria-label="Delete chat {{ s.title }}"
+              data-del-kind="chat" data-del-url="/api/sessions/{{ s.id }}" data-del-page="/sessions/{{ s.id }}"
+              data-del-name="{{ s.title }}">{{ icon("trash", 14) }}</button>
+      </div>
     {% endfor %}
     <form method="post" action="/ui/sessions">
       <button class="nav-link" type="submit" style="border:0;background:none;width:100%;cursor:pointer">{{ icon("plus", 14) }}New chat</button>
@@ -57,8 +67,59 @@
   <div class="account">
     <span class="account-avatar" aria-hidden="true">{{ (user.name or user.email)[:1]|upper }}</span>
     <span class="account-text"><b>{{ user.name or user.email.split("@")[0] }}</b><small>{{ user.email }}</small></span>
-    <form method="post" action="/auth/logout"><button class="icon-btn" type="submit" title="Sign out" aria-label="Sign out">{{ icon("x") }}</button></form>
+    <button class="icon-btn" type="button" title="Log out" aria-label="Log out"
+            onclick="document.getElementById('logout-dialog').showModal()">{{ icon("logout") }}</button>
   </div>
+  <dialog class="confirm" id="logout-dialog" aria-labelledby="logout-title">
+    <h2 id="logout-title">Log out?</h2>
+    <p>Do you want to log out of ResearchPilot?</p>
+    <div class="confirm-actions">
+      <form method="dialog"><button class="btn" type="submit" autofocus>Cancel</button></form>
+      <form method="post" action="/auth/logout"><button class="btn primary" type="submit">{{ icon("logout", 14) }}Log out</button></form>
+    </div>
+  </dialog>
   {% endif %}
+  <dialog class="confirm" id="delete-dialog" aria-labelledby="delete-title">
+    <h2 id="delete-title">Delete?</h2>
+    <p id="delete-text"></p>
+    <p class="confirm-error" id="delete-error" hidden>Could not delete it. Please try again.</p>
+    <div class="confirm-actions">
+      <form method="dialog"><button class="btn" type="submit" autofocus>Cancel</button></form>
+      <button class="btn danger" type="button" id="delete-confirm">{{ icon("trash", 14) }}Delete</button>
+    </div>
+  </dialog>
 </aside>
+<script>
+  /* Hover a report or chat in the sidebar -> bin icon -> confirm -> delete. */
+  (() => {
+    const dialog = document.getElementById("delete-dialog");
+    const confirmButton = document.getElementById("delete-confirm");
+    const error = document.getElementById("delete-error");
+    let target = null;
+    document.getElementById("sidebar").addEventListener("click", (event) => {
+      const button = event.target.closest(".session-del");
+      if (!button) return;
+      event.preventDefault();
+      target = button;
+      const report = button.dataset.delKind === "report";
+      document.getElementById("delete-title").textContent = report ? "Delete this report?" : "Delete this chat?";
+      document.getElementById("delete-text").textContent =
+        `\u201c${button.dataset.delName}\u201d will be deleted permanently. This cannot be undone.`;
+      error.hidden = true;
+      dialog.showModal();
+    });
+    confirmButton.addEventListener("click", async () => {
+      confirmButton.disabled = true;
+      const response = await fetch(target.dataset.delUrl, { method: "DELETE" }).catch(() => null);
+      confirmButton.disabled = false;
+      if (!response || !(response.ok || response.status === 404)) { error.hidden = false; return; }
+      if (location.pathname === target.dataset.delPage) {
+        location.href = target.dataset.delKind === "report" ? "/" : "/chat";
+        return;
+      }
+      target.closest(".session-row").remove();
+      dialog.close();
+    });
+  })();
+</script>
 <div class="scrim" data-toggle="sidebar" hidden></div>

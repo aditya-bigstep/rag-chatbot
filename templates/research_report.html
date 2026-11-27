@@ -45,8 +45,12 @@
             <p class="wait-status" id="wait-status"></p>
           </div>
           <div class="wait-fact">
-            <small>While you wait</small>
-            <p id="wait-fact"></p>
+            <span class="wait-fact-icon">{{ icon("bulb", 22) }}</span>
+            <div>
+              <small>While you wait · did you know?</small>
+              <p id="wait-fact"></p>
+            </div>
+            <span class="wait-fact-timer" id="wait-fact-timer" aria-hidden="true"></span>
           </div>
         </section>
 

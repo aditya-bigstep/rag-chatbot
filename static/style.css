@@ -400,6 +400,33 @@ details[open] > summary .icon { transform: none; }
 .account-text { display: flex; flex-direction: column; min-width: 0; flex: 1; line-height: 1.25; }
 .account-text b { font-weight: 500; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .account-text small { color: var(--muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+dialog.confirm {
+  width: min(360px, calc(100vw - 32px)); padding: 22px; border: 1px solid var(--line-strong); border-radius: 16px;
+  background: var(--card); color: var(--text); box-shadow: 0 24px 64px rgb(0 0 0 / 0.28);
+}
+dialog.confirm[open] { animation: enter 200ms var(--ease) both; }
+dialog.confirm::backdrop { background: rgb(8 10 16 / 0.45); backdrop-filter: blur(2px); }
+dialog.confirm h2 { margin: 0 0 6px; font-size: 18px; font-weight: 600; }
+dialog.confirm p { margin: 0 0 20px; color: var(--text-2); font-size: 14px; }
+.confirm-actions { display: flex; justify-content: flex-end; gap: 8px; }
+.confirm-actions form { margin: 0; }
+.confirm-error { margin: -8px 0 16px !important; color: var(--danger) !important; }
+.btn.danger { background: var(--danger); color: #fff; border-color: transparent; }
+.btn.danger:hover { background: color-mix(in oklab, var(--danger) 85%, #000); }
+.btn.danger:disabled { opacity: 0.6; cursor: default; }
+
+/* sidebar history: a delete button appears on hover */
+.session-row { position: relative; }
+.session-del {
+  position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px;
+  display: grid; place-items: center; border: 0; border-radius: 6px; background: transparent; color: var(--muted);
+  cursor: pointer; opacity: 0; pointer-events: none; transition: opacity 120ms var(--ease), color 120ms var(--ease), background-color 120ms var(--ease);
+}
+.session-row:hover .session-del, .session-row:focus-within .session-del { opacity: 1; pointer-events: auto; }
+.session-row:hover .session-link, .session-row:focus-within .session-link { padding-right: 38px; }
+.session-row:hover .session-meta, .session-row:focus-within .session-meta { display: none; }
+.session-del:hover { color: var(--danger); background: color-mix(in oklab, var(--danger) 12%, transparent); }
+@media (hover: none) { .session-del { opacity: 1; pointer-events: auto; } .session-row .session-meta { display: none; } .session-row .session-link { padding-right: 38px; } }
 
 /* ===================================================================== ResearchPilot additions
    Same tokens and components as the chat. Only what the report workspace needs on top. */
@@ -443,6 +470,11 @@ details[open] > summary .icon { transform: none; }
 }
 .menu-list a:hover, .menu-list button:hover { background: var(--raised); color: var(--text); }
 .menu-list .danger { color: var(--danger); }
+/* the report actions arrow next to the status: clearly visible once the report is ready */
+.menu.is-ready > summary { width: auto; padding: 0 8px; gap: 4px; color: var(--accent); border: 1px solid color-mix(in oklab, var(--accent) 45%, transparent); background: color-mix(in oklab, var(--accent) 10%, transparent); animation: ready-ping 1.6s var(--ease) 2; }
+.menu.is-ready > summary:hover, .menu.is-ready[open] > summary { color: var(--accent-ink); background: var(--accent); }
+.menu.is-ready > summary .icon { stroke-width: 2.2; }
+@keyframes ready-ping { 50% { box-shadow: 0 0 0 5px color-mix(in oklab, var(--accent) 22%, transparent); } }
 
 /* the report document */
 .report-thread { max-width: 760px; }
@@ -504,9 +536,21 @@ details[open] > summary .icon { transform: none; }
 .wait-sheet .w-packet { fill: var(--sheet-red); }
 .wait-status { margin: 10px 0 0; font: 12px var(--mono); color: var(--sheet-ink-2); min-height: 1.5em; }
 .wait-status b { color: var(--sheet-red); font-weight: 500; }
-.wait-fact { padding: 16px 20px 18px; }
-.wait-fact small { display: block; font: 12px var(--mono); color: var(--muted); margin-bottom: 6px; }
-.wait-fact p { margin: 0; font-size: 15px; color: var(--text); max-width: 60ch; min-height: 3.1em; }
+.wait-fact {
+  position: relative; display: flex; gap: 14px; align-items: flex-start; padding: 18px 20px 22px;
+  border-top: 2px solid var(--accent); background: linear-gradient(135deg, color-mix(in oklab, var(--accent) 9%, var(--card)), color-mix(in oklab, var(--accent) 3%, var(--card)));
+}
+.wait-fact-icon {
+  flex: none; width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center;
+  background: var(--accent); color: var(--accent-ink); box-shadow: 0 4px 14px color-mix(in oklab, var(--accent) 30%, transparent);
+  animation: glow 2.4s var(--ease) infinite;
+}
+.wait-fact small { display: block; font: 500 12px var(--mono); color: var(--accent); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.06em; }
+.wait-fact p { margin: 0; font-size: 16px; font-weight: 400; line-height: 1.55; color: color-mix(in oklab, var(--text) 85%, var(--muted)); max-width: 60ch; min-height: 3.1em; }
+.wait-fact-timer { position: absolute; left: 0; bottom: 0; height: 3px; width: 100%; background: var(--accent); opacity: 0.55; transform-origin: left; transform: scaleX(0); }
+.wait-fact-timer.run { animation: countdown 7s linear both; }
+@keyframes countdown { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+@keyframes glow { 50% { box-shadow: 0 6px 22px color-mix(in oklab, var(--accent) 50%, transparent); } }
 
 /* right panel: tabs */
 .panel-tabs { display: flex; gap: 2px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
@@ -533,12 +577,48 @@ details[open] > summary .icon { transform: none; }
 .card-title { display: block; font-weight: 500; font-size: 14px; color: var(--text); text-decoration: none; overflow-wrap: anywhere; }
 a.card-title:hover { text-decoration: underline; }
 .card-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; font-size: 13px; color: var(--muted); }
-.insight { padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; }
-.senti { display: grid; grid-template-columns: minmax(0, 1fr) 110px; gap: 6px 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; }
-.senti .why { grid-column: 1 / -1; font-size: 13px; color: var(--muted); }
-.scale { position: relative; height: 4px; border-radius: 2px; background: linear-gradient(to right, color-mix(in oklab, var(--danger) 45%, var(--raised)), var(--raised) 50%, color-mix(in oklab, var(--ok) 45%, var(--raised))); }
-.scale i { position: absolute; top: -4px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--text); border: 2px solid var(--side); }
-.scale u { position: absolute; top: -2px; width: 2px; height: 8px; background: var(--muted); }
+/* analysis tab: one neutral card per block; colour only where it means something (sentiment, group dot) */
+.an-card { margin: 0; padding: 0 14px; list-style: none; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+.an-overall { padding: 14px; }
+.an-row { padding: 14px 0; }
+.an-row + .an-row { border-top: 1px solid var(--line); }
+.an-title { display: block; margin-bottom: 10px; font-size: 14px; font-weight: 500; line-height: 1.35; color: var(--text); text-decoration: none; }
+.an-title:hover { text-decoration: underline; }
+.an-meter { display: flex; align-items: center; gap: 8px; }
+.an-meter .scale { flex: 1; min-width: 0; margin-right: 6px; }
+.an-tone { flex: none; font-size: 13px; font-weight: 500; color: var(--text-2); text-transform: capitalize; }
+.an-tone.ok { color: var(--ok); }
+.an-tone.bad { color: var(--danger); }
+.an-row .an-tone { min-width: 58px; text-align: right; }  /* same width for every label, so the bars line up */
+.an-tone.big { flex: 1; font-size: 20px; font-weight: 600; line-height: 1.2; }
+.an-num { flex: none; min-width: 5ch; text-align: right; font: 12px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.an-overall .scale { margin-top: 14px; }
+.scale-axis { display: flex; justify-content: space-between; margin-top: 8px; font: 11px var(--mono); color: var(--muted); }
+.an-why { margin: 10px 0 0; font-size: 13px; line-height: 1.55; color: var(--text-2); }
+.an-warn { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 0; font-size: 12.5px; color: var(--text-2); }
+.an-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 10px 2px 0; font-size: 12px; color: var(--muted); }
+.an-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.an-legend i { width: 8px; height: 8px; border-radius: 50%; background: var(--text-2); }
+.an-legend u { width: 2px; height: 11px; margin: 0 3px; border-radius: 1px; background: var(--text-2); }
+.panel-body h3.an-head { display: flex; align-items: center; gap: 8px; margin-top: 24px; font-size: 14px; color: var(--text); }
+.an-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-2); }
+.an-dot.op { background: var(--ok); }
+.an-dot.rk { background: var(--danger); }
+.an-dot.nx { background: var(--accent); }
+.an-count { font: 12px var(--mono); color: var(--muted); }
+.an-list p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--text); }
+.an-src { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-top: 8px; }
+.an-from { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.an-from a { font-size: 12.5px; line-height: 1.4; color: var(--muted); text-decoration: none; }
+.an-from a:hover { color: var(--text); text-decoration: underline; }
+.an-cites { flex: none; display: flex; gap: 4px; }
+.scale { --tone: var(--text-2); position: relative; height: 6px; border-radius: 3px; background: var(--raised); }
+.scale.ok { --tone: var(--ok); }
+.scale.bad { --tone: var(--danger); }
+.scale::before { content: ""; position: absolute; left: 50%; top: -3px; width: 1px; height: 12px; background: var(--line-strong); }
+.scale b { position: absolute; top: 0; height: 100%; border-radius: 3px; background: color-mix(in oklab, var(--tone) 55%, transparent); }
+.scale i { position: absolute; top: -3px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--tone); border: 2px solid var(--card); }
+.scale u { position: absolute; top: -4px; width: 2px; height: 14px; margin-left: -1px; border-radius: 1px; background: var(--text-2); }
 .diff { margin-top: 6px; font-size: 13px; color: var(--text-2); }
 .diff ins { background: color-mix(in oklab, var(--ok) 16%, transparent); color: var(--ok); text-decoration: none; }
 .diff del { background: color-mix(in oklab, var(--danger) 12%, transparent); color: var(--danger); }

@@ -225,3 +225,52 @@ def test_streaming_still_yields_tokens_then_result(tmp_path: Path) -> None:
     )
     items = list(engine.stream(message="Hi", history=[], session_id="s2"))
     assert items[0] == "streamed" and items[-1].answer == "streamed"  # type: ignore[union-attr]
+
+
+# ------------------------------------------------------------------ report chat (whole report in the prompt)
+class _ReportStore:
+    """Tiny store with metadata filtering, like Chroma's `all_chunks(where)`."""
+
+    def __init__(self, chunks: list) -> None:
+        self.chunks = chunks
+
+    def all_chunks(self, where: dict | None = None) -> list:
+        where = where or {}
+        return [c for c in self.chunks if all(c.metadata.get(k) == v for k, v in where.items())]
+
+    def search(self, vector: list[float], k: int, where: dict | None = None) -> list:
+        return []  # nothing passes a similarity cutoff — the report chat must not depend on it
+
+
+def _report_engine(reply: str) -> tuple:
+    from tests.fakes import HashEmbedder
+    from app.vectordb.retriever import VectorRetriever
+
+    chunks = []
+    for i, (title, text) in enumerate([("Background", "EV sales grew fast in India."), ("Players", "TVS leads.")]):
+        chunk = make_chunk(text, source="EVs in India", doc_id=f"report-r1-s{i}")
+        chunk.metadata = {"report_id": "r1", "section": title}
+        chunks.append(chunk)
+    other = make_chunk("Leave policy text.", doc_id="leave")
+    other.metadata = {"report_id": "other"}
+    retriever = VectorRetriever(_ReportStore([*chunks, other]), HashEmbedder(), k=4, min_score=0.5, mode="hybrid")
+    llm = FakeChatModel(reply=reply)
+    return get_engine(llm=llm, retriever=retriever, tools=[], options=APP_OPTIONS), llm
+
+
+def test_report_chat_summary_gets_the_whole_report() -> None:
+    engine, llm = _report_engine("EV sales grew fast in India and TVS leads the market today overall.")
+    result = engine.invoke(message="summarize this pdf", history=[], session_id="s", scope="r1")
+    prompt = llm.prompt_text()
+    assert "EV sales grew fast" in prompt and "TVS leads" in prompt and "Leave policy" not in prompt
+    assert 'research report titled "EVs in India"' in prompt
+    assert result.answer.startswith("EV sales grew fast")  # not the "couldn't find that" fallback
+    assert [s.section for s in result.sources] == ["Background", "Players"]
+
+
+def test_report_chat_off_topic_refusal_is_kept_without_sources() -> None:
+    refusal = "That's outside this report on EVs in India. Ask me to summarize it, or ask about: Background."
+    engine, _ = _report_engine(refusal)
+    result = engine.invoke(message="who won the IPL in 2024?", history=[], session_id="s", scope="r1")
+    assert result.answer == refusal  # not replaced by the grounding fallback
+    assert result.sources == []

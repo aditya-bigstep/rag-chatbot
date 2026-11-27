@@ -151,6 +151,6 @@ def reset(
 @router.post("/auth/logout")
 def logout(request: Request, auth: AuthService = Depends(get_auth)) -> Response:
     auth.end_session(request.cookies.get(COOKIE))
-    response = RedirectResponse("/auth", status_code=status.HTTP_303_SEE_OTHER)
+    response = RedirectResponse("/", status_code=status.HTTP_303_SEE_OTHER)  # signed out, "/" is the home page
     response.delete_cookie(COOKIE, path="/")
     return response
