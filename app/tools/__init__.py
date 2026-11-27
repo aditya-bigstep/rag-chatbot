@@ -23,11 +23,9 @@ from __future__ import annotations
 from langchain_core.tools import BaseTool
 
 from app.tools.calculator import calculator
-from app.tools.datetime_tool import current_datetime
+from app.tools.datetime_tool import current_datetime, date_info
 
 
 def get_tools() -> list[BaseTool]:
-    """OUT: every tool the engine should bind to the LLM.
-
-    """
-    return [calculator, current_datetime]
+    """OUT: every tool the engine should bind to the LLM."""
+    return [calculator, current_datetime, date_info]

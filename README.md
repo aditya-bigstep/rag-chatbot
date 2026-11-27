@@ -39,6 +39,16 @@ sign up, enter the 6-digit code sent by e-mail (Brevo), and you are in. "Forgot 
 Reports and chats belong to the user who created them. Without `BREVO_API_KEY` the code is printed in the
 server log instead, which is enough for local testing.
 
+## Memory
+
+- **Within a chat:** the last `MEMORY_MAX_MESSAGES` messages go to the model word for word and older ones as a short
+  summary (`MEMORY_SUMMARIZE`). If summarising fails a plain excerpt is used, so memory never breaks the chat.
+  Each chat is one JSON file under `data/sessions/`, the single source of truth.
+- **Across chats:** what you say about yourself ("my name is Aditya", "I live in Pune", "remember that I prefer short
+  answers") is saved per user in `data/memory/` and given to every chat, every report chat and the research box.
+  "Forget my name" or "forget everything about me" erases it. Rule-based, no extra LLM call.
+- **Research box:** keeps its own conversation, so follow-ups and "what did I ask earlier?" work there too.
+
 ## Environment variables
 
 | Variable | What it does |
@@ -54,6 +64,8 @@ server log instead, which is enough for local testing.
 | `RESEARCH_MAX_SECTIONS`, `RESEARCH_SOURCES_PER_SECTION`, `RESEARCH_PARALLEL_SECTIONS` | Size and speed of a report. |
 | `RESEARCH_VERIFY` | `false` skips claim verification. Used as the baseline in the evals. |
 | `RESEARCH_MAX_LLM_CALLS` | Hard cap on LLM calls per run. |
+| `RESEARCH_ROUTING` | `true` (default) routes what is typed in the research box: greetings get a canned reply, quick questions one short LLM answer, and only real topics start a report. `false` sends everything to the research agent. |
+| `SMART_ROUTING`, `GUARDRAILS` | Same idea for the document and report chats: skip retrieval for small talk, and block prompt injection, jailbreaks and harmful requests before any model is called. |
 | `AUTH_ENABLED` | `true` puts everything except the welcome page behind sign-in. |
 | `BREVO_API_KEY`, `BREVO_SENDER_EMAIL`, `BREVO_SENDER_NAME` | Sends the sign-up code and reset link. The sender is picked from the Brevo account when left empty. |
 | `SESSION_TTL_DAYS` | How long a login lasts. |

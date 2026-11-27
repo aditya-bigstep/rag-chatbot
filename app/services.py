@@ -28,9 +28,17 @@ def _mask_pii(content: str) -> str:
     return redaction.text
 
 
-def _scope(session: Session) -> dict[str, str]:
-    """Extra engine argument for chats that belong to a research report (limits retrieval to it)."""
-    return {"scope": session.report_id} if session.report_id else {}
+def _extras(store: Any, session: Session, content: str) -> dict[str, str]:
+    """Optional engine arguments, passed only when they have a value (simple engines take neither):
+    `scope`   for chats that belong to a research report (limits retrieval to it),
+    `profile` what the user told us about themselves, after learning from this message (long-term memory)."""
+    extras = {"scope": session.report_id} if session.report_id else {}
+    memory = getattr(store, "memory", None)
+    if memory is not None:
+        profile = memory.prompt(memory.learn(content))
+        if profile:
+            extras["profile"] = profile
+    return extras
 
 
 def run_chat_turn(store: Any, engine: ChatEngine, session_id: str, content: str) -> tuple[Message, Message]:
@@ -39,7 +47,8 @@ def run_chat_turn(store: Any, engine: ChatEngine, session_id: str, content: str)
     content = _mask_pii(content)
     user_message = Message(role="user", content=content)
     try:
-        result = engine.invoke(message=content, history=session.messages, session_id=session_id, **_scope(session))
+        extras = _extras(store, session, content)
+        result = engine.invoke(message=content, history=session.messages, session_id=session_id, **extras)
         assistant_message = Message(role="assistant", content=result.answer, sources=result.sources)
     except Exception as exc:
         logger.exception("Engine failed for session %s", session_id)
@@ -62,9 +71,7 @@ def resolve_approval(store: Any, engine: ChatEngine, session_id: str, approved: 
     return reply
 
 
-def run_chat_turn_stream(
-    store: Any, engine: ChatEngine, session_id: str, content: str
-) -> Iterator[str | Message]:
+def run_chat_turn_stream(store: Any, engine: ChatEngine, session_id: str, content: str) -> Iterator[str | Message]:
     """Like `run_chat_turn`, but yields answer text pieces and ends with the saved assistant Message.
 
     The first item is the (PII-masked) user Message, so the UI can show what was actually sent.
@@ -74,7 +81,8 @@ def run_chat_turn_stream(
     user_message = Message(role="user", content=content)
     yield user_message
     try:
-        stream = engine.stream(message=content, history=session.messages, session_id=session_id, **_scope(session))
+        extras = _extras(store, session, content)
+        stream = engine.stream(message=content, history=session.messages, session_id=session_id, **extras)
         for item in stream:
             if isinstance(item, EngineResult):
                 assistant_message = Message(role="assistant", content=item.answer, sources=item.sources)

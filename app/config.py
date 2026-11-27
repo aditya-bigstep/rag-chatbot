@@ -76,6 +76,7 @@ class Settings:
     research_parallel_sections: int = 2
     research_verify: bool = True
     research_max_llm_calls: int = 40
+    research_routing: bool = True  # answer greetings and quick questions directly instead of starting a report
 
     auth_enabled: bool = False  # true = an account is needed for everything except the welcome page
     admin_login: str = ""  # a built-in account that signs in with this name instead of an e-mail ("" = none)
@@ -137,6 +138,7 @@ def load_settings() -> Settings:
         research_parallel_sections=_env_int("RESEARCH_PARALLEL_SECTIONS", 2),
         research_verify=_env_bool("RESEARCH_VERIFY", True),
         research_max_llm_calls=_env_int("RESEARCH_MAX_LLM_CALLS", 40),
+        research_routing=_env_bool("RESEARCH_ROUTING", True),
         auth_enabled=_env_bool("AUTH_ENABLED", False),
         admin_login=os.getenv("ADMIN_LOGIN", "").strip().lower(),
         admin_password=os.getenv("ADMIN_PASSWORD", ""),

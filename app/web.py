@@ -39,7 +39,8 @@ def _redirect(request: Request, url: str) -> Response:
 def _shell(request: Request, store: UserSessions, components: Components) -> dict[str, Any]:
     """What every signed-in page needs for its sidebar: the user, their reports and their chats."""
     reports = components.research.summaries(user_id_of(request)) if components.research else []
-    chats = [s for s in store.list() if not s.report_id]  # report chats live inside their report
+    # report chats live inside their report, and the research box keeps its own hidden conversation
+    chats = [s for s in store.list() if not s.report_id and s.kind == "chat"]
     return {"user": getattr(request.state, "user", None), "reports": reports, "sessions": chats}
 
 
@@ -98,7 +99,7 @@ def chat_home(
     store: UserSessions = Depends(get_store),
     components: Components = Depends(get_components),
 ) -> Response:
-    chats = [s for s in store.list() if not s.report_id]
+    chats = [s for s in store.list() if not s.report_id and s.kind == "chat"]
     if chats:
         return RedirectResponse(f"/sessions/{chats[0].id}", status_code=status.HTTP_303_SEE_OTHER)
     return _chat_page(request, store, components, None)

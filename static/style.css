@@ -630,3 +630,36 @@ table.runs th { color: var(--muted); font-weight: 400; }
   .chat, .scroll { height: auto; overflow: visible; }
   body { background: #fff; }
 }
+
+/* sidebar rows: the delete button shows on hover or keyboard focus (always on touch screens) */
+.session-row { position: relative; }
+.session-row .session-link { width: 100%; }
+.row-delete { position: absolute; right: 4px; top: 4px; width: 28px; height: 28px; border-radius: 6px; opacity: 0; }
+.row-delete:hover { color: var(--danger); background: color-mix(in oklab, var(--danger) 12%, transparent); }
+.session-row:hover .row-delete, .row-delete:focus-visible { opacity: 1; }
+.session-row:hover .session-link, .session-row:focus-within .session-link { padding-right: 36px; background: var(--raised); color: var(--text); }
+.session-row:hover .session-meta, .session-row:focus-within .session-meta { display: none; }
+.session-row.is-leaving { opacity: 0.4; pointer-events: none; }
+@media (hover: none) {
+  .row-delete { opacity: 1; }
+  .session-row .session-link { padding-right: 36px; }
+  .session-row .session-meta { display: none; }
+}
+
+/* confirmation dialog (log out, delete) */
+.dialog {
+  width: min(400px, calc(100vw - 32px)); padding: 20px; border: 1px solid var(--line-strong); border-radius: 14px;
+  background: var(--card); color: var(--text); box-shadow: 0 24px 64px rgb(0 0 0 / 0.3);
+}
+.dialog[open] { animation: enter 200ms var(--ease) both; }
+.dialog::backdrop { background: rgb(5 8 14 / 0.55); animation: fade 200ms var(--ease) both; }
+.dialog h2 { margin: 0; font-size: 17px; font-weight: 600; text-wrap: balance; }
+.dialog p { margin: 8px 0 0; font-size: 14px; color: var(--text-2); overflow-wrap: anywhere; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+.btn.danger { background: var(--danger); color: #fff; border-color: transparent; }
+.btn.danger:hover { background: color-mix(in oklab, var(--danger) 86%, #000); }
+
+/* answers given on the new-report screen (routing: direct / llm / blocked) */
+.route-tag { display: inline-flex; align-items: center; height: 20px; margin-bottom: 6px; padding: 0 7px; border: 1px solid var(--line-strong); border-radius: 5px; font: 11px var(--mono); color: var(--muted); }
+.route-tag.blocked { color: var(--danger); border-color: color-mix(in oklab, var(--danger) 40%, transparent); }
+.message-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }

@@ -8,8 +8,13 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field
 
+from app.chat.guardrails import check_input
+from app.chat.memory import ConversationMemory
+from app.chat.router import small_talk
 from app.deps import Components, UserSessions, get_components, get_store, is_mine, user_id_of
+from app.models import Message
 from app.research import events
+from app.research.intake import Intake, route_request
 from app.research.render import report_markdown
 from app.research.service import ResearchService
 from app.research.store import ReportNotFoundError
@@ -21,6 +26,11 @@ MAX_ACTIVE_RUNS = 2
 
 class NewReport(BaseModel):
     topic: str = Field(min_length=4, max_length=300)
+
+
+class Ask(BaseModel):
+    text: str = Field(min_length=1, max_length=300)
+    session_id: str | None = None  # the box's conversation so far (returned by the previous call)
 
 
 class OutlineItem(BaseModel):
@@ -69,12 +79,69 @@ def list_reports(request: Request, service: ResearchService = Depends(get_servic
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
-def create_report(
-    body: NewReport, request: Request, service: ResearchService = Depends(get_service)
-) -> dict[str, Any]:
+def create_report(body: NewReport, request: Request, service: ResearchService = Depends(get_service)) -> dict[str, Any]:
     if len(service.active) >= MAX_ACTIVE_RUNS:
         raise HTTPException(status.HTTP_429_TOO_MANY_REQUESTS, "Two reports are already running. Try again shortly.")
     return service.create(body.topic, user_id_of(request))
+
+
+def _summarizer(service: ResearchService) -> ConversationMemory:
+    """Conversation memory for the research box: recent turns verbatim, older ones summarised (cached)."""
+    if getattr(service, "home_memory", None) is None:
+        settings = service.settings
+        service.home_memory = ConversationMemory(  # type: ignore[attr-defined]
+            service.deps.fast_llm, settings.memory_max_messages, settings.memory_summarize
+        )
+    return service.home_memory  # type: ignore[attr-defined,no-any-return]
+
+
+@router.post("/ask")
+def ask(
+    body: Ask,
+    request: Request,
+    service: ResearchService = Depends(get_service),
+    sessions: UserSessions = Depends(get_store),
+) -> dict[str, Any]:
+    """The research box. Routes the message (see app/research/intake.py): a greeting, a sum or a quick
+    question is answered right here with the conversation and the user memory, and only a real topic
+    starts a report. The conversation is one JSON session file, like every chat."""
+    session = sessions.home(body.session_id)
+    result = route_request(
+        body.text,
+        service.deps.fast_llm,
+        service.settings.research_routing,
+        history=session.messages,
+        memory=sessions.memory,
+        summarizer=_summarizer(service),
+    )
+    reply: dict[str, Any] = {
+        "route": result.route.value,
+        "reason": result.reason,
+        "reply": result.reply,
+        "report_id": None,
+        "session_id": session.id,
+    }
+    if result.route is Intake.AGENT:
+        if len(service.active) >= MAX_ACTIVE_RUNS:
+            raise HTTPException(
+                status.HTTP_429_TOO_MANY_REQUESTS, "Two reports are already running. Try again shortly."
+            )
+        reply["report_id"] = service.create(result.text, user_id_of(request))["id"]
+    if result.route is not Intake.BLOCKED:  # a blocked message is never replayed to a model later
+        said = result.reply or f"I started a research report on: {result.text}"
+        sessions.append_messages(
+            session.id, Message(role="user", content=result.text), Message(role="assistant", content=said)
+        )
+    return reply
+
+
+def _guard(*texts: str) -> None:
+    """Guardrails for text typed into a report (outline titles, change requests): refuse before any work starts."""
+    for text in texts:
+        if text.strip():
+            verdict = check_input(text)
+            if not verdict.allowed:
+                raise HTTPException(status.HTTP_400_BAD_REQUEST, verdict.reply)
 
 
 @router.get("/{report_id}")
@@ -94,6 +161,8 @@ def approve_outline(
     report_id: str, body: OutlineDecision, service: ResearchService = Depends(get_service)
 ) -> dict[str, str]:
     """Human step 1: the user approves (or edits) the outline and the research starts."""
+    for item in body.outline:
+        _guard(item.title, *item.questions, *item.queries)
     _call(service.approve_outline, report_id, [item.model_dump() for item in body.outline])
     return {"status": "researching"}
 
@@ -103,6 +172,11 @@ def send_feedback(report_id: str, body: Feedback, service: ResearchService = Dep
     """Human step 2: a change request. Only the sections it touches are redone."""
     if not body.text.strip() and not body.action:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Say what should change")
+    _guard(body.text)
+    if not body.action and small_talk(body.text):  # "hi" or "thanks" is not a change request: skip the run
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST, "Say what should change, for example: add a section on government policy."
+        )
     _call(service.revise, report_id, body.text, body.section_id, body.action)
     return {"status": "revising"}
 

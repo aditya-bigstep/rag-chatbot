@@ -14,9 +14,9 @@
       <span class="chat-title">New report</span>
     </header>
 
-    <div class="scroll">
+    <div class="scroll" id="scroll">
       <div class="thread">
-        <section class="intro">
+        <section class="intro" id="intro">
           <h1>What should we research?</h1>
           <p>ResearchPilot plans an outline for you to approve, reads the web, writes a cited report and removes any sentence its sources do not back.</p>
           <div class="starters">
@@ -24,17 +24,17 @@
             <button type="button" class="starter" data-topic="Solid-state batteries: where the technology stands">Solid-state batteries: where the technology stands</button>
             <button type="button" class="starter" data-topic="Remote work and productivity: what studies show">Remote work and productivity: what studies show</button>
           </div>
-          <p class="turn-error" id="start-error" role="alert" hidden></p>
         </section>
+        <div id="messages" class="messages" aria-live="polite"></div>
       </div>
     </div>
 
     <form class="composer" id="start">
       <div class="composer-box">
-        <textarea name="topic" rows="1" placeholder="Type a topic" required minlength="4" maxlength="300" aria-label="Research topic">{{ topic or "" }}</textarea>
+        <textarea name="topic" rows="1" placeholder="Type a topic or a question" required maxlength="300" aria-label="Research topic">{{ topic or "" }}</textarea>
         <button class="send" type="submit" aria-label="Plan the report">{{ icon("send", 18) }}</button>
       </div>
-      <p class="composer-hint">You approve the outline before anything is written</p>
+      <p class="composer-hint">Quick questions are answered here · topics become a report you approve first</p>
     </form>
   </main>
 </div>

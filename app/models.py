@@ -85,6 +85,7 @@ class Session(BaseModel):
     messages: list[Message] = Field(default_factory=list)
     report_id: str | None = None  # set when this chat is about one research report
     user_id: str | None = None  # owner, when accounts are switched on
+    kind: str = "chat"  # "home" = the conversation in the research box (not listed in the sidebar)
 
 
 class SessionSummary(BaseModel):
@@ -94,3 +95,4 @@ class SessionSummary(BaseModel):
     message_count: int
     report_id: str | None = None
     user_id: str | None = None
+    kind: str = "chat"

@@ -13,6 +13,7 @@ from app import web
 from app.api import chat, documents, research, sessions
 from app.auth.router import COOKIE
 from app.auth.router import router as auth_router
+from app.chat.profile import UserMemoryStore
 from app.config import Settings, get_settings
 from app.observability import configure_tracing
 from app.storage.json_store import SessionStore
@@ -28,6 +29,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application = FastAPI(title="ResearchPilot")
     application.state.settings = settings
     application.state.session_store = SessionStore(settings.sessions_dir)
+    application.state.user_memory = UserMemoryStore(settings.data_dir / "memory")
     application.state.components = None  # built lazily by app.deps.get_components
     application.state.tracing_enabled = configure_tracing()
     application.state.auth = build_auth(settings) if settings.auth_enabled else None

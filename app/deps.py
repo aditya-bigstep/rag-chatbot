@@ -18,6 +18,7 @@ from fastapi import Request
 from app.chat.checkpointing import get_checkpointer
 from app.chat.engine import ChatEngine, PlaceholderEngine, get_engine
 from app.chat.options import EngineOptions
+from app.chat.profile import UserMemory
 from app.config import Settings, get_settings
 from app.models import Message, Session, SessionSummary
 from app.research.deps import build_deps
@@ -101,9 +102,7 @@ def build_components(settings: Settings | None = None) -> Components:
     )
 
 
-def _build_research(
-    settings: Settings, embedder: Any, checkpointer: Any, chunker: Any, store: Any
-) -> ResearchService:
+def _build_research(settings: Settings, embedder: Any, checkpointer: Any, chunker: Any, store: Any) -> ResearchService:
     return ResearchService(settings, build_deps(settings, embedder), checkpointer, chunker, store)
 
 
@@ -121,15 +120,31 @@ def is_mine(owner: str | None, user_id: str | None) -> bool:
 class UserSessions:
     """The chat store as one person sees it: only their own chats."""
 
-    def __init__(self, store: SessionStore, user_id: str | None) -> None:
+    def __init__(self, store: SessionStore, user_id: str | None, memory: UserMemory | None = None) -> None:
         self.store = store
         self.user_id = user_id
+        self.memory = memory  # long-term facts about this person (app/chat/profile.py)
 
     def list(self) -> list[SessionSummary]:
         return [s for s in self.store.list() if is_mine(s.user_id, self.user_id)]
 
-    def create(self, title: str | None = None, report_id: str | None = None) -> Session:
-        return self.store.create(title, report_id, self.user_id)
+    def create(self, title: str | None = None, report_id: str | None = None, kind: str = "chat") -> Session:
+        return self.store.create(title, report_id, self.user_id, kind)
+
+    def home(self, session_id: str | None) -> Session:
+        """The conversation behind the research box: the given one if it is still there, else a fresh one
+        (older ones are removed, so each person has a single home conversation)."""
+        if session_id:
+            try:
+                session = self.get(session_id)
+                if session.kind == "home":
+                    return session
+            except SessionNotFoundError:
+                pass
+        for old in self.list():
+            if old.kind == "home" and (self.user_id is None or old.user_id == self.user_id):
+                self.store.delete(old.id)
+        return self.create("Research box", kind="home")
 
     def get(self, session_id: str) -> Session:
         session = self.store.get(session_id)
@@ -151,7 +166,9 @@ class UserSessions:
 
 
 def get_store(request: Request) -> UserSessions:
-    return UserSessions(request.app.state.session_store, user_id_of(request))
+    user_id = user_id_of(request)
+    memories = getattr(request.app.state, "user_memory", None)
+    return UserSessions(request.app.state.session_store, user_id, memories.for_user(user_id) if memories else None)
 
 
 def get_components(request: Request) -> Components:

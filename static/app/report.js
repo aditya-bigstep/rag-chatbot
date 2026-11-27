@@ -317,7 +317,9 @@
         text = window.prompt("How should this section change?") || "";
         if (!text.trim()) return;
       }
-      if (data.act === "remove" && !window.confirm("Remove this section from the report?")) return;
+      if (data.act === "remove" && !(await confirmDialog({
+        title: "Remove this section?", text: "The section and its sources are taken out of the report.", confirm: "Remove", danger: true,
+      }))) return;
       await send("/feedback", { text, section_id: data.id, action: data.act });
     } else if (data.resume !== undefined) {
       await send("/resume");
@@ -348,7 +350,9 @@
   document.addEventListener("click", async (event) => {
     const target = event.target;
     if (target.closest("[data-print]")) window.print();
-    if (target.closest("[data-delete]") && window.confirm("Delete this report? This cannot be undone.")) {
+    if (target.closest("[data-delete]") && await confirmDialog({
+      title: "Delete this report?", text: "The report, its sources and its chat will be removed for good.", confirm: "Delete", danger: true,
+    })) {
       await api("", { method: "DELETE" }).catch((error) => window.alert(error.message));
       location.href = "/";
     }

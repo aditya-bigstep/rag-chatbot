@@ -16,7 +16,8 @@
           <input name="title" value="{{ current.title }}" aria-label="Chat title" maxlength="120" autocomplete="off" spellcheck="false">
           <span class="rename-icon">{{ icon("pencil", 14) }}</span>
         </form>
-        <form method="post" action="/ui/sessions/{{ current.id }}/delete" onsubmit="return confirm('Delete this chat?')">
+        <form method="post" action="/ui/sessions/{{ current.id }}/delete" data-confirm="Delete this chat?"
+              data-confirm-text="“{{ current.title }}” and its messages will be removed for good." data-confirm-label="Delete" data-confirm-danger>
           <button class="icon-btn" type="submit" aria-label="Delete chat" title="Delete chat">{{ icon("trash") }}</button>
         </form>
       {% else %}

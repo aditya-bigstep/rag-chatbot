@@ -28,6 +28,7 @@ Rules the evaluator checks (with a scripted fake LLM, so no API key needed):
 ADVANCED FEATURES (added on top of M1/M7/M8) — each is switched by `EngineOptions` (app/chat/options.py):
 
   1. memory      app/chat/memory.py        recent messages verbatim + summary of older ones
+                 app/chat/profile.py       long-term: facts about the user, shared by every chat
   2. routing     app/chat/router.py        conditional edges: direct / history / tool / rewrite+retrieve
   3. guardrails  app/chat/guardrails.py    `guard` node (input), untrusted-doc prompt, `verify` node (output)
   4. checkpoint  app/chat/checkpointing.py SQLite checkpointer, thread_id = session_id
@@ -42,7 +43,7 @@ The graph (default options = only the solid arrows run; routing adds the branche
                |--document------------------> retrieve ----> generate
                |--followup/compare--> rewrite_query -> retrieve -> generate
     generate --tool call--> approval --approved--> tools --> generate      (HITL only for dangerous tools)
-    generate --no tool call--> verify --> END                              (grounding check)
+    generate --no tool call--> verify --> END                              (prompt-leak + grounding check)
 """
 
 from __future__ import annotations
@@ -71,10 +72,13 @@ from langgraph.types import Command
 from app.chat.approval import needs_approval, request_approval
 from app.chat.guardrails import (
     INSUFFICIENT_CONTEXT_ANSWER,
+    LEAK_REFUSAL,
+    SAFETY_RULES,
     UNSUPPORTED_ANSWER,
     check_grounding,
     check_input,
     format_context,
+    leaks_prompt,
 )
 from app.chat.llm import get_llm
 from app.chat.memory import ConversationMemory
@@ -118,6 +122,8 @@ HISTORY_PROMPT = (
 TOOL_PROMPT = (
     "Use the available tools when the user needs a calculation, the date/time, or to delete a document. "
     "Only call delete_document when the user explicitly names the file.\n"
+    "For a percentage such as '18% of 4500' call the calculator with 18 / 100 * 4500. For a weekday, or the date "
+    "of today, tomorrow or any other day, call date_info: never work out a weekday yourself.\n"
     "Write maths as plain text, never LaTeX: no \\( \\), \\[ \\], $ or \\times. Use the symbols * / + - "
     "(or ×), e.g. '46 × 122 = 5612'."
 )
@@ -147,6 +153,17 @@ OVERVIEW_INSTRUCTIONS = (
     "If the user asked for a specific length or focus, follow that instead."
 )
 MAX_REWRITE_CHARS = 300
+# Feature 3: an answer that recites any of these is replaced (see `verify`).
+SECRET_PROMPTS = (
+    SAFETY_RULES,
+    RAG_PROMPT,
+    CHAT_PROMPT,
+    HISTORY_PROMPT,
+    TOOL_PROMPT,
+    REWRITE_PROMPT,
+    COMPARE_INSTRUCTIONS,
+    OVERVIEW_INSTRUCTIONS,
+)
 
 
 class ChatEngine(Protocol):
@@ -210,6 +227,8 @@ class ChatState(TypedDict):
     approved: bool
     # Report chat: when set, retrieval only looks at chunks of this report.
     scope: str
+    # Long-term memory: what the user told us about themselves in any chat (app/chat/profile.py).
+    profile: str
 
 
 # M1: maps our stored Message.role to the matching LangChain message class.
@@ -288,7 +307,9 @@ class GraphEngine:
         self.options = options or EngineOptions()
         self.checkpointed = checkpointed
 
-    def _inputs(self, message: str, history: list[Message], scope: str | None = None) -> dict[str, Any]:
+    def _inputs(
+        self, message: str, history: list[Message], scope: str | None = None, profile: str = ""
+    ) -> dict[str, Any]:
         # Feature 1 (memory): decide which past messages the model sees — recent ones verbatim plus a summary.
         view = self.memory.build(history) if self.memory else None
         recent = view.recent if view else history
@@ -311,6 +332,7 @@ class GraphEngine:
             "blocked": "",
             "approved": False,
             "scope": scope or "",
+            "profile": profile,
         }
 
     def _config(self, session_id: str) -> dict[str, Any]:
@@ -334,9 +356,11 @@ class GraphEngine:
         answer = str(pending["message"]) if pending else _text(state["messages"][-1])
         return EngineResult(answer=answer, sources=state.get("sources", []), pending_approval=pending)
 
-    def invoke(self, message: str, history: list[Message], session_id: str, scope: str | None = None) -> EngineResult:
+    def invoke(
+        self, message: str, history: list[Message], session_id: str, scope: str | None = None, profile: str = ""
+    ) -> EngineResult:
         # M1: run the graph once. M2: the metadata tags the LangSmith trace with the session id.
-        state = self.graph.invoke(self._inputs(message, history, scope), config=self._config(session_id))
+        state = self.graph.invoke(self._inputs(message, history, scope, profile), config=self._config(session_id))
         return self._result(state, session_id)
 
     def resume(self, session_id: str, approved: bool) -> EngineResult:
@@ -345,13 +369,13 @@ class GraphEngine:
         return self._result(state, session_id)
 
     def stream(
-        self, message: str, history: list[Message], session_id: str, scope: str | None = None
+        self, message: str, history: list[Message], session_id: str, scope: str | None = None, profile: str = ""
     ) -> Iterator[str | EngineResult]:
         """Yield the `generate` node's text as it arrives, then the final EngineResult."""
         # M9 (streaming): "messages" mode gives token pieces, "values" mode gives the full state.
         state: dict[str, Any] = {}
         for mode, data in self.graph.stream(
-            self._inputs(message, history, scope),
+            self._inputs(message, history, scope, profile),
             config=self._config(session_id),
             stream_mode=["messages", "values"],
         ):
@@ -493,6 +517,10 @@ class _GraphBuilder:
                 )
         if state["summary"]:  # Feature 1: the summarised older part of the chat
             prompt = (prompt or "") + "\n\nSummary of the earlier conversation:\n" + state["summary"]
+        if state.get("profile"):  # long-term memory: the same facts in every chat
+            prompt = (prompt or "") + "\n\n" + state["profile"]
+        if prompt and self.options.input_guard:  # Feature 3: the model's own line of defence
+            prompt = SAFETY_RULES + "\n\n" + prompt
         return prompt
 
     def _has_no_evidence(self, state: ChatState) -> bool:
@@ -529,6 +557,10 @@ class _GraphBuilder:
     def verify(self, state: ChatState) -> dict[str, Any]:
         """Feature 3: is the final answer backed by the retrieved text?"""
         last = state["messages"][-1]
+        if self.options.input_guard and isinstance(last, AIMessage) and leaks_prompt(_text(last), SECRET_PROMPTS):
+            annotate_run(prompt_leak=True)
+            logger.warning("Answer recited the system prompt; replaced")
+            return {"messages": [AIMessage(content=LEAK_REFUSAL, id=last.id)]}  # same id = replace
         if (
             self.options.grounding == "off"
             or state["route"] not in RETRIEVAL_ROUTES

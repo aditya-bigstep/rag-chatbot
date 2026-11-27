@@ -11,12 +11,16 @@
   <nav class="group sessions" aria-label="Reports">
     <h2 class="group-label">Reports</h2>
     {% for r in reports %}
-      <a class="session-link {% if report_id and r.id == report_id %}active{% endif %}" href="/research/{{ r.id }}" title="{{ r.topic }}">
-        <span class="session-title">{{ r.topic }}</span>
-        {% if r.status in ("planning", "researching", "revising") %}<span class="session-meta is-live">running</span>
-        {% elif r.status == "awaiting_outline" %}<span class="session-meta is-live">review</span>
-        {% elif r.trust %}<span class="session-meta" title="Trust score">{{ (r.trust * 100)|round|int }}%</span>{% endif %}
-      </a>
+      <div class="session-row">
+        <a class="session-link {% if report_id and r.id == report_id %}active{% endif %}" href="/research/{{ r.id }}" title="{{ r.topic }}">
+          <span class="session-title">{{ r.topic }}</span>
+          {% if r.status in ("planning", "researching", "revising") %}<span class="session-meta is-live">running</span>
+          {% elif r.status == "awaiting_outline" %}<span class="session-meta is-live">review</span>
+          {% elif r.trust %}<span class="session-meta" title="Trust score">{{ (r.trust * 100)|round|int }}%</span>{% endif %}
+        </a>
+        <button type="button" class="icon-btn row-delete" data-remove="report" data-id="{{ r.id }}" data-name="{{ r.topic }}"
+                aria-label="Delete report: {{ r.topic }}" title="Delete report">{{ icon("trash", 15) }}</button>
+      </div>
     {% else %}
       <p class="hint">No reports yet</p>
     {% endfor %}
@@ -25,10 +29,14 @@
   <nav class="group sessions short" aria-label="Document chats">
     <h2 class="group-label">Document chats</h2>
     {% for s in sessions %}
-      <a class="session-link {% if current and s.id == current.id %}active{% endif %}" href="/sessions/{{ s.id }}" title="{{ s.title }}">
-        <span class="session-title">{{ s.title }}</span>
-        <span class="session-meta">{{ s.message_count }}</span>
-      </a>
+      <div class="session-row">
+        <a class="session-link {% if current and s.id == current.id %}active{% endif %}" href="/sessions/{{ s.id }}" title="{{ s.title }}">
+          <span class="session-title">{{ s.title }}</span>
+          <span class="session-meta">{{ s.message_count }}</span>
+        </a>
+        <button type="button" class="icon-btn row-delete" data-remove="chat" data-id="{{ s.id }}" data-name="{{ s.title }}"
+                aria-label="Delete chat: {{ s.title }}" title="Delete chat">{{ icon("trash", 15) }}</button>
+      </div>
     {% endfor %}
     <form method="post" action="/ui/sessions">
       <button class="nav-link" type="submit" style="border:0;background:none;width:100%;cursor:pointer">{{ icon("plus", 14) }}New chat</button>
@@ -57,8 +65,12 @@
   <div class="account">
     <span class="account-avatar" aria-hidden="true">{{ (user.name or user.email)[:1]|upper }}</span>
     <span class="account-text"><b>{{ user.name or user.email.split("@")[0] }}</b><small>{{ user.email }}</small></span>
-    <form method="post" action="/auth/logout"><button class="icon-btn" type="submit" title="Sign out" aria-label="Sign out">{{ icon("x") }}</button></form>
+    <form method="post" action="/auth/logout" data-confirm="Log out of ResearchPilot?"
+          data-confirm-text="You will need to sign in again to see your reports and chats." data-confirm-label="Log out">
+      <button class="icon-btn" type="submit" title="Log out" aria-label="Log out">{{ icon("logout") }}</button>
+    </form>
   </div>
   {% endif %}
 </aside>
 <div class="scrim" data-toggle="sidebar" hidden></div>
+<script src="{{ url_for('static', path='app/shell.js') }}?v={{ static_v('app/shell.js') }}" defer></script>
