@@ -577,48 +577,97 @@ dialog.confirm p { margin: 0 0 20px; color: var(--text-2); font-size: 14px; }
 .card-title { display: block; font-weight: 500; font-size: 14px; color: var(--text); text-decoration: none; overflow-wrap: anywhere; }
 a.card-title:hover { text-decoration: underline; }
 .card-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; font-size: 13px; color: var(--muted); }
-/* analysis tab: one neutral card per block; colour only where it means something (sentiment, group dot) */
-.an-card { margin: 0; padding: 0 14px; list-style: none; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
-.an-overall { padding: 14px; }
-.an-row { padding: 14px 0; }
+/* analysis tab: quiet neutral cards; colour only where it carries meaning (green positive, red negative) */
+.an-card { margin: 0; padding: 0 16px; list-style: none; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+.an-pad { padding: 16px; }
+.an-why { margin: 8px 0 0; font-size: 13px; line-height: 20px; color: var(--text-2); }
+.an-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 12px 0 0; font-size: 12px; line-height: 16px; color: var(--muted); }
+.an-legend span { display: inline-flex; align-items: center; gap: 8px; }
+.an-legend i { width: 12px; height: 8px; border-radius: 2px; background: color-mix(in oklab, var(--ok) 70%, transparent); }
+.an-legend u { width: 2px; height: 12px; background: var(--text); }
+.an-legend s { width: 0; height: 12px; border-left: 1px dashed var(--text-2); }
+.an-note { margin: 4px 0 0; font-size: 12px; line-height: 16px; color: var(--muted); }
+
+/* summary: three figures in one row */
+.an-summary { padding: 16px; }
+.an-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); margin-bottom: 16px; }
+.an-stat { display: grid; grid-template-rows: 16px 28px 16px; row-gap: 4px; min-width: 0; padding: 0 12px; border-left: 1px solid var(--line); }
+.an-stat:first-child { padding-left: 0; border-left: 0; }
+.an-stat-name { font-size: 12px; line-height: 16px; color: var(--muted); }
+.an-fig { font-size: 24px; font-weight: 500; line-height: 28px; color: var(--text); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.an-fig small { font-size: 13px; font-weight: 400; color: var(--muted); }
+.an-stat-note { font-size: 12px; line-height: 16px; color: var(--text-2); text-transform: capitalize; }
+.an-stat-note.ok { color: var(--ok); }
+.an-stat-note.bad { color: var(--danger); }
+.an-summary .an-why { margin: 0; padding-top: 12px; border-top: 1px solid var(--line); }
+
+/* main chart: diverging bars around zero on a muted grid */
+.chart { --plot-grid: var(--line); }
+.ch-row, .ch-axis { display: grid; grid-template-columns: 16px minmax(0, 1fr) 44px; column-gap: 8px; align-items: center; }
+.ch-row { height: 32px; text-decoration: none; color: inherit; border-radius: 4px; }
+.ch-row:hover .ch-n, .ch-row:hover .ch-v { color: var(--text); }
+.ch-row:hover .ch-plot b { filter: brightness(1.15); }
+.ch-n { font: 12px var(--mono); color: var(--muted); text-align: right; }
+.ch-v { font: 12px var(--mono); color: var(--text-2); text-align: right; font-variant-numeric: tabular-nums; }
+.ch-plot {
+  position: relative; height: 100%;
+  background: linear-gradient(to right, var(--plot-grid) 1px, transparent 1px) 0 0 / 25% 100%;
+  border-right: 1px solid var(--plot-grid);
+}
+.ch-plot::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--line-strong); }
+.ch-plot b { position: absolute; top: 10px; height: 12px; border-radius: 2px; background: color-mix(in oklab, var(--text-2) 45%, transparent); transition: filter 140ms var(--ease); }
+.ch-plot b.ok, .share b.ok, .an-legend i.ok, .sl-bar b.ok { background: color-mix(in oklab, var(--ok) 70%, transparent); }
+.ch-plot b.bad, .share b.bad, .an-legend i.bad, .sl-bar b.bad { background: color-mix(in oklab, var(--danger) 70%, transparent); }
+.ch-plot u { position: absolute; top: 8px; width: 2px; height: 16px; margin-left: -1px; background: var(--text); }
+.ch-plot s { position: absolute; top: 0; bottom: 0; margin-left: -0.5px; border-left: 1px dashed var(--text-2); opacity: 0.7; }
+.ch-axis { height: 20px; }
+.ch-ticks { position: relative; height: 100%; }
+.ch-ticks i { position: absolute; bottom: 0; transform: translateX(-50%); font: 11px var(--mono); font-style: normal; color: var(--muted); white-space: nowrap; }
+.ch-ticks i:first-child { transform: none; }
+.ch-ticks i:last-child { transform: translateX(-100%); }
+
+/* why each section reads the way it does */
+.an-notes { margin: 12px 0 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+.an-row { padding: 12px 0; }
 .an-row + .an-row { border-top: 1px solid var(--line); }
-.an-title { display: block; margin-bottom: 10px; font-size: 14px; font-weight: 500; line-height: 1.35; color: var(--text); text-decoration: none; }
+.an-notes .an-row:last-child { padding-bottom: 0; }
+.an-title { display: flex; gap: 8px; font-size: 14px; font-weight: 500; line-height: 20px; color: var(--text); text-decoration: none; }
 .an-title:hover { text-decoration: underline; }
-.an-meter { display: flex; align-items: center; gap: 8px; }
-.an-meter .scale { flex: 1; min-width: 0; margin-right: 6px; }
-.an-tone { flex: none; font-size: 13px; font-weight: 500; color: var(--text-2); text-transform: capitalize; }
-.an-tone.ok { color: var(--ok); }
-.an-tone.bad { color: var(--danger); }
-.an-row .an-tone { min-width: 58px; text-align: right; }  /* same width for every label, so the bars line up */
-.an-tone.big { flex: 1; font-size: 20px; font-weight: 600; line-height: 1.2; }
-.an-num { flex: none; min-width: 5ch; text-align: right; font: 12px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
-.an-overall .scale { margin-top: 14px; }
-.scale-axis { display: flex; justify-content: space-between; margin-top: 8px; font: 11px var(--mono); color: var(--muted); }
-.an-why { margin: 10px 0 0; font-size: 13px; line-height: 1.55; color: var(--text-2); }
-.an-warn { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 0; font-size: 12.5px; color: var(--text-2); }
-.an-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 10px 2px 0; font-size: 12px; color: var(--muted); }
-.an-legend span { display: inline-flex; align-items: center; gap: 7px; }
-.an-legend i { width: 8px; height: 8px; border-radius: 50%; background: var(--text-2); }
-.an-legend u { width: 2px; height: 11px; margin: 0 3px; border-radius: 1px; background: var(--text-2); }
+.an-n { flex: none; width: 16px; font: 12px/20px var(--mono); font-weight: 400; color: var(--muted); text-align: right; }
+.an-notes .an-why, .an-notes .an-warn { margin-left: 24px; }
+.an-warn { margin: 8px 0 0; font-size: 12px; line-height: 16px; color: var(--warn); }
+
+/* sources: one share bar, then a short ranked list */
+.share { display: flex; gap: 2px; height: 8px; border-radius: 4px; overflow: hidden; }
+.share b { min-width: 4px; background: color-mix(in oklab, var(--text-2) 45%, transparent); }
+.share-legend em { font: 12px var(--mono); font-style: normal; color: var(--text); }
+.share-legend i { width: 8px; height: 8px; border-radius: 50%; background: color-mix(in oklab, var(--text-2) 45%, transparent); }
+.sl-head { margin: 16px 0 0; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12px; line-height: 16px; color: var(--muted); }
+.sl { margin: 0; padding: 0; list-style: none; }
+.sl-row { display: grid; grid-template-columns: 16px minmax(0, 1fr) 44px; column-gap: 8px; row-gap: 2px; padding: 8px 0; }
+.sl-row + .sl-row { border-top: 1px solid var(--line); }
+.sl-n { grid-row: span 3; font: 12px/20px var(--mono); color: var(--muted); text-align: right; }
+.sl-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; line-height: 20px; color: var(--text); text-decoration: none; }
+.sl-title:hover { text-decoration: underline; }
+.sl-v { font: 12px/20px var(--mono); color: var(--text-2); text-align: right; font-variant-numeric: tabular-nums; }
+.sl-d { grid-column: 2 / 4; font-size: 12px; line-height: 16px; color: var(--muted); }
+.sl-bar { grid-column: 2 / 4; position: relative; height: 4px; margin-top: 4px; border-radius: 2px; background: var(--raised); }
+.sl-bar::before { content: ""; position: absolute; left: 50%; top: -2px; width: 1px; height: 8px; background: var(--line-strong); }
+.sl-bar b { position: absolute; top: 0; height: 100%; border-radius: 2px; }
+
+/* takeaways, opportunities, risks, next steps */
 .panel-body h3.an-head { display: flex; align-items: center; gap: 8px; margin-top: 24px; font-size: 14px; color: var(--text); }
-.an-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-2); }
+.an-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-2); }
 .an-dot.op { background: var(--ok); }
 .an-dot.rk { background: var(--danger); }
 .an-dot.nx { background: var(--accent); }
 .an-count { font: 12px var(--mono); color: var(--muted); }
-.an-list p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--text); }
+.an-list p { margin: 0; font-size: 14px; line-height: 20px; color: var(--text); }
 .an-src { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-top: 8px; }
 .an-from { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.an-from a { font-size: 12.5px; line-height: 1.4; color: var(--muted); text-decoration: none; }
+.an-from a { font-size: 12px; line-height: 16px; color: var(--muted); text-decoration: none; }
 .an-from a:hover { color: var(--text); text-decoration: underline; }
 .an-cites { flex: none; display: flex; gap: 4px; }
-.scale { --tone: var(--text-2); position: relative; height: 6px; border-radius: 3px; background: var(--raised); }
-.scale.ok { --tone: var(--ok); }
-.scale.bad { --tone: var(--danger); }
-.scale::before { content: ""; position: absolute; left: 50%; top: -3px; width: 1px; height: 12px; background: var(--line-strong); }
-.scale b { position: absolute; top: 0; height: 100%; border-radius: 3px; background: color-mix(in oklab, var(--tone) 55%, transparent); }
-.scale i { position: absolute; top: -3px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--tone); border: 2px solid var(--card); }
-.scale u { position: absolute; top: -4px; width: 2px; height: 14px; margin-left: -1px; border-radius: 1px; background: var(--text-2); }
 .diff { margin-top: 6px; font-size: 13px; color: var(--text-2); }
 .diff ins { background: color-mix(in oklab, var(--ok) 16%, transparent); color: var(--ok); text-decoration: none; }
 .diff del { background: color-mix(in oklab, var(--danger) 12%, transparent); color: var(--danger); }

@@ -455,12 +455,15 @@
     return { positive: "ok", negative: "bad" }[label] || "";
   }
 
-  // A bar that fills from the neutral centre towards the score. Dot = LLM score, tick = word-list score.
-  function scale(score, lexicon, tone = "") {
-    const at = (value) => Math.round((Math.max(-1, Math.min(1, value)) + 1) * 50);
-    const spot = at(score);
-    const tick = lexicon === undefined ? "" : `<u style="left:${at(lexicon)}%" title="Word-list score ${lexicon}"></u>`;
-    return `<div class="scale ${tone}" title="Score ${score}"><b style="left:${Math.min(50, spot)}%;width:${Math.abs(spot - 50)}%"></b>${tick}<i style="left:${spot}%"></i></div>`;
+  // Where a score from -1 to +1 sits on a 0-100% axis.
+  function axis(value) {
+    return (Math.max(-1, Math.min(1, value)) + 1) * 50;
+  }
+
+  // A bar from the zero line to the score.
+  function bar(score, tone) {
+    const at = axis(score);
+    return `<b class="${tone}" style="left:${Math.min(50, at)}%;width:${Math.abs(at - 50)}%"></b>`;
   }
 
   const INSIGHT_GROUPS = [
@@ -481,16 +484,71 @@
         <button class="btn primary" data-analyse>Run analysis</button>`;
     }
     const titles = Object.fromEntries(report.outline.map((item, i) => [item.id, `${i + 1}. ${item.title}`]));
+    const names = Object.fromEntries(report.outline.map((item) => [item.id, item.title]));
+    const order = Object.fromEntries(report.outline.map((item, i) => [item.id, i + 1]));
     const overall = analysis.overall;
-    const reading = (row, big = "") => `<span class="an-tone ${big} ${toneClass(row.label)}">${row.label}</span>
-      <span class="an-num" title="Score from -1 to +1">${signed(row.score)}</span>`;
+    const rows = analysis.sections;
+    const sources = Object.entries(analysis.sources || {}).filter(([sid]) => report.sources[sid]);
+    const tally = (list, label) => list.filter((row) => row.label === label).length;
+    const sourceTones = sources.map(([, tone]) => tone);
+    const agree = rows.filter((row) => row.agrees).length;
 
-    const sections = analysis.sections.map((row) => `<div class="an-row">
-        <a class="an-title" href="#sec-${row.id}">${esc(titles[row.id] || row.id)}</a>
-        <div class="an-meter">${scale(row.score, row.lexicon_score, toneClass(row.label))}${reading(row)}</div>
+    // Summary: three figures, then the reason in words.
+    const stat = (name, figure, note, tone = "") => `<div class="an-stat">
+        <span class="an-stat-name">${name}</span>
+        <span class="an-fig">${figure}</span>
+        <span class="an-stat-note ${tone}">${note}</span></div>`;
+    const summary = `<div class="an-card an-summary">
+        <div class="an-stats">
+          ${stat("Overall", signed(overall.score), overall.label, toneClass(overall.label))}
+          ${stat("Sections", `${tally(rows, "positive")}<small> of ${rows.length}</small>`, "positive")}
+          ${sources.length ? stat("Sources", `${tally(sourceTones, "positive")}<small> of ${sources.length}</small>`, "positive") : ""}
+        </div>
+        <p class="an-why">${esc(overall.why)}</p>
+      </div>`;
+
+    // Main chart: one diverging bar per section, the word-list score as a tick, the overall score as a dashed line.
+    const chartRows = rows.map((row) => {
+      const tick = row.lexicon_score === undefined ? ""
+        : `<u style="left:${axis(row.lexicon_score)}%" title="Word-list score ${signed(row.lexicon_score)}"></u>`;
+      return `<a class="ch-row" href="#sec-${row.id}" title="${esc(titles[row.id] || row.id)}: ${signed(row.score)}">
+          <span class="ch-n">${order[row.id] ?? ""}</span>
+          <span class="ch-plot">${bar(row.score, toneClass(row.label))}${tick}<s style="left:${axis(overall.score)}%"></s></span>
+          <span class="ch-v">${signed(row.score)}</span></a>`;
+    }).join("");
+    const chart = `<div class="chart" role="img" aria-label="Sentiment score of each section, from -1 to +1">
+        ${chartRows}
+        <div class="ch-axis"><span></span><span class="ch-ticks"><i style="left:0">−1</i><i style="left:25%">−0.5</i><i style="left:50%">0</i><i style="left:75%">+0.5</i><i style="left:100%">+1</i></span><span></span></div>
+      </div>
+      <p class="an-legend"><span><i></i>LLM score</span><span><u></u>Word-list score</span><span><s></s>Overall</span></p>`;
+
+    const notes = rows.map((row) => `<li class="an-row">
+        <a class="an-title" href="#sec-${row.id}"><span class="an-n">${order[row.id] ?? ""}</span>${esc(names[row.id] || row.id)}</a>
         <p class="an-why">${esc(row.why)}</p>
-        ${row.agrees ? "" : '<p class="an-warn"><span class="pill warn">models disagree</span> The word-list score points the other way. Read this section yourself.</p>'}
-      </div>`).join("");
+        ${row.agrees ? "" : '<p class="an-warn">The word-list score points the other way. Read this section yourself</p>'}
+      </li>`).join("");
+
+    // Sources: the share of each tone as one bar, then the three least positive sources to read for the other side.
+    const shares = [["positive", "ok"], ["neutral", ""], ["negative", "bad"]]
+      .map(([label, tone]) => [label, tone, tally(sourceTones, label)]).filter(([, , n]) => n);
+    const critical = [...sources].sort((a, b) => a[1].score - b[1].score).slice(0, 3).map(([sid, tone]) => {
+      const source = report.sources[sid];
+      const n = report.numbers ? report.numbers[sid] : "";
+      return `<li class="sl-row">
+          <span class="sl-n">${n ?? ""}</span>
+          <a class="sl-title" href="${esc(source.url)}" target="_blank" rel="noopener noreferrer" title="${esc(source.title)}">${esc(source.title)}</a>
+          <span class="sl-v">${signed(tone.score)}</span>
+          <span class="sl-d">${esc(source.domain)}</span>
+          <span class="sl-bar">${bar(tone.score, toneClass(tone.label))}</span></li>`;
+    }).join("");
+    const sourceBlock = sources.length ? `
+      <h3>Tone across ${sources.length} sources</h3>
+      <div class="an-card an-pad">
+        <div class="share" role="img" aria-label="${shares.map(([l, , n]) => `${n} ${l}`).join(", ")}">${shares.map(([label, tone, n]) => `<b class="${tone}" style="flex:${n}" title="${n} ${label}"></b>`).join("")}</div>
+        <p class="an-legend share-legend">${shares.map(([label, tone, n]) => `<span><i class="${tone}"></i><em>${n}</em> ${label}</span>`).join("")}</p>
+        <p class="sl-head">Least positive, worth reading for the other side</p>
+        <ul class="sl">${critical}</ul>
+      </div>` : "";
 
     const groups = INSIGHT_GROUPS.filter(([key]) => analysis[key].length).map(([key, name, tone]) => `
       <h3 class="an-head"><i class="an-dot ${tone}"></i>${name}<span class="an-count">${analysis[key].length}</span></h3>
@@ -503,15 +561,14 @@
 
     return `${report.analysis_stale ? `<p class="notice" style="margin:0 0 16px">The report changed after this analysis. <button class="btn small" data-analyse>Run again</button></p>` : ""}
       <h3>Overall sentiment</h3>
-      <div class="an-card an-overall">
-        <div class="an-meter">${reading(overall, "big")}</div>
-        ${scale(overall.score, undefined, toneClass(overall.label))}
-        <div class="scale-axis"><span>Negative</span><span>Neutral</span><span>Positive</span></div>
-        <p class="an-why">${esc(overall.why)}</p>
+      ${summary}
+      <h3>Tone by section</h3>
+      <div class="an-card an-pad">
+        ${chart}
+        <p class="an-note">The word-list check agrees with the LLM on ${agree} of ${rows.length} sections</p>
+        <ul class="an-notes">${notes}</ul>
       </div>
-      <h3>By section</h3>
-      <div class="an-card">${sections}</div>
-      <p class="an-legend"><span><i></i>Dot: LLM reading</span><span><u></u>Tick: word-list score, a free second opinion</span></p>
+      ${sourceBlock}
       ${groups}`;
   }
 

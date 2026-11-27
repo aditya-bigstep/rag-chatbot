@@ -20,9 +20,9 @@
           <h1>What should we research?</h1>
           <p>ResearchPilot plans an outline for you to approve, reads the web, writes a cited report and removes any sentence its sources do not back.</p>
           <div class="starters">
-            <button type="button" class="starter" data-topic="State of electric two-wheelers in India">State of electric two-wheelers in India</button>
-            <button type="button" class="starter" data-topic="Solid-state batteries: where the technology stands">Solid-state batteries: where the technology stands</button>
-            <button type="button" class="starter" data-topic="Remote work and productivity: what studies show">Remote work and productivity: what studies show</button>
+            {% for topic in starters %}
+            <button type="button" class="starter" data-topic="{{ topic }}">{{ topic }}</button>
+            {% endfor %}
           </div>
           <p class="turn-error" id="start-error" role="alert" hidden></p>
         </section>

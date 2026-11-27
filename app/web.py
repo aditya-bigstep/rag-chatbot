@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, Form, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 
+from app import starters
 from app.config import Settings
 from app.deps import Components, UserSessions, get_components, get_store, is_mine, user_id_of
 from app.services import UploadError, run_chat_turn, save_and_index_upload
@@ -64,7 +65,12 @@ def home(
     auth_on = request.app.state.auth is not None
     if auth_on and getattr(request.state, "user", None) is None:
         return welcome(request)
-    return templates.TemplateResponse(request, "research_home.html", _shell(request, store, components))
+    shell = _shell(request, store, components)
+    taken = {str(r["topic"]) for r in shell["reports"] if r.get("topic")}
+    topics = starters.pick(request.cookies.get(starters.COOKIE), taken)
+    response = templates.TemplateResponse(request, "research_home.html", {**shell, "starters": topics})
+    response.set_cookie(starters.COOKIE, starters.remember(topics), max_age=30 * 24 * 3600, samesite="lax")
+    return response
 
 
 @router.get("/welcome", response_class=HTMLResponse)
